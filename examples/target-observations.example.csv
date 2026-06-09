@@ -1,0 +1,4 @@
+status,region,source,time_bce,mean,uncertainty,citation_key,citation,note
+synthetic,britain,steppe,2950,0.05,0.03,synthetic_example,"Synthetic example for loader tests; not observed ancient DNA","Illustrative row only"
+synthetic,britain,steppe,2750,0.15,0.05,synthetic_example,"Synthetic example for loader tests; not observed ancient DNA","Illustrative row only"
+synthetic,britain,steppe,2500,0.30,0.08,synthetic_example,"Synthetic example for loader tests; not observed ancient DNA","Illustrative row only"

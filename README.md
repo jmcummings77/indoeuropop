@@ -41,6 +41,12 @@ uv run ruff check .
 uv run mypy src tests
 ```
 
+Compare a demo run against the synthetic target example:
+
+```bash
+uv run indoeuropop demo --targets examples/target-observations.example.csv
+```
+
 ## Package Layout
 
 ```text
@@ -49,9 +55,13 @@ src/indoeuropop/
   config.py          simple TOML config loading
   models.py          typed state, parameter, and result dataclasses
   simulation.py      deterministic and tau-leap simulation skeletons
+  targets.py         target observation CSV loading and comparison helpers
   visualization.py   Matplotlib helpers for outputs and debugging
 docs/
   project-plan.md    implementation roadmap and scientific guardrails
+  target-data-schema.md
+examples/
+  target-observations.example.csv
 tests/
   test_*.py          100% coverage tests for logic-bearing modules
 ```
@@ -63,6 +73,8 @@ tests/
 - Run a small deterministic mean-field scenario.
 - Run a seeded tau-leap stochastic scenario for smoke testing.
 - Load the same inputs from TOML.
+- Load synthetic or published target-observation CSV files.
+- Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
 
 ## Not Yet Included

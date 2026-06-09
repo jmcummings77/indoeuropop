@@ -54,3 +54,25 @@ def test_cli_demo_can_write_plot_and_use_config(tmp_path: Path) -> None:
 
     assert exit_code == 0
     assert plot_path.exists()
+
+
+def test_cli_demo_can_compare_targets(
+    tmp_path: Path, capsys: CaptureFixture[str]
+) -> None:
+    """The CLI should print target comparisons when a target CSV is supplied."""
+    target_path = tmp_path / "targets.csv"
+    target_path.write_text(
+        "\n".join(
+            [
+                "status,region,source,time_bce,mean,uncertainty,citation_key,citation,note",
+                'synthetic,britain,steppe,2750,0.1,0.05,key,"Synthetic",Example',
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = main(["demo", "--targets", str(target_path)])
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "target_comparison=britain,steppe,2750.0" in captured.out
