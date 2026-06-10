@@ -9,6 +9,11 @@ from typing import Any
 
 from indoeuropop.events import ForcingWindow, MigrationPulse, SimulationSchedule
 from indoeuropop.models import PopulationState, SimulationParameters
+from indoeuropop.parameterization import (
+    ParameterSet,
+    RegionParameters,
+    SourceParameters,
+)
 
 
 @dataclass(frozen=True)
@@ -21,6 +26,7 @@ class SimulationConfig:
     end_bce: float = 1500.0
     step_years: float = 25.0
     schedule: SimulationSchedule = field(default_factory=SimulationSchedule)
+    parameter_set: ParameterSet = field(default_factory=ParameterSet)
 
 
 def default_config() -> SimulationConfig:
@@ -32,6 +38,7 @@ def default_config() -> SimulationConfig:
         end_bce=2500.0,
         step_years=50.0,
         schedule=SimulationSchedule(),
+        parameter_set=ParameterSet(),
     )
 
 
@@ -49,6 +56,9 @@ def load_config(path: str | Path) -> SimulationConfig:
     [parameters]
     migration_rate = 0.002
 
+    [region_parameters.britain]
+    migration_rate = 0.003
+
     [counts.britain]
     local = 1000
     steppe = 25
@@ -64,6 +74,10 @@ def load_config(path: str | Path) -> SimulationConfig:
     end_bce = 2750
     climate_stress_delta = 0.2
     epidemic_mortality_delta = 0.01
+
+    [source_parameters.britain.steppe]
+    fertility_rate = 0.04
+    reproductive_multiplier = 1.1
     ```
     """
     config_path = Path(path)
@@ -87,6 +101,7 @@ def load_config(path: str | Path) -> SimulationConfig:
                 for window in _optional_table_list(raw_config, "forcing_windows")
             ),
         ),
+        parameter_set=_load_parameter_set(raw_config),
     )
 
 
@@ -106,3 +121,48 @@ def _optional_table_list(
     if not isinstance(value, list) or not all(isinstance(item, dict) for item in value):
         raise ValueError(f"{key} must be a list of tables")
     return tuple(value)
+
+
+def _load_parameter_set(raw_config: dict[str, Any]) -> ParameterSet:
+    """Load optional region/source parameter tables from TOML data."""
+    return ParameterSet(
+        region_parameters={
+            region: RegionParameters(**parameters)
+            for region, parameters in _optional_named_tables(
+                raw_config, "region_parameters"
+            ).items()
+        },
+        source_parameters={
+            region: {
+                source: SourceParameters(**parameters)
+                for source, parameters in source_table.items()
+            }
+            for region, source_table in _optional_nested_tables(
+                raw_config, "source_parameters"
+            ).items()
+        },
+    )
+
+
+def _optional_named_tables(raw_config: dict[str, Any], key: str) -> dict[str, Any]:
+    """Return an optional TOML table of named tables."""
+    value = raw_config.get(key, {})
+    if not isinstance(value, dict) or not all(
+        isinstance(item, dict) for item in value.values()
+    ):
+        raise ValueError(f"{key} must be a table of tables")
+    return value
+
+
+def _optional_nested_tables(
+    raw_config: dict[str, Any], key: str
+) -> dict[str, dict[str, Any]]:
+    """Return an optional TOML table nested two levels deep."""
+    value = _optional_named_tables(raw_config, key)
+    if not all(
+        isinstance(source_table, dict)
+        and all(isinstance(item, dict) for item in source_table.values())
+        for source_table in value.values()
+    ):
+        raise ValueError(f"{key} must be a nested table of tables")
+    return value

@@ -49,6 +49,9 @@ Phase 2: Scientific input layer.
 Phase 3: Model expansion.
 
 - Replace global parameters with region- and source-specific parameter tables.
+  The first implementation supports optional TOML tables for regional shared
+  rates and source-specific fertility, mortality, epidemic risk, and
+  reproductive multipliers.
 - Add migration pulses rather than relying only on smooth migration pressure.
   The first implementation supports steppe-source pulses and climate/epidemic
   forcing windows through validated schedules.

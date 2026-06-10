@@ -33,6 +33,9 @@ def test_load_config_from_toml(tmp_path: Path) -> None:
         migration_rate = 0.003
         fertility_rate = 0.04
 
+        [region_parameters.britain]
+        migration_rate = 0.004
+
         [counts.britain]
         local = 100
         steppe = 5
@@ -48,6 +51,10 @@ def test_load_config_from_toml(tmp_path: Path) -> None:
         end_bce = 3025
         climate_stress_delta = 0.2
         epidemic_mortality_delta = 0.01
+
+        [source_parameters.britain.steppe]
+        fertility_rate = 0.05
+        reproductive_multiplier = 1.2
         """,
         encoding="utf-8",
     )
@@ -63,6 +70,10 @@ def test_load_config_from_toml(tmp_path: Path) -> None:
     assert len(config.schedule.forcing_windows) == 1
     assert config.schedule.migration_pulses[0].annual_rate == 0.002
     assert config.schedule.forcing_windows[0].climate_stress_delta == 0.2
+    assert config.parameter_set.region_parameters["britain"].migration_rate == 0.004
+    source_parameters = config.parameter_set.source_parameters["britain"]["steppe"]
+    assert source_parameters.fertility_rate == 0.05
+    assert source_parameters.reproductive_multiplier == 1.2
 
 
 def test_example_pulsed_config_loads() -> None:
@@ -71,6 +82,17 @@ def test_example_pulsed_config_loads() -> None:
 
     assert config.schedule.migration_pulses[0].region == "britain"
     assert config.schedule.forcing_windows[0].epidemic_mortality_delta == 0.01
+
+
+def test_example_parameter_override_config_loads() -> None:
+    """The checked-in parameter override example should remain loadable."""
+    config = load_config("examples/parameter-overrides.example.toml")
+
+    assert config.parameter_set.region_parameters["britain"].migration_rate == 0.003
+    assert (
+        config.parameter_set.source_parameters["britain"]["steppe"].fertility_rate
+        == 0.04
+    )
 
 
 @pytest.mark.parametrize("contents", ["", "[parameters]\nmigration_rate = 0.1\n"])
@@ -105,4 +127,44 @@ def test_load_config_rejects_bad_schedule_tables(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ValueError, match="migration_pulses"):
+        load_config(config_path)
+
+
+@pytest.mark.parametrize(
+    "extra_config,match",
+    [
+        ('region_parameters = "bad"\n', "region_parameters"),
+        (
+            """
+            [source_parameters.britain]
+            steppe = "bad"
+            """,
+            "source_parameters",
+        ),
+    ],
+)
+def test_load_config_rejects_bad_parameter_tables(
+    tmp_path: Path, extra_config: str, match: str
+) -> None:
+    """Parameter override tables should have the expected nested shape."""
+    config_path = tmp_path / "bad-parameters.toml"
+    config_path.write_text(
+        f"""
+        {extra_config}
+
+        [simulation]
+        start_bce = 3100
+        end_bce = 3000
+
+        [parameters]
+        migration_rate = 0.003
+
+        [counts.britain]
+        local = 100
+        steppe = 5
+        """,
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match=match):
         load_config(config_path)

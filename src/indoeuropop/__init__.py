@@ -8,6 +8,12 @@ from indoeuropop.events import (
     TimeWindow,
 )
 from indoeuropop.models import PopulationState, SimulationParameters, SimulationResult
+from indoeuropop.parameterization import (
+    ParameterSet,
+    RegionParameters,
+    ResolvedSourceParameters,
+    SourceParameters,
+)
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.targets import (
     TargetComparison,
@@ -19,11 +25,15 @@ from indoeuropop.targets import (
 __all__ = [
     "ForcingWindow",
     "MigrationPulse",
+    "ParameterSet",
     "PopulationState",
+    "RegionParameters",
+    "ResolvedSourceParameters",
     "SimulationConfig",
     "SimulationParameters",
     "SimulationResult",
     "SimulationSchedule",
+    "SourceParameters",
     "TargetComparison",
     "TargetDataset",
     "TargetObservation",

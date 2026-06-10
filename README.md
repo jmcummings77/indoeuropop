@@ -75,6 +75,8 @@ tests/
 - Load the same inputs from TOML.
 - Layer time-bounded migration pulses and climate/epidemic forcing windows over
   base parameters.
+- Override shared region rates and source-specific rates through parameter
+  tables.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.

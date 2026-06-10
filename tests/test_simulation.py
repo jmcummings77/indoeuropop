@@ -5,6 +5,11 @@ import pytest
 
 from indoeuropop.events import ForcingWindow, MigrationPulse, SimulationSchedule
 from indoeuropop.models import PopulationState, SimulationParameters
+from indoeuropop.parameterization import (
+    ParameterSet,
+    RegionParameters,
+    SourceParameters,
+)
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 
 
@@ -124,6 +129,60 @@ def test_tau_leap_accepts_schedule() -> None:
     )
 
     assert result.final_state.source_total("steppe", "britain") > 0
+
+
+def test_region_parameter_override_changes_only_matching_region() -> None:
+    """A region migration override should affect only its named region."""
+    result = run_deterministic(
+        PopulationState(
+            {
+                "britain": {"local": 1000, "steppe": 0},
+                "iberia": {"local": 1000, "steppe": 0},
+            }
+        ),
+        SimulationParameters(migration_rate=0),
+        start_bce=3000,
+        end_bce=2900,
+        step_years=50,
+        parameter_set=ParameterSet(
+            region_parameters={
+                "britain": RegionParameters(migration_rate=0.002),
+            }
+        ),
+    )
+
+    assert result.final_state.ancestry_proportion("steppe", "britain") > 0
+    assert result.final_state.ancestry_proportion("steppe", "iberia") == 0
+
+
+def test_source_parameter_override_changes_source_growth() -> None:
+    """A source fertility override should change the matching source trajectory."""
+    state = PopulationState({"britain": {"local": 1000, "steppe": 100}})
+    parameters = SimulationParameters(migration_rate=0, fertility_rate=0.01)
+    baseline = run_deterministic(
+        state, parameters, start_bce=3000, end_bce=2950, step_years=50
+    )
+    boosted = run_deterministic(
+        state,
+        parameters,
+        start_bce=3000,
+        end_bce=2950,
+        step_years=50,
+        parameter_set=ParameterSet(
+            source_parameters={
+                "britain": {
+                    "steppe": SourceParameters(
+                        fertility_rate=0.04,
+                        reproductive_multiplier=1.5,
+                    )
+                }
+            }
+        ),
+    )
+
+    assert boosted.final_state.source_total(
+        "steppe", "britain"
+    ) > baseline.final_state.source_total("steppe", "britain")
 
 
 @pytest.mark.parametrize(

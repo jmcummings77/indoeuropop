@@ -1,0 +1,29 @@
+[simulation]
+start_bce = 3000
+end_bce = 2500
+step_years = 50
+
+[parameters]
+migration_rate = 0.001
+fertility_rate = 0.035
+
+[counts.britain]
+local = 1000
+steppe = 25
+
+[counts.iberia]
+local = 1200
+steppe = 25
+
+[region_parameters.britain]
+migration_rate = 0.003
+
+[region_parameters.iberia]
+migration_rate = 0.0005
+
+[source_parameters.britain.steppe]
+fertility_rate = 0.04
+reproductive_multiplier = 1.1
+
+[source_parameters.iberia.local]
+mortality_rate = 0.032

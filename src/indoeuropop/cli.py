@@ -27,6 +27,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             step_years=config.step_years,
             seed=args.seed,
             schedule=config.schedule,
+            parameter_set=config.parameter_set,
         )
     else:
         result = run_deterministic(
@@ -36,6 +37,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             end_bce=config.end_bce,
             step_years=config.step_years,
             schedule=config.schedule,
+            parameter_set=config.parameter_set,
         )
 
     final_ancestry = result.final_state.ancestry_proportion(args.source, args.region)
