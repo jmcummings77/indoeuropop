@@ -1,0 +1,3 @@
+status,dataset_id,sample_id,accession_id,publication_key,publication,region,site,time_bce,date_uncertainty,sex,method,note
+synthetic,synthetic-samples,SYN001,synthetic-accession-1,synthetic-sample-example,Synthetic sample metadata example,britain,Example Site A,2900,50,unknown,synthetic_metadata,Example-only sample row
+synthetic,synthetic-samples,SYN002,synthetic-accession-2,synthetic-sample-example,Synthetic sample metadata example,iberia,Example Site B,2700,75,not_reported,synthetic_metadata,Example-only sample row

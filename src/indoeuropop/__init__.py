@@ -52,6 +52,12 @@ from indoeuropop.reporting import (
     provenance_rows,
     write_provenance_csv,
 )
+from indoeuropop.sample_metadata import (
+    RegionSampleCount,
+    SampleMetadataDataset,
+    SampleMetadataRecord,
+    load_sample_metadata,
+)
 from indoeuropop.sensitivity import SensitivityResult, analyze_sensitivity
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.summary import TrajectorySummary, summarize_trajectory
@@ -87,7 +93,10 @@ __all__ = [
     "PopulationState",
     "ProvenanceRecord",
     "RegionParameters",
+    "RegionSampleCount",
     "ResolvedSourceParameters",
+    "SampleMetadataDataset",
+    "SampleMetadataRecord",
     "ScoredSweepRun",
     "SensitivityResult",
     "SimulationConfig",
@@ -112,6 +121,7 @@ __all__ = [
     "latin_hypercube_samples",
     "load_config",
     "load_data_source_catalog",
+    "load_sample_metadata",
     "load_target_dataset",
     "parameters_with_overrides",
     "plot_ancestry",

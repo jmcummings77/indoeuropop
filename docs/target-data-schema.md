@@ -39,3 +39,6 @@ aggregation happens.
 The data-source catalog in `examples/data-sources.example.toml` is the current
 place to register planned AADR/Poseidon inputs and local target files before
 implementing that ingestion layer.
+
+Sample-level metadata belongs in the sample metadata schema first. Target CSV
+rows should be created only after a documented curation and aggregation step.

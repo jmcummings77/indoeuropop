@@ -60,6 +60,7 @@ src/indoeuropop/
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
   reporting.py       CSV export helpers for provenance and diagnostics
+  sample_metadata.py typed sample metadata staging for later ingestion
   simulation.py      deterministic and tau-leap simulation skeletons
   targets.py         target observation CSV loading and comparison helpers
   visualization.py   Matplotlib helpers for outputs and debugging
@@ -96,6 +97,8 @@ tests/
 - Load synthetic or published target-observation CSV files.
 - Register local and planned external data sources with citations and optional
   SHA-256 checksums.
+- Load synthetic or published sample metadata rows without aggregating them into
+  ancestry targets.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
 

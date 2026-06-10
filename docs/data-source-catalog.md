@@ -20,6 +20,9 @@ Catalog files use `[[data_sources]]` tables. Each record includes:
 The example manifest is `examples/data-sources.example.toml`. Its bundled target
 entry is synthetic and must not be treated as historical evidence.
 
+Sample metadata CSV sources can be registered with `kind = "sample_metadata_csv"`.
+The loader for those files is documented in `docs/sample-metadata-schema.md`.
+
 ## Checksum Verification
 
 `verify_record_checksum` verifies only local files with registered SHA-256
