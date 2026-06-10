@@ -7,6 +7,14 @@ from indoeuropop.events import (
     SimulationSchedule,
     TimeWindow,
 )
+from indoeuropop.fitting import (
+    ScoredSweepRun,
+    TargetFit,
+    rank_scored_runs,
+    run_scored_parameter_sweep,
+    score_result_against_targets,
+    score_target_fit,
+)
 from indoeuropop.models import PopulationState, SimulationParameters, SimulationResult
 from indoeuropop.parameterization import (
     ParameterSet,
@@ -22,6 +30,7 @@ from indoeuropop.sweeps import (
     SweepRun,
     SweepSpec,
     latin_hypercube_samples,
+    parameters_with_overrides,
     run_parameter_sweep,
 )
 from indoeuropop.targets import (
@@ -39,6 +48,7 @@ __all__ = [
     "PopulationState",
     "RegionParameters",
     "ResolvedSourceParameters",
+    "ScoredSweepRun",
     "SensitivityResult",
     "SimulationConfig",
     "SimulationParameters",
@@ -49,6 +59,7 @@ __all__ = [
     "SweepSpec",
     "TargetComparison",
     "TargetDataset",
+    "TargetFit",
     "TargetObservation",
     "TimeWindow",
     "TrajectorySummary",
@@ -57,8 +68,13 @@ __all__ = [
     "latin_hypercube_samples",
     "load_config",
     "load_target_dataset",
+    "parameters_with_overrides",
+    "rank_scored_runs",
     "run_deterministic",
     "run_parameter_sweep",
+    "run_scored_parameter_sweep",
     "run_tau_leap",
+    "score_result_against_targets",
+    "score_target_fit",
     "summarize_trajectory",
 ]

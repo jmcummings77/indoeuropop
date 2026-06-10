@@ -125,7 +125,7 @@ def run_parameter_sweep(spec: SweepSpec) -> tuple[SweepRun, ...]:
     )
     runs: list[SweepRun] = []
     for index, values in enumerate(sampled_values):
-        parameters = _parameters_with_overrides(spec.base_parameters, values)
+        parameters = parameters_with_overrides(spec.base_parameters, values)
         result = run_deterministic(
             spec.initial_state,
             parameters,
@@ -148,7 +148,7 @@ def run_parameter_sweep(spec: SweepSpec) -> tuple[SweepRun, ...]:
     return tuple(runs)
 
 
-def _parameters_with_overrides(
+def parameters_with_overrides(
     parameters: SimulationParameters, values: dict[str, float]
 ) -> SimulationParameters:
     """Return a SimulationParameters object with sampled field values applied."""

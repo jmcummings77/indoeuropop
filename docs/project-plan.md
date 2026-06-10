@@ -69,6 +69,8 @@ Phase 4: Inference and validation.
   outputs; formal Sobol analysis remains a later dependency decision.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
+  Target-fit scoring now ranks deterministic sweep runs against curated targets;
+  this ranking is exploratory and not a posterior.
 - Add emulator code only after full simulator outputs are reproducible.
 - Revalidate emulator and posterior results against the explicit simulator.
 

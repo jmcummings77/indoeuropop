@@ -12,6 +12,7 @@ from indoeuropop.sweeps import (
     ParameterRange,
     SweepSpec,
     latin_hypercube_samples,
+    parameters_with_overrides,
     run_parameter_sweep,
 )
 
@@ -149,3 +150,14 @@ def test_run_parameter_sweep_returns_summaries() -> None:
         [run.summary.start_bce for run in runs],
         [3000, 3000, 3000],
     )
+
+
+def test_parameters_with_overrides_updates_parameter_bundle() -> None:
+    """Sampled values should produce a validated SimulationParameters object."""
+    parameters = parameters_with_overrides(
+        SimulationParameters(migration_rate=0.001),
+        {"migration_rate": 0.002, "climate_stress": 0.1},
+    )
+
+    assert parameters.migration_rate == 0.002
+    assert parameters.climate_stress == 0.1

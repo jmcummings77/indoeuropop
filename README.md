@@ -79,6 +79,7 @@ tests/
   tables.
 - Run seeded Latin-hypercube parameter sweeps and summarize trajectories.
 - Analyze sweep sensitivity with lightweight correlation diagnostics.
+- Score simulations and deterministic sweeps against target observations.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
