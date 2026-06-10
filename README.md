@@ -53,6 +53,7 @@ uv run indoeuropop demo --targets examples/target-observations.example.csv
 src/indoeuropop/
   cli.py             argparse entry point for smoke/demo runs
   config.py          simple TOML config loading
+  debugging.py       trajectory comparison helpers for simulation debugging
   models.py          typed state, parameter, and result dataclasses
   simulation.py      deterministic and tau-leap simulation skeletons
   targets.py         target observation CSV loading and comparison helpers
@@ -80,6 +81,7 @@ tests/
 - Run seeded Latin-hypercube parameter sweeps and summarize trajectories.
 - Analyze sweep sensitivity with lightweight correlation diagnostics.
 - Score simulations and deterministic sweeps against target observations.
+- Compare deterministic and tau-leap ancestry trajectories for debugging.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.

@@ -5,6 +5,7 @@ from __future__ import annotations
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
+from indoeuropop.debugging import AncestryComparison
 from indoeuropop.models import SimulationResult
 
 
@@ -37,4 +38,28 @@ def plot_population_total(
     axis.set_ylabel("Population count")
     axis.invert_xaxis()
     axis.grid(alpha=0.3)
+    return figure
+
+
+def plot_ancestry_comparison(comparison: AncestryComparison) -> Figure:
+    """Create a Matplotlib figure comparing two ancestry trajectories."""
+    figure, axis = plt.subplots()
+    axis.plot(
+        comparison.times_bce,
+        comparison.first_ancestry,
+        marker="o",
+        label=comparison.first_label,
+    )
+    axis.plot(
+        comparison.times_bce,
+        comparison.second_ancestry,
+        marker="s",
+        label=comparison.second_label,
+    )
+    axis.set_xlabel("Time (BCE)")
+    axis.set_ylabel(f"{comparison.source} ancestry proportion")
+    axis.set_ylim(0.0, 1.0)
+    axis.invert_xaxis()
+    axis.grid(alpha=0.3)
+    axis.legend()
     return figure

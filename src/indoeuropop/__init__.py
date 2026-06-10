@@ -1,6 +1,11 @@
 """Tools for scaffolded Indo-European population dynamics experiments."""
 
 from indoeuropop.config import SimulationConfig, default_config, load_config
+from indoeuropop.debugging import (
+    AncestryComparison,
+    compare_ancestry_trajectories,
+    compare_deterministic_and_tau_leap,
+)
 from indoeuropop.events import (
     ForcingWindow,
     MigrationPulse,
@@ -39,8 +44,14 @@ from indoeuropop.targets import (
     TargetObservation,
     load_target_dataset,
 )
+from indoeuropop.visualization import (
+    plot_ancestry,
+    plot_ancestry_comparison,
+    plot_population_total,
+)
 
 __all__ = [
+    "AncestryComparison",
     "ForcingWindow",
     "MigrationPulse",
     "ParameterRange",
@@ -64,11 +75,16 @@ __all__ = [
     "TimeWindow",
     "TrajectorySummary",
     "analyze_sensitivity",
+    "compare_ancestry_trajectories",
+    "compare_deterministic_and_tau_leap",
     "default_config",
     "latin_hypercube_samples",
     "load_config",
     "load_target_dataset",
     "parameters_with_overrides",
+    "plot_ancestry",
+    "plot_ancestry_comparison",
+    "plot_population_total",
     "rank_scored_runs",
     "run_deterministic",
     "run_parameter_sweep",

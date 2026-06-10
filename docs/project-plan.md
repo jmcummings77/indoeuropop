@@ -83,6 +83,8 @@ Every simulator should support quick plots for:
 - total population by region;
 - extinction or runaway-growth checks;
 - comparison of deterministic and stochastic runs using the same parameters.
+  The first comparison helper reports pointwise ancestry differences and can
+  generate overlay plots for deterministic versus seeded tau-leap runs.
 
 Plots should be generated through package functions so tests can verify that
 figures build in headless environments.
