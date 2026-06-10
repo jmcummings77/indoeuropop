@@ -77,6 +77,7 @@ tests/
   base parameters.
 - Override shared region rates and source-specific rates through parameter
   tables.
+- Run seeded Latin-hypercube parameter sweeps and summarize trajectories.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.

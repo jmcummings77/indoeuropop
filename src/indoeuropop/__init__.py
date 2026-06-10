@@ -15,6 +15,14 @@ from indoeuropop.parameterization import (
     SourceParameters,
 )
 from indoeuropop.simulation import run_deterministic, run_tau_leap
+from indoeuropop.summary import TrajectorySummary, summarize_trajectory
+from indoeuropop.sweeps import (
+    ParameterRange,
+    SweepRun,
+    SweepSpec,
+    latin_hypercube_samples,
+    run_parameter_sweep,
+)
 from indoeuropop.targets import (
     TargetComparison,
     TargetDataset,
@@ -25,6 +33,7 @@ from indoeuropop.targets import (
 __all__ = [
     "ForcingWindow",
     "MigrationPulse",
+    "ParameterRange",
     "ParameterSet",
     "PopulationState",
     "RegionParameters",
@@ -34,13 +43,19 @@ __all__ = [
     "SimulationResult",
     "SimulationSchedule",
     "SourceParameters",
+    "SweepRun",
+    "SweepSpec",
     "TargetComparison",
     "TargetDataset",
     "TargetObservation",
     "TimeWindow",
+    "TrajectorySummary",
     "default_config",
+    "latin_hypercube_samples",
     "load_config",
     "load_target_dataset",
     "run_deterministic",
+    "run_parameter_sweep",
     "run_tau_leap",
+    "summarize_trajectory",
 ]
