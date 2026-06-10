@@ -50,6 +50,8 @@ Phase 3: Model expansion.
 
 - Replace global parameters with region- and source-specific parameter tables.
 - Add migration pulses rather than relying only on smooth migration pressure.
+  The first implementation supports steppe-source pulses and climate/epidemic
+  forcing windows through validated schedules.
 - Add age or generation structure when it changes testable behavior.
 - Add sex-biased reproduction only after the neutral source-count model is stable.
 - Add epidemic compartments if plague is modeled as transmission rather than as

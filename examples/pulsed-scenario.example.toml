@@ -1,0 +1,24 @@
+[simulation]
+start_bce = 3000
+end_bce = 2500
+step_years = 50
+
+[parameters]
+migration_rate = 0.001
+fertility_rate = 0.035
+
+[counts.britain]
+local = 1000
+steppe = 25
+
+[[migration_pulses]]
+region = "britain"
+start_bce = 2900
+end_bce = 2700
+annual_rate = 0.003
+
+[[forcing_windows]]
+start_bce = 2850
+end_bce = 2750
+climate_stress_delta = 0.2
+epidemic_mortality_delta = 0.01

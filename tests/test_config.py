@@ -15,6 +15,8 @@ def test_default_config_is_runnable() -> None:
     assert config.parameters.migration_rate >= 0
     assert config.start_bce > config.end_bce
     assert config.step_years > 0
+    assert config.schedule.migration_pulses == ()
+    assert config.schedule.forcing_windows == ()
 
 
 def test_load_config_from_toml(tmp_path: Path) -> None:
@@ -34,6 +36,18 @@ def test_load_config_from_toml(tmp_path: Path) -> None:
         [counts.britain]
         local = 100
         steppe = 5
+
+        [[migration_pulses]]
+        region = "britain"
+        start_bce = 3050
+        end_bce = 3025
+        annual_rate = 0.002
+
+        [[forcing_windows]]
+        start_bce = 3050
+        end_bce = 3025
+        climate_stress_delta = 0.2
+        epidemic_mortality_delta = 0.01
         """,
         encoding="utf-8",
     )
@@ -45,6 +59,18 @@ def test_load_config_from_toml(tmp_path: Path) -> None:
     assert config.step_years == 25
     assert config.parameters.migration_rate == 0.003
     assert config.initial_state.source_total("steppe", "britain") == 5
+    assert len(config.schedule.migration_pulses) == 1
+    assert len(config.schedule.forcing_windows) == 1
+    assert config.schedule.migration_pulses[0].annual_rate == 0.002
+    assert config.schedule.forcing_windows[0].climate_stress_delta == 0.2
+
+
+def test_example_pulsed_config_loads() -> None:
+    """The checked-in pulsed example should remain loadable."""
+    config = load_config("examples/pulsed-scenario.example.toml")
+
+    assert config.schedule.migration_pulses[0].region == "britain"
+    assert config.schedule.forcing_windows[0].epidemic_mortality_delta == 0.01
 
 
 @pytest.mark.parametrize("contents", ["", "[parameters]\nmigration_rate = 0.1\n"])
@@ -54,4 +80,29 @@ def test_load_config_requires_tables(tmp_path: Path, contents: str) -> None:
     config_path.write_text(contents, encoding="utf-8")
 
     with pytest.raises(ValueError):
+        load_config(config_path)
+
+
+def test_load_config_rejects_bad_schedule_tables(tmp_path: Path) -> None:
+    """Optional event schedule sections should be arrays of tables."""
+    config_path = tmp_path / "bad-schedule.toml"
+    config_path.write_text(
+        """
+        migration_pulses = "not-a-list"
+
+        [simulation]
+        start_bce = 3100
+        end_bce = 3000
+
+        [parameters]
+        migration_rate = 0.003
+
+        [counts.britain]
+        local = 100
+        steppe = 5
+        """,
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="migration_pulses"):
         load_config(config_path)

@@ -7,6 +7,7 @@ from math import ceil
 import numpy as np
 from numpy.random import Generator
 
+from indoeuropop.events import SimulationSchedule
 from indoeuropop.models import PopulationState, SimulationParameters, SimulationResult
 
 LOCAL_SOURCE = "local"
@@ -20,6 +21,7 @@ def run_deterministic(
     start_bce: float = 3500.0,
     end_bce: float = 1500.0,
     step_years: float = 25.0,
+    schedule: SimulationSchedule | None = None,
 ) -> SimulationResult:
     """Run a deterministic mean-field simulation.
 
@@ -30,13 +32,20 @@ def run_deterministic(
     total_years, step_count = _timeline(start_bce, end_bce, step_years)
     states = [initial_state]
     times = [float(start_bce)]
+    active_schedule = schedule or SimulationSchedule()
 
     for step_index in range(step_count):
         elapsed_years = step_index * step_years
         remaining_years = total_years - elapsed_years
         dt = min(step_years, remaining_years)
-        states.append(_advance_mean_field(states[-1], parameters, dt))
-        times.append(start_bce - min(total_years, elapsed_years + dt))
+        next_time_bce = start_bce - min(total_years, elapsed_years + dt)
+        step_midpoint_bce = (times[-1] + next_time_bce) / 2
+        states.append(
+            _advance_mean_field(
+                states[-1], parameters, dt, step_midpoint_bce, active_schedule
+            )
+        )
+        times.append(next_time_bce)
 
     return SimulationResult(tuple(times), tuple(states))
 
@@ -49,6 +58,7 @@ def run_tau_leap(
     end_bce: float = 1500.0,
     step_years: float = 25.0,
     seed: int = 7,
+    schedule: SimulationSchedule | None = None,
 ) -> SimulationResult:
     """Run a seeded tau-leap stochastic simulation.
 
@@ -60,13 +70,25 @@ def run_tau_leap(
     random_generator = np.random.default_rng(seed)
     states = [initial_state]
     times = [float(start_bce)]
+    active_schedule = schedule or SimulationSchedule()
 
     for step_index in range(step_count):
         elapsed_years = step_index * step_years
         remaining_years = total_years - elapsed_years
         dt = min(step_years, remaining_years)
-        states.append(_advance_tau_leap(states[-1], parameters, dt, random_generator))
-        times.append(start_bce - min(total_years, elapsed_years + dt))
+        next_time_bce = start_bce - min(total_years, elapsed_years + dt)
+        step_midpoint_bce = (times[-1] + next_time_bce) / 2
+        states.append(
+            _advance_tau_leap(
+                states[-1],
+                parameters,
+                dt,
+                random_generator,
+                step_midpoint_bce,
+                active_schedule,
+            )
+        )
+        times.append(next_time_bce)
 
     return SimulationResult(tuple(times), tuple(states))
 
@@ -82,31 +104,41 @@ def _timeline(start_bce: float, end_bce: float, step_years: float) -> tuple[floa
 
 
 def _advance_mean_field(
-    state: PopulationState, parameters: SimulationParameters, dt: float
+    state: PopulationState,
+    parameters: SimulationParameters,
+    dt: float,
+    time_bce: float,
+    schedule: SimulationSchedule,
 ) -> PopulationState:
     """Advance a state by one deterministic time increment."""
+    effective_parameters = schedule.effective_parameters(parameters, time_bce)
     next_counts: dict[str, dict[str, float]] = {}
     for region, source_counts in state.counts.items():
         local_count = source_counts.get(LOCAL_SOURCE, 0.0)
         steppe_count = source_counts.get(STEPPE_SOURCE, 0.0)
+        scheduled_rate = schedule.migration_rate_for(
+            region=region, source=STEPPE_SOURCE, time_bce=time_bce
+        )
+        migration_rate = effective_parameters.migration_rate + scheduled_rate
         next_counts[region] = {
             LOCAL_SOURCE: _mean_source_count(
                 local_count,
-                parameters.fertility_rate,
-                parameters.local_mortality_rate,
-                parameters.epidemic_mortality_rate * parameters.local_epidemic_risk,
-                parameters.violence_mortality_rate,
+                _fertility_rate(effective_parameters),
+                effective_parameters.local_mortality_rate,
+                _epidemic_rate(effective_parameters, local=True),
+                _stress_rate(effective_parameters),
                 dt,
             ),
             STEPPE_SOURCE: _mean_source_count(
                 steppe_count,
-                parameters.fertility_rate * parameters.elite_reproductive_advantage,
-                parameters.steppe_mortality_rate,
-                parameters.epidemic_mortality_rate * parameters.steppe_epidemic_risk,
-                parameters.violence_mortality_rate,
+                _fertility_rate(effective_parameters)
+                * effective_parameters.elite_reproductive_advantage,
+                effective_parameters.steppe_mortality_rate,
+                _epidemic_rate(effective_parameters, local=False),
+                _stress_rate(effective_parameters),
                 dt,
             )
-            + state.total(region) * parameters.migration_rate * dt,
+            + state.total(region) * migration_rate * dt,
         }
     return PopulationState(next_counts)
 
@@ -130,34 +162,42 @@ def _advance_tau_leap(
     parameters: SimulationParameters,
     dt: float,
     random_generator: Generator,
+    time_bce: float,
+    schedule: SimulationSchedule,
 ) -> PopulationState:
     """Advance a state by one stochastic tau-leap increment."""
+    effective_parameters = schedule.effective_parameters(parameters, time_bce)
     next_counts: dict[str, dict[str, float]] = {}
     for region, source_counts in state.counts.items():
         local_count = source_counts.get(LOCAL_SOURCE, 0.0)
         steppe_count = source_counts.get(STEPPE_SOURCE, 0.0)
+        scheduled_rate = schedule.migration_rate_for(
+            region=region, source=STEPPE_SOURCE, time_bce=time_bce
+        )
+        migration_rate = effective_parameters.migration_rate + scheduled_rate
         next_counts[region] = {
             LOCAL_SOURCE: _tau_source_count(
                 local_count,
-                parameters.fertility_rate,
-                parameters.local_mortality_rate,
-                parameters.epidemic_mortality_rate * parameters.local_epidemic_risk,
-                parameters.violence_mortality_rate,
+                _fertility_rate(effective_parameters),
+                effective_parameters.local_mortality_rate,
+                _epidemic_rate(effective_parameters, local=True),
+                _stress_rate(effective_parameters),
                 dt,
                 random_generator,
             ),
             STEPPE_SOURCE: _tau_source_count(
                 steppe_count,
-                parameters.fertility_rate * parameters.elite_reproductive_advantage,
-                parameters.steppe_mortality_rate,
-                parameters.epidemic_mortality_rate * parameters.steppe_epidemic_risk,
-                parameters.violence_mortality_rate,
+                _fertility_rate(effective_parameters)
+                * effective_parameters.elite_reproductive_advantage,
+                effective_parameters.steppe_mortality_rate,
+                _epidemic_rate(effective_parameters, local=False),
+                _stress_rate(effective_parameters),
                 dt,
                 random_generator,
             )
             + float(
                 random_generator.poisson(
-                    max(0.0, state.total(region) * parameters.migration_rate * dt)
+                    max(0.0, state.total(region) * migration_rate * dt)
                 )
             ),
         }
@@ -180,3 +220,19 @@ def _tau_source_count(
     )
     deaths = min(count, float(random_generator.poisson(max(0.0, death_lambda))))
     return count + births - deaths
+
+
+def _fertility_rate(parameters: SimulationParameters) -> float:
+    """Return climate-adjusted fertility for one simulation step."""
+    return parameters.fertility_rate * (1.0 - parameters.climate_stress)
+
+
+def _epidemic_rate(parameters: SimulationParameters, *, local: bool) -> float:
+    """Return source-specific epidemic mortality for one simulation step."""
+    risk = parameters.local_epidemic_risk if local else parameters.steppe_epidemic_risk
+    return parameters.epidemic_mortality_rate * risk
+
+
+def _stress_rate(parameters: SimulationParameters) -> float:
+    """Return shared climate and violence mortality for one simulation step."""
+    return parameters.violence_mortality_rate + 0.01 * parameters.climate_stress

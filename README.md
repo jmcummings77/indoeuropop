@@ -73,6 +73,8 @@ tests/
 - Run a small deterministic mean-field scenario.
 - Run a seeded tau-leap stochastic scenario for smoke testing.
 - Load the same inputs from TOML.
+- Layer time-bounded migration pulses and climate/epidemic forcing windows over
+  base parameters.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
