@@ -82,6 +82,8 @@ Every simulator should support quick plots for:
 - steppe-source ancestry by region;
 - total population by region;
 - extinction or runaway-growth checks;
+  The first diagnostics helper reports extinction and runaway-growth warnings,
+  plus time and label consistency errors.
 - comparison of deterministic and stochastic runs using the same parameters.
   The first comparison helper reports pointwise ancestry differences and can
   generate overlay plots for deterministic versus seeded tau-leap runs.

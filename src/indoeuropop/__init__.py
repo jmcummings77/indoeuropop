@@ -6,6 +6,11 @@ from indoeuropop.debugging import (
     compare_ancestry_trajectories,
     compare_deterministic_and_tau_leap,
 )
+from indoeuropop.diagnostics import (
+    DiagnosticIssue,
+    has_errors,
+    validate_simulation_result,
+)
 from indoeuropop.events import (
     ForcingWindow,
     MigrationPulse,
@@ -52,6 +57,7 @@ from indoeuropop.visualization import (
 
 __all__ = [
     "AncestryComparison",
+    "DiagnosticIssue",
     "ForcingWindow",
     "MigrationPulse",
     "ParameterRange",
@@ -78,6 +84,7 @@ __all__ = [
     "compare_ancestry_trajectories",
     "compare_deterministic_and_tau_leap",
     "default_config",
+    "has_errors",
     "latin_hypercube_samples",
     "load_config",
     "load_target_dataset",
@@ -93,4 +100,5 @@ __all__ = [
     "score_result_against_targets",
     "score_target_fit",
     "summarize_trajectory",
+    "validate_simulation_result",
 ]

@@ -54,6 +54,7 @@ src/indoeuropop/
   cli.py             argparse entry point for smoke/demo runs
   config.py          simple TOML config loading
   debugging.py       trajectory comparison helpers for simulation debugging
+  diagnostics.py     sanity checks for simulation output quality
   models.py          typed state, parameter, and result dataclasses
   simulation.py      deterministic and tau-leap simulation skeletons
   targets.py         target observation CSV loading and comparison helpers
@@ -82,6 +83,8 @@ tests/
 - Analyze sweep sensitivity with lightweight correlation diagnostics.
 - Score simulations and deterministic sweeps against target observations.
 - Compare deterministic and tau-leap ancestry trajectories for debugging.
+- Validate simulation outputs for time-order, label, extinction, and growth
+  diagnostics.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
