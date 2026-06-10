@@ -38,6 +38,13 @@ from indoeuropop.provenance import (
     target_fit_provenance_records,
     target_observation_provenance_records,
 )
+from indoeuropop.reporting import (
+    diagnostic_issue_records,
+    provenance_fieldnames,
+    provenance_records_to_csv,
+    provenance_rows,
+    write_provenance_csv,
+)
 from indoeuropop.sensitivity import SensitivityResult, analyze_sensitivity
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.summary import TrajectorySummary, summarize_trajectory
@@ -91,6 +98,7 @@ __all__ = [
     "compare_ancestry_trajectories",
     "compare_deterministic_and_tau_leap",
     "default_config",
+    "diagnostic_issue_records",
     "has_errors",
     "latin_hypercube_samples",
     "load_config",
@@ -99,6 +107,9 @@ __all__ = [
     "plot_ancestry",
     "plot_ancestry_comparison",
     "plot_population_total",
+    "provenance_fieldnames",
+    "provenance_records_to_csv",
+    "provenance_rows",
     "rank_scored_runs",
     "run_deterministic",
     "run_parameter_sweep",
@@ -111,4 +122,5 @@ __all__ = [
     "target_fit_provenance_records",
     "target_observation_provenance_records",
     "validate_simulation_result",
+    "write_provenance_csv",
 ]

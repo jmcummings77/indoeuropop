@@ -104,6 +104,8 @@ figures build in headless environments.
   The first provenance helper labels simulated summaries, published or
   synthetic targets, and derived fit scores; inferred records are reserved for a
   later inference phase.
+- Write simple CSV reporting artifacts from provenance and diagnostics before
+  introducing richer report formats.
 
 ## Acceptance Criteria
 

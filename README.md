@@ -57,6 +57,7 @@ src/indoeuropop/
   diagnostics.py     sanity checks for simulation output quality
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
+  reporting.py       CSV export helpers for provenance and diagnostics
   simulation.py      deterministic and tau-leap simulation skeletons
   targets.py         target observation CSV loading and comparison helpers
   visualization.py   Matplotlib helpers for outputs and debugging
@@ -88,6 +89,7 @@ tests/
   diagnostics.
 - Label output values as simulated, observed, synthetic, derived, or future
   inferred records for reporting.
+- Export provenance and diagnostic records to rectangular CSV tables.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
