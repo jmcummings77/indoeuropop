@@ -65,6 +65,8 @@ Phase 4: Inference and validation.
 - Begin with Latin-hypercube parameter sweeps and sensitivity analysis.
   The first implementation supports seeded Latin-hypercube sampling over
   `SimulationParameters` fields and compact trajectory summary statistics.
+  Lightweight Pearson/Spearman sensitivity diagnostics are available for sweep
+  outputs; formal Sobol analysis remains a later dependency decision.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
 - Add emulator code only after full simulator outputs are reproducible.

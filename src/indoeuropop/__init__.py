@@ -14,6 +14,7 @@ from indoeuropop.parameterization import (
     ResolvedSourceParameters,
     SourceParameters,
 )
+from indoeuropop.sensitivity import SensitivityResult, analyze_sensitivity
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.summary import TrajectorySummary, summarize_trajectory
 from indoeuropop.sweeps import (
@@ -38,6 +39,7 @@ __all__ = [
     "PopulationState",
     "RegionParameters",
     "ResolvedSourceParameters",
+    "SensitivityResult",
     "SimulationConfig",
     "SimulationParameters",
     "SimulationResult",
@@ -50,6 +52,7 @@ __all__ = [
     "TargetObservation",
     "TimeWindow",
     "TrajectorySummary",
+    "analyze_sensitivity",
     "default_config",
     "latin_hypercube_samples",
     "load_config",
