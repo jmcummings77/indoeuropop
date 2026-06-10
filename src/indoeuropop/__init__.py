@@ -32,6 +32,12 @@ from indoeuropop.parameterization import (
     ResolvedSourceParameters,
     SourceParameters,
 )
+from indoeuropop.provenance import (
+    ProvenanceRecord,
+    summary_provenance_records,
+    target_fit_provenance_records,
+    target_observation_provenance_records,
+)
 from indoeuropop.sensitivity import SensitivityResult, analyze_sensitivity
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.summary import TrajectorySummary, summarize_trajectory
@@ -63,6 +69,7 @@ __all__ = [
     "ParameterRange",
     "ParameterSet",
     "PopulationState",
+    "ProvenanceRecord",
     "RegionParameters",
     "ResolvedSourceParameters",
     "ScoredSweepRun",
@@ -100,5 +107,8 @@ __all__ = [
     "score_result_against_targets",
     "score_target_fit",
     "summarize_trajectory",
+    "summary_provenance_records",
+    "target_fit_provenance_records",
+    "target_observation_provenance_records",
     "validate_simulation_result",
 ]

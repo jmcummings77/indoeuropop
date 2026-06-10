@@ -101,6 +101,9 @@ figures build in headless environments.
 - Keep language-shift variables separate from genetic ancestry when they are
   eventually added.
 - Record which outputs are simulated, inferred, or observed.
+  The first provenance helper labels simulated summaries, published or
+  synthetic targets, and derived fit scores; inferred records are reserved for a
+  later inference phase.
 
 ## Acceptance Criteria
 

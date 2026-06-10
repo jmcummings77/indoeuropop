@@ -56,6 +56,7 @@ src/indoeuropop/
   debugging.py       trajectory comparison helpers for simulation debugging
   diagnostics.py     sanity checks for simulation output quality
   models.py          typed state, parameter, and result dataclasses
+  provenance.py      explicit simulated/observed/derived output records
   simulation.py      deterministic and tau-leap simulation skeletons
   targets.py         target observation CSV loading and comparison helpers
   visualization.py   Matplotlib helpers for outputs and debugging
@@ -85,6 +86,8 @@ tests/
 - Compare deterministic and tau-leap ancestry trajectories for debugging.
 - Validate simulation outputs for time-order, label, extinction, and growth
   diagnostics.
+- Label output values as simulated, observed, synthetic, derived, or future
+  inferred records for reporting.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
