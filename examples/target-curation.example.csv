@@ -1,0 +1,2 @@
+status,target_id,region,source,start_bce,end_bce,sample_ids,sample_count,ancestry_method,aggregation_method,citation_key,citation,note
+synthetic,synthetic-britain-steppe-window,britain,steppe,3000,2800,SYN001,1,synthetic_ancestry_estimate,synthetic_mean,synthetic-curation-example,Synthetic target curation example,Example-only curation row; not historical evidence

@@ -69,6 +69,11 @@ from indoeuropop.sweeps import (
     parameters_with_overrides,
     run_parameter_sweep,
 )
+from indoeuropop.target_curation import (
+    TargetCurationDataset,
+    TargetCurationRecord,
+    load_target_curation,
+)
 from indoeuropop.targets import (
     TargetComparison,
     TargetDataset,
@@ -107,6 +112,8 @@ __all__ = [
     "SweepRun",
     "SweepSpec",
     "TargetComparison",
+    "TargetCurationDataset",
+    "TargetCurationRecord",
     "TargetDataset",
     "TargetFit",
     "TargetObservation",
@@ -122,6 +129,7 @@ __all__ = [
     "load_config",
     "load_data_source_catalog",
     "load_sample_metadata",
+    "load_target_curation",
     "load_target_dataset",
     "parameters_with_overrides",
     "plot_ancestry",

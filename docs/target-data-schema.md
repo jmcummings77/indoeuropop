@@ -42,3 +42,4 @@ implementing that ingestion layer.
 
 Sample-level metadata belongs in the sample metadata schema first. Target CSV
 rows should be created only after a documented curation and aggregation step.
+That intermediate curation manifest is documented in `docs/target-curation.md`.

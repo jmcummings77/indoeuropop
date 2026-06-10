@@ -30,3 +30,6 @@ Sample metadata records do not contain ancestry proportions and do not create
 target observations. A later curation step must document how sample-level
 metadata, genotype-derived estimates, and regional aggregation rules produce any
 published target row.
+
+That curation step is represented by `docs/target-curation.md` and
+`examples/target-curation.example.csv`.

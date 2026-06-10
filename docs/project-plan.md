@@ -49,6 +49,9 @@ Phase 2: Scientific input layer.
   The first sample-metadata loader preserves accession IDs, publication fields,
   modeled regions, dates, sex labels, and method notes before any target
   construction.
+  The first target-curation metadata layer documents sample selections, time
+  windows, ancestry methods, and aggregation methods before any ancestry target
+  values are written.
 - Compare model output to targets through a validated observation interface,
   never by hard-coding target values inside simulator functions.
 

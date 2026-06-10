@@ -62,6 +62,7 @@ src/indoeuropop/
   reporting.py       CSV export helpers for provenance and diagnostics
   sample_metadata.py typed sample metadata staging for later ingestion
   simulation.py      deterministic and tau-leap simulation skeletons
+  target_curation.py target derivation metadata before ancestry outputs
   targets.py         target observation CSV loading and comparison helpers
   visualization.py   Matplotlib helpers for outputs and debugging
 docs/
@@ -99,6 +100,8 @@ tests/
   SHA-256 checksums.
 - Load synthetic or published sample metadata rows without aggregating them into
   ancestry targets.
+- Document target curation windows, sample selections, and methods before
+  creating target observations.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
 
