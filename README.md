@@ -54,6 +54,7 @@ uv run indoeuropop demo --targets examples/target-observations.example.csv
 src/indoeuropop/
   cli.py             argparse entry point for smoke/demo runs
   config.py          simple TOML config loading
+  data_sources.py    metadata catalog for target and future sample inputs
   debugging.py       trajectory comparison helpers for simulation debugging
   diagnostics.py     sanity checks for simulation output quality
   models.py          typed state, parameter, and result dataclasses
@@ -93,6 +94,8 @@ tests/
 - Export provenance and diagnostic records to rectangular CSV tables.
 - Write CLI provenance reports for demo simulations.
 - Load synthetic or published target-observation CSV files.
+- Register local and planned external data sources with citations and optional
+  SHA-256 checksums.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.
 

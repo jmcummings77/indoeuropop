@@ -43,6 +43,9 @@ Phase 2: Scientific input layer.
 - Add explicit citation metadata for every target.
 - Keep all target values separate from simulator code.
 - Design later AADR or Poseidon ingestion around published metadata fields.
+  The first data-source catalog records planned AADR/Poseidon inputs and local
+  target files with citations and optional SHA-256 checksums, without
+  downloading or aggregating ancient-DNA metadata.
 - Compare model output to targets through a validated observation interface,
   never by hard-coding target values inside simulator functions.
 

@@ -1,6 +1,13 @@
 """Tools for scaffolded Indo-European population dynamics experiments."""
 
 from indoeuropop.config import SimulationConfig, default_config, load_config
+from indoeuropop.data_sources import (
+    DataSourceCatalog,
+    DataSourceRecord,
+    load_data_source_catalog,
+    sha256_file,
+    verify_record_checksum,
+)
 from indoeuropop.debugging import (
     AncestryComparison,
     compare_ancestry_trajectories,
@@ -70,6 +77,8 @@ from indoeuropop.visualization import (
 
 __all__ = [
     "AncestryComparison",
+    "DataSourceCatalog",
+    "DataSourceRecord",
     "DiagnosticIssue",
     "ForcingWindow",
     "MigrationPulse",
@@ -102,6 +111,7 @@ __all__ = [
     "has_errors",
     "latin_hypercube_samples",
     "load_config",
+    "load_data_source_catalog",
     "load_target_dataset",
     "parameters_with_overrides",
     "plot_ancestry",
@@ -117,10 +127,12 @@ __all__ = [
     "run_tau_leap",
     "score_result_against_targets",
     "score_target_fit",
+    "sha256_file",
     "summarize_trajectory",
     "summary_provenance_records",
     "target_fit_provenance_records",
     "target_observation_provenance_records",
     "validate_simulation_result",
+    "verify_record_checksum",
     "write_provenance_csv",
 ]

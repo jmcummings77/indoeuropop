@@ -1,0 +1,26 @@
+[[data_sources]]
+dataset_id = "synthetic-target-example"
+kind = "target_csv"
+status = "local"
+citation_key = "synthetic-target-example"
+citation = "Synthetic target observation example bundled with IndoEuroPop."
+uri = "examples/target-observations.example.csv"
+checksum_sha256 = "bb2b1f4c719fe7a8d649918c377ec58736857d95a15c5820a0295d0012ac160c"
+license_note = "Example-only scaffold data."
+notes = "Synthetic smoke-test data; not historical evidence."
+
+[[data_sources]]
+dataset_id = "planned-aadr-metadata"
+kind = "aadr"
+status = "planned"
+citation_key = "aadr-planned"
+citation = "Allen Ancient DNA Resource release to be selected and cited in a later ingestion phase."
+notes = "Placeholder catalog entry only; no AADR files are bundled or downloaded."
+
+[[data_sources]]
+dataset_id = "planned-poseidon-packages"
+kind = "poseidon"
+status = "planned"
+citation_key = "poseidon-planned"
+citation = "Poseidon package or package set to be selected and cited in a later ingestion phase."
+notes = "Placeholder catalog entry only; no Poseidon packages are bundled or downloaded."
