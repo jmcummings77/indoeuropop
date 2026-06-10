@@ -1,5 +1,13 @@
 """Tools for scaffolded Indo-European population dynamics experiments."""
 
+from indoeuropop.age_structure import (
+    ADULT,
+    ELDER,
+    JUVENILE,
+    AgeStructuredState,
+    AgeStructureParameters,
+    advance_age_structure,
+)
 from indoeuropop.config import SimulationConfig, default_config, load_config
 from indoeuropop.data_sources import (
     DataSourceCatalog,
@@ -87,6 +95,11 @@ from indoeuropop.visualization import (
 )
 
 __all__ = [
+    "ADULT",
+    "ELDER",
+    "JUVENILE",
+    "AgeStructureParameters",
+    "AgeStructuredState",
     "AncestryComparison",
     "DataSourceCatalog",
     "DataSourceRecord",
@@ -119,6 +132,7 @@ __all__ = [
     "TargetObservation",
     "TimeWindow",
     "TrajectorySummary",
+    "advance_age_structure",
     "analyze_sensitivity",
     "compare_ancestry_trajectories",
     "compare_deterministic_and_tau_leap",

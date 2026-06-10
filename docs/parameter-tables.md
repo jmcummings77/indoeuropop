@@ -43,3 +43,7 @@ This is still a source-count scaffold, not a calibrated demographic model.
 Tables make regional experiments possible without hard-coding region names into
 the simulator, but they do not yet provide age structure, sex-biased inheritance,
 or explicit pathogen transmission compartments.
+
+The separate age-structure scaffold is documented in `docs/age-structure.md`.
+It is available for experiments but is not yet integrated into these parameter
+tables or the main simulator.

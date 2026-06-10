@@ -52,6 +52,7 @@ uv run indoeuropop demo --targets examples/target-observations.example.csv
 
 ```text
 src/indoeuropop/
+  age_structure.py   deterministic age-class scaffold for model expansion
   cli.py             argparse entry point for smoke/demo runs
   config.py          simple TOML config loading
   data_sources.py    metadata catalog for target and future sample inputs
@@ -78,6 +79,8 @@ tests/
 
 - Construct validated population states with region/source counts.
 - Derive ancestry proportions from source counts.
+- Represent and project age-structured counts, then collapse them back to
+  source-count states for existing diagnostics and plots.
 - Run a small deterministic mean-field scenario.
 - Run a seeded tau-leap stochastic scenario for smoke testing.
 - Load the same inputs from TOML.

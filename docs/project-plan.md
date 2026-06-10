@@ -65,6 +65,9 @@ Phase 3: Model expansion.
   The first implementation supports steppe-source pulses and climate/epidemic
   forcing windows through validated schedules.
 - Add age or generation structure when it changes testable behavior.
+  The first age-structure scaffold can represent juvenile/adult/elder counts,
+  apply deterministic births/deaths/transitions, and collapse back to the
+  source-count state without changing the main simulator yet.
 - Add sex-biased reproduction only after the neutral source-count model is stable.
 - Add epidemic compartments if plague is modeled as transmission rather than as
   an exogenous hazard.
