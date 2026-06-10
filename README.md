@@ -30,6 +30,7 @@ implemented as model components to test, not conclusions to smuggle in.
 uv sync --all-extras --dev
 uv run indoeuropop demo
 uv run indoeuropop demo --plot results/demo-ancestry.png
+uv run indoeuropop demo --provenance-csv results/provenance.csv
 ```
 
 Run the full verification suite:
@@ -90,6 +91,7 @@ tests/
 - Label output values as simulated, observed, synthetic, derived, or future
   inferred records for reporting.
 - Export provenance and diagnostic records to rectangular CSV tables.
+- Write CLI provenance reports for demo simulations.
 - Load synthetic or published target-observation CSV files.
 - Compare simulated ancestry trajectories to target observations.
 - Plot ancestry and population-total trajectories without requiring a display.

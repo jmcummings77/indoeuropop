@@ -8,6 +8,11 @@ scientific conclusions.
 
 `provenance_records_to_csv` serializes records to CSV text. `write_provenance_csv`
 writes the same content to disk and creates parent directories when needed.
+The CLI exposes the same path with:
+
+```bash
+uv run indoeuropop demo --provenance-csv results/provenance.csv
+```
 
 The first four columns are always:
 

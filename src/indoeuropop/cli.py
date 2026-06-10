@@ -7,8 +7,19 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from indoeuropop.config import default_config, load_config
+from indoeuropop.diagnostics import validate_simulation_result
+from indoeuropop.fitting import score_result_against_targets
+from indoeuropop.models import SimulationResult
+from indoeuropop.provenance import (
+    ProvenanceRecord,
+    summary_provenance_records,
+    target_fit_provenance_records,
+    target_observation_provenance_records,
+)
+from indoeuropop.reporting import diagnostic_issue_records, write_provenance_csv
 from indoeuropop.simulation import run_deterministic, run_tau_leap
-from indoeuropop.targets import load_target_dataset
+from indoeuropop.summary import summarize_trajectory
+from indoeuropop.targets import TargetDataset, load_target_dataset
 from indoeuropop.visualization import plot_ancestry
 
 
@@ -43,8 +54,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     final_ancestry = result.final_state.ancestry_proportion(args.source, args.region)
     print(f"final_{args.source}_ancestry={final_ancestry:.6f}")
 
-    if args.targets:
-        dataset = load_target_dataset(args.targets)
+    dataset = load_target_dataset(args.targets) if args.targets else None
+    if dataset is not None:
         for comparison in dataset.compare(result):
             observation = comparison.observation
             print(
@@ -61,6 +72,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         figure = plot_ancestry(result, source=args.source, region=args.region)
         args.plot.parent.mkdir(parents=True, exist_ok=True)
         figure.savefig(args.plot)
+
+    if args.provenance_csv:
+        write_provenance_csv(
+            _provenance_records(
+                result,
+                source=args.source,
+                region=args.region,
+                dataset=dataset,
+            ),
+            args.provenance_csv,
+        )
     return 0
 
 
@@ -75,11 +97,43 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--seed", type=int, default=7, help="seed for stochastic runs")
     parser.add_argument("--targets", type=Path, help="optional target CSV to compare")
     parser.add_argument(
+        "--provenance-csv",
+        type=Path,
+        help="optional output path for a provenance CSV report",
+    )
+    parser.add_argument(
         "--stochastic",
         action="store_true",
         help="use the tau-leap simulator instead of the deterministic simulator",
     )
     return parser
+
+
+def _provenance_records(
+    result: SimulationResult,
+    *,
+    source: str,
+    region: str | None,
+    dataset: TargetDataset | None,
+) -> tuple[ProvenanceRecord, ...]:
+    """Return provenance records for one CLI smoke run."""
+    records = list(
+        summary_provenance_records(
+            summarize_trajectory(result, source=source, region=region)
+        )
+    )
+    records.extend(
+        diagnostic_issue_records(
+            validate_simulation_result(result),
+        )
+    )
+    if dataset is not None:
+        for observation in dataset.observations:
+            records.extend(target_observation_provenance_records(observation))
+        records.extend(
+            target_fit_provenance_records(score_result_against_targets(result, dataset))
+        )
+    return tuple(records)
 
 
 if __name__ == "__main__":

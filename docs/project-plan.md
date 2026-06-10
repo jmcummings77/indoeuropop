@@ -105,7 +105,9 @@ figures build in headless environments.
   synthetic targets, and derived fit scores; inferred records are reserved for a
   later inference phase.
 - Write simple CSV reporting artifacts from provenance and diagnostics before
-  introducing richer report formats.
+  introducing richer report formats. The CLI demo can now write a provenance
+  CSV containing simulated summaries, diagnostics, and optional target-fit
+  records.
 
 ## Acceptance Criteria
 

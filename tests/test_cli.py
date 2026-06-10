@@ -76,3 +76,34 @@ def test_cli_demo_can_compare_targets(
 
     assert exit_code == 0
     assert "target_comparison=britain,steppe,2750.0" in captured.out
+
+
+def test_cli_demo_can_write_provenance_csv(tmp_path: Path) -> None:
+    """The CLI should write a provenance report for smoke runs."""
+    target_path = tmp_path / "targets.csv"
+    report_path = tmp_path / "reports" / "provenance.csv"
+    target_path.write_text(
+        "\n".join(
+            [
+                "status,region,source,time_bce,mean,uncertainty,citation_key,citation,note",
+                'synthetic,britain,steppe,2750,0.1,0.05,key,"Synthetic",Example',
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "demo",
+            "--targets",
+            str(target_path),
+            "--provenance-csv",
+            str(report_path),
+        ]
+    )
+    report_text = report_path.read_text(encoding="utf-8")
+
+    assert exit_code == 0
+    assert "final_ancestry" in report_text
+    assert "target_mean" in report_text
+    assert "chi_square" in report_text
