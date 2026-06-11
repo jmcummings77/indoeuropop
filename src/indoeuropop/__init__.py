@@ -135,6 +135,13 @@ from indoeuropop.sex_bias import (
     expected_births_by_source,
 )
 from indoeuropop.simulation import run_deterministic, run_tau_leap
+from indoeuropop.source_downloader import (
+    DownloadedSource,
+    DownloadOptions,
+    download_catalog_sources,
+    download_data_source,
+    write_download_manifest_csv,
+)
 from indoeuropop.summary import TrajectorySummary, summarize_trajectory
 from indoeuropop.summary_statistics import (
     SummaryStatistic,
@@ -240,6 +247,8 @@ __all__ = [
     "DataSourceCatalog",
     "DataSourceRecord",
     "DiagnosticIssue",
+    "DownloadOptions",
+    "DownloadedSource",
     "EmulatorPrediction",
     "EmulatorTrainingDataset",
     "EmulatorTrainingRow",
@@ -304,6 +313,8 @@ __all__ = [
     "compare_deterministic_and_tau_leap",
     "default_config",
     "diagnostic_issue_records",
+    "download_catalog_sources",
+    "download_data_source",
     "emulator_training_dataset_from_sweep_runs",
     "expected_births_by_source",
     "experiment_artifact_payload",
@@ -371,6 +382,7 @@ __all__ = [
     "validate_emulator_predictions",
     "validate_simulation_result",
     "verify_record_checksum",
+    "write_download_manifest_csv",
     "write_experiment_manifest_json",
     "write_provenance_csv",
     "write_scored_sweep_runs_csv",

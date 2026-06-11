@@ -58,6 +58,9 @@ Phase 2: Scientific input layer.
   The first target-data pipeline loads sample-level ancestry estimates, joins
   them to sample metadata and curation records, propagates uncertainty, and
   writes target-observation CSVs without bundling published values.
+  Catalog-driven source downloads can now materialize local or external source
+  artifacts into a raw-data cache with optional checksums and a download
+  manifest; exact AADR/Poseidon release URLs remain catalog decisions.
 - Compare model output to targets through a validated observation interface,
   never by hard-coding target values inside simulator functions.
 

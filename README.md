@@ -49,6 +49,15 @@ Compare a demo run against the synthetic target example:
 uv run indoeuropop demo --targets examples/target-observations.example.csv
 ```
 
+Download or materialize cataloged source files:
+
+```bash
+uv run indoeuropop download-sources \
+  --data-sources examples/data-sources.example.toml \
+  --output-dir data/raw \
+  --download-manifest-csv results/downloads.csv
+```
+
 Build target observations from curated sample-level inputs:
 
 ```bash
@@ -100,6 +109,7 @@ src/indoeuropop/
   reproducibility.py canonical output fingerprints for audit trails
   sample_metadata.py typed sample metadata staging for later ingestion
   simulation.py      deterministic and tau-leap simulation skeletons
+  source_downloader.py catalog-driven raw source downloads
   sex_bias.py        sex-structured reproduction scaffold
   summary_statistics.py named summary vectors for future inference inputs
   sweep_reporting.py CSV exports for sweep and sensitivity diagnostics
@@ -113,6 +123,7 @@ src/indoeuropop/
 docs/
   experiment-manifests.md
   project-plan.md    implementation roadmap and scientific guardrails
+  source-downloads.md
   sweep-workflows.md
   target-data-schema.md
   workflow-api.md
@@ -175,6 +186,8 @@ tests/
   sample ancestry estimates.
 - Register local and planned external data sources with citations and optional
   SHA-256 checksums.
+- Download or copy cataloged source files into a raw-data cache with optional
+  checksum verification and a manifest CSV.
 - Load synthetic or published sample metadata rows without aggregating them into
   ancestry targets.
 - Load sample-level ancestry estimates before target aggregation.

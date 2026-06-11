@@ -49,6 +49,7 @@ def test_data_source_catalog_filters_and_finds_records() -> None:
         {"citation_key": ""},
         {"citation": ""},
         {"status": "local", "uri": ""},
+        {"download_filename": "nested/source.csv"},
         {"checksum_sha256": "not-a-checksum"},
     ],
 )
@@ -103,6 +104,7 @@ def test_load_data_source_catalog_reads_toml(tmp_path: Path) -> None:
         citation_key = "synthetic"
         citation = "Synthetic target example"
         uri = "examples/target-observations.example.csv"
+        download_filename = "targets.csv"
         checksum_sha256 = "{checksum}"
         license_note = "Example-only data"
         notes = "Not historical evidence"
@@ -116,6 +118,7 @@ def test_load_data_source_catalog_reads_toml(tmp_path: Path) -> None:
     assert record.kind == "target_csv"
     assert record.status == "local"
     assert record.has_checksum
+    assert record.download_filename == "targets.csv"
     assert record.checksum_sha256 == (
         "bb2b1f4c719fe7a8d649918c377ec58736857d95a15c5820a0295d0012ac160c"
     )

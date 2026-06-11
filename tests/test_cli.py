@@ -48,6 +48,55 @@ def test_cli_build_targets_writes_target_csv(
     assert "synthetic,britain,steppe,2900,0.08,0.03" in output_text
 
 
+def test_cli_download_sources_materializes_catalog_entries(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The CLI should download or copy cataloged data-source records."""
+    output_dir = tmp_path / "sources"
+    manifest_path = tmp_path / "manifests" / "downloads.csv"
+
+    exit_code = main(
+        [
+            "download-sources",
+            "--data-sources",
+            "examples/data-sources.example.toml",
+            "--output-dir",
+            str(output_dir),
+            "--download-manifest-csv",
+            str(manifest_path),
+        ]
+    )
+    captured = capsys.readouterr()
+    downloaded_path = output_dir / "target-observations.example.csv"
+
+    assert exit_code == 0
+    assert downloaded_path.exists()
+    assert "download_count=1" in captured.out
+    assert "downloaded_source=synthetic-target-example" in captured.out
+    assert manifest_path.read_text(encoding="utf-8").startswith(
+        "dataset_id,kind,status,source_uri"
+    )
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["download-sources"],
+        [
+            "download-sources",
+            "--data-sources",
+            "examples/data-sources.example.toml",
+        ],
+    ],
+)
+def test_cli_download_sources_requires_paths(argv: list[str]) -> None:
+    """The download command should reject incomplete input paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
+
+
 @pytest.mark.parametrize(
     "argv",
     [

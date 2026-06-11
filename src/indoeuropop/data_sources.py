@@ -31,6 +31,7 @@ class DataSourceRecord:
     citation_key: str
     citation: str
     uri: str = ""
+    download_filename: str = ""
     checksum_sha256: str = ""
     license_note: str = ""
     notes: str = ""
@@ -46,6 +47,8 @@ class DataSourceRecord:
             raise ValueError("status is not supported")
         if self.status != "planned" and not self.uri:
             raise ValueError("uri is required for local and external data sources")
+        if Path(self.download_filename).name != self.download_filename:
+            raise ValueError("download_filename must not include directories")
         object.__setattr__(
             self,
             "checksum_sha256",
@@ -150,6 +153,7 @@ def _record_from_mapping(raw_record: dict[str, Any]) -> DataSourceRecord:
         citation_key=_required_text(raw_record, "citation_key"),
         citation=_required_text(raw_record, "citation"),
         uri=_optional_text(raw_record, "uri"),
+        download_filename=_optional_text(raw_record, "download_filename"),
         checksum_sha256=_optional_text(raw_record, "checksum_sha256"),
         license_note=_optional_text(raw_record, "license_note"),
         notes=_optional_text(raw_record, "notes"),
