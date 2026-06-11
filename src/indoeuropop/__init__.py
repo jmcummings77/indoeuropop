@@ -131,6 +131,15 @@ from indoeuropop.summary_statistics import (
     SummaryVector,
     trajectory_summary_vector,
 )
+from indoeuropop.sweep_reporting import (
+    sensitivity_result_rows,
+    sensitivity_results_to_csv,
+    sweep_run_fieldnames,
+    sweep_run_rows,
+    sweep_runs_to_csv,
+    write_sensitivity_csv,
+    write_sweep_runs_csv,
+)
 from indoeuropop.sweeps import (
     ParameterRange,
     SweepRun,
@@ -293,6 +302,8 @@ __all__ = [
     "score_result_against_targets",
     "score_result_on_split",
     "score_target_fit",
+    "sensitivity_result_rows",
+    "sensitivity_results_to_csv",
     "sha256_file",
     "simulation_experiment_manifest",
     "simulation_parameters_payload",
@@ -302,7 +313,10 @@ __all__ = [
     "summarize_trajectory",
     "summary_provenance_records",
     "sweep_collection_payload",
+    "sweep_run_fieldnames",
     "sweep_run_payload",
+    "sweep_run_rows",
+    "sweep_runs_to_csv",
     "target_fit_provenance_records",
     "target_observation_provenance_records",
     "trajectory_summary_payload",
@@ -312,5 +326,7 @@ __all__ = [
     "verify_record_checksum",
     "write_experiment_manifest_json",
     "write_provenance_csv",
+    "write_sensitivity_csv",
     "write_simulation_outputs",
+    "write_sweep_runs_csv",
 ]

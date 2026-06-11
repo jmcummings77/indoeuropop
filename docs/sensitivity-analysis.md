@@ -16,6 +16,9 @@ Results are sorted by absolute Spearman correlation. This is useful for quick
 screening because small exploratory sweeps often care more about monotonic
 ordering than exact linear effect size.
 
+`sensitivity_results_to_csv` and `write_sensitivity_csv` export these
+diagnostics to a stable CSV schema for review alongside sweep-run summaries.
+
 ## Supported Outcomes
 
 The supported outcome names match numeric fields on `TrajectorySummary`:

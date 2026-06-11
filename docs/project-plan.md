@@ -89,7 +89,8 @@ Phase 4: Inference and validation.
   The first implementation supports seeded Latin-hypercube sampling over
   `SimulationParameters` fields and compact trajectory summary statistics.
   Lightweight Pearson/Spearman sensitivity diagnostics are available for sweep
-  outputs; formal Sobol analysis remains a later dependency decision.
+  outputs, with CSV exports for sweep summaries and sensitivity results; formal
+  Sobol analysis remains a later dependency decision.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;

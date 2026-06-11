@@ -37,6 +37,12 @@ ABC-SMC or Bayesian optimization once target statistics are documented.
 `trajectory_summary_vector` converts these fields into named, scaled values for
 explicit distance comparisons.
 
+## CSV Export
+
+`sweep_runs_to_csv` and `write_sweep_runs_csv` export sampled parameter values
+and trajectory summaries to stable rectangular tables. The export is meant for
+inspection, debugging, and audit trails; it is not an inference result.
+
 ## Guardrail
 
 Sweep outputs are simulated sensitivity probes, not inferred historical results.
