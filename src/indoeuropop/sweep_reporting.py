@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from io import StringIO
 from pathlib import Path
 
+from indoeuropop.fitting import ScoredSweepRun
 from indoeuropop.sensitivity import SensitivityResult
 from indoeuropop.summary import TrajectorySummary
 from indoeuropop.sweeps import SweepRun
@@ -32,6 +33,15 @@ SENSITIVITY_FIELDS = (
     "spearman_correlation",
     "absolute_spearman",
     "linear_slope",
+)
+
+TARGET_FIT_FIELDS = (
+    "fit_observation_count",
+    "fit_mean_absolute_error",
+    "fit_root_mean_squared_error",
+    "fit_chi_square",
+    "fit_reduced_chi_square",
+    "fit_max_abs_z_score",
 )
 
 
@@ -64,6 +74,56 @@ def write_sweep_runs_csv(runs: Iterable[SweepRun], path: str | Path) -> Path:
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(sweep_runs_to_csv(runs), encoding="utf-8")
+    return output_path
+
+
+def scored_sweep_run_fieldnames(
+    scored_runs: Iterable[ScoredSweepRun],
+) -> tuple[str, ...]:
+    """Return stable CSV field names for ranked target-fit sweep rows."""
+    scored_tuple = _validated_scored_runs(scored_runs)
+    parameter_names = _sampled_parameter_names(
+        tuple(scored.run for scored in scored_tuple)
+    )
+    return (
+        "rank",
+        "run_index",
+        *(f"sampled_{parameter_name}" for parameter_name in parameter_names),
+        *TARGET_FIT_FIELDS,
+        *(f"summary_{field_name}" for field_name in SWEEP_SUMMARY_FIELDS),
+    )
+
+
+def scored_sweep_run_rows(
+    scored_runs: Iterable[ScoredSweepRun],
+) -> tuple[dict[str, str], ...]:
+    """Return ranked target-fit sweep rows with stable string values."""
+    scored_tuple = _validated_scored_runs(scored_runs)
+    parameter_names = _sampled_parameter_names(
+        tuple(scored.run for scored in scored_tuple)
+    )
+    return tuple(
+        _scored_sweep_run_row(rank, scored, parameter_names)
+        for rank, scored in enumerate(scored_tuple, start=1)
+    )
+
+
+def scored_sweep_runs_to_csv(scored_runs: Iterable[ScoredSweepRun]) -> str:
+    """Return ranked target-fit sweep rows serialized as CSV text."""
+    scored_tuple = _validated_scored_runs(scored_runs)
+    return _rows_to_csv(
+        scored_sweep_run_fieldnames(scored_tuple),
+        scored_sweep_run_rows(scored_tuple),
+    )
+
+
+def write_scored_sweep_runs_csv(
+    scored_runs: Iterable[ScoredSweepRun], path: str | Path
+) -> Path:
+    """Write ranked target-fit sweep rows to a CSV file and return the path."""
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(scored_sweep_runs_to_csv(scored_runs), encoding="utf-8")
     return output_path
 
 
@@ -102,6 +162,17 @@ def _validated_sweep_runs(runs: Iterable[SweepRun]) -> tuple[SweepRun, ...]:
     return run_tuple
 
 
+def _validated_scored_runs(
+    scored_runs: Iterable[ScoredSweepRun],
+) -> tuple[ScoredSweepRun, ...]:
+    """Return scored sweep runs after validating underlying run shape."""
+    scored_tuple = tuple(scored_runs)
+    if not scored_tuple:
+        raise ValueError("scored runs must contain at least one sweep run")
+    _validated_sweep_runs(scored.run for scored in scored_tuple)
+    return scored_tuple
+
+
 def _sampled_parameter_names(runs: tuple[SweepRun, ...]) -> tuple[str, ...]:
     """Return sorted sampled parameter names for a non-empty run collection."""
     parameter_names = tuple(sorted(runs[0].sampled_values))
@@ -122,6 +193,38 @@ def _sweep_run_row(
         )
     row.update(_summary_row(run.summary))
     return row
+
+
+def _scored_sweep_run_row(
+    rank: int,
+    scored_run: ScoredSweepRun,
+    parameter_names: tuple[str, ...],
+) -> dict[str, str]:
+    """Return one ranked target-fit sweep CSV row."""
+    row = {
+        "rank": str(rank),
+        "run_index": str(scored_run.run.index),
+    }
+    for parameter_name in parameter_names:
+        row[f"sampled_{parameter_name}"] = _value_text(
+            scored_run.run.sampled_values[parameter_name]
+        )
+    row.update(_target_fit_row(scored_run))
+    row.update(_summary_row(scored_run.run.summary))
+    return row
+
+
+def _target_fit_row(scored_run: ScoredSweepRun) -> dict[str, str]:
+    """Return aggregate target-fit fields with stable names."""
+    fit = scored_run.fit
+    return {
+        "fit_observation_count": str(fit.observation_count),
+        "fit_mean_absolute_error": _value_text(fit.mean_absolute_error),
+        "fit_root_mean_squared_error": _value_text(fit.root_mean_squared_error),
+        "fit_chi_square": _value_text(fit.chi_square),
+        "fit_reduced_chi_square": _value_text(fit.reduced_chi_square),
+        "fit_max_abs_z_score": _value_text(fit.max_abs_z_score),
+    }
 
 
 def _summary_row(summary: TrajectorySummary) -> dict[str, str]:

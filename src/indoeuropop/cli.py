@@ -74,16 +74,23 @@ def _run_sweep_command(
     """Run the CLI deterministic sweep command."""
     if args.config is None:
         parser.error("sweep requires --config")
+    if args.target_fit_csv is not None and args.targets is None:
+        parser.error("sweep --target-fit-csv requires --targets")
     spec = load_sweep_spec(args.config)
+    dataset = load_target_dataset(args.targets) if args.targets else None
     result = run_sweep_workflow(
         spec,
         paths=SweepOutputPaths(
             config=args.config,
+            targets=args.targets,
             sweep_runs_csv=args.sweep_runs_csv,
             sensitivity_csv=args.sensitivity_csv,
+            target_fit_csv=args.target_fit_csv,
             manifest_json=args.manifest_json,
         ),
+        targets=dataset,
         sensitivity_outcome=args.sensitivity_outcome,
+        fit_metric=args.fit_metric,
         command=args.command,
         manifest_name="cli-sweep",
         manifest_description="CLI deterministic sweep manifest",
@@ -96,6 +103,15 @@ def _run_sweep_command(
             f"outcome={sensitivity.outcome},"
             f"spearman={sensitivity.spearman_correlation:.6f},"
             f"pearson={sensitivity.pearson_correlation:.6f}"
+        )
+    if result.scored_runs:
+        best_fit = result.scored_runs[0]
+        print(
+            "best_target_fit="
+            f"run_index={best_fit.run.index},"
+            f"metric={args.fit_metric},"
+            f"value={best_fit.metric_value(args.fit_metric):.6f},"
+            f"observations={best_fit.fit.observation_count}"
         )
     return 0
 
@@ -135,9 +151,19 @@ def _build_parser() -> argparse.ArgumentParser:
         help="optional output path for sweep sensitivity CSV rows",
     )
     parser.add_argument(
+        "--target-fit-csv",
+        type=Path,
+        help="optional output path for ranked sweep target-fit CSV rows",
+    )
+    parser.add_argument(
         "--sensitivity-outcome",
         default="final_ancestry",
         help="trajectory summary field used for sweep sensitivity diagnostics",
+    )
+    parser.add_argument(
+        "--fit-metric",
+        default="chi_square",
+        help="target-fit metric used to rank scored sweep rows",
     )
     parser.add_argument(
         "--stochastic",

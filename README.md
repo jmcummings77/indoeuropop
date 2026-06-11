@@ -59,6 +59,16 @@ uv run indoeuropop sweep \
   --manifest-json results/sweep-manifest.json
 ```
 
+Rank deterministic sweep runs against a target CSV:
+
+```bash
+uv run indoeuropop sweep \
+  --config examples/sweep.example.toml \
+  --targets path/to/matching-targets.csv \
+  --target-fit-csv results/target-fit.csv \
+  --fit-metric root_mean_squared_error
+```
+
 ## Package Layout
 
 ```text
@@ -126,7 +136,7 @@ tests/
 - Export sweep summaries and sensitivity diagnostics to stable CSV tables.
 - Load deterministic sweep specifications from TOML and run them from the CLI.
 - Run deterministic sweep workflows that can write sweep CSVs, sensitivity CSVs,
-  and manifest JSON files.
+  target-fit CSVs, and manifest JSON files.
 - Convert trajectory summaries into named, scaled summary-statistic vectors.
 - Analyze sweep sensitivity with lightweight correlation diagnostics.
 - Score simulations and deterministic sweeps against target observations.

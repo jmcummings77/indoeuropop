@@ -42,8 +42,8 @@ explicit distance comparisons.
 `sweep_runs_to_csv` and `write_sweep_runs_csv` export sampled parameter values
 and trajectory summaries to stable rectangular tables. The export is meant for
 inspection, debugging, and audit trails; it is not an inference result.
-`run_sweep_workflow` can run a sweep, write sweep and sensitivity CSVs, and
-emit a manifest with a sweep-collection fingerprint.
+`run_sweep_workflow` can run a sweep, write sweep, sensitivity, and optional
+target-fit CSVs, and emit a manifest with a sweep-collection fingerprint.
 `load_sweep_spec` loads the same sweep shape from TOML for CLI and script use.
 
 ## Guardrail

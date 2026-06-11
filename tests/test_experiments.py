@@ -35,6 +35,7 @@ def test_artifact_from_path_records_checksum_and_metadata(tmp_path: Path) -> Non
     record = artifact.to_provenance_record()
 
     assert "provenance" in ARTIFACT_ROLES
+    assert "target_fit" in ARTIFACT_ROLES
     assert artifact.has_checksum
     assert len(artifact.checksum_sha256) == 64
     assert artifact.metadata == {"stage": "smoke"}

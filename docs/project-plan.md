@@ -93,7 +93,9 @@ Phase 4: Inference and validation.
   Sobol analysis remains a later dependency decision.
   The first sweep workflow layer can run deterministic sweeps, write sweep and
   sensitivity CSV artifacts, and emit a sweep-collection manifest. Sweep specs
-  can now be loaded from TOML and run through the CLI.
+  can now be loaded from TOML and run through the CLI. Optional target-fit
+  scoring can rank deterministic sweep rows against supplied target CSVs and
+  write a dedicated fit artifact.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;

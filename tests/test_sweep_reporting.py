@@ -4,19 +4,25 @@ from pathlib import Path
 
 import pytest
 
+from indoeuropop.fitting import ScoredSweepRun, score_target_fit
 from indoeuropop.models import SimulationParameters
 from indoeuropop.sensitivity import SensitivityResult
 from indoeuropop.summary import TrajectorySummary
 from indoeuropop.sweep_reporting import (
+    scored_sweep_run_fieldnames,
+    scored_sweep_run_rows,
+    scored_sweep_runs_to_csv,
     sensitivity_result_rows,
     sensitivity_results_to_csv,
     sweep_run_fieldnames,
     sweep_run_rows,
     sweep_runs_to_csv,
+    write_scored_sweep_runs_csv,
     write_sensitivity_csv,
     write_sweep_runs_csv,
 )
 from indoeuropop.sweeps import SweepRun
+from indoeuropop.targets import TargetComparison, TargetObservation
 
 
 def _run(
@@ -44,6 +50,29 @@ def _run(
             final_total_population=0.0 if is_extinct else 100.0,
             is_extinct=is_extinct,
         ),
+    )
+
+
+def _scored_run(
+    index: int,
+    sampled_values: dict[str, float],
+    *,
+    predicted: float = 0.2,
+) -> ScoredSweepRun:
+    """Return one scored sweep run for reporting tests."""
+    observation = TargetObservation(
+        status="synthetic",
+        region="britain",
+        source="steppe",
+        time_bce=2900,
+        mean=0.1,
+        uncertainty=0.05,
+        citation_key="synthetic",
+        citation="Synthetic target",
+    )
+    return ScoredSweepRun(
+        run=_run(index, sampled_values, final_ancestry=predicted),
+        fit=score_target_fit((TargetComparison(observation, predicted),)),
     )
 
 
@@ -89,6 +118,48 @@ def test_write_sweep_runs_csv_creates_parent_directory(tmp_path: Path) -> None:
     )
 
 
+def test_scored_sweep_run_rows_and_csv_use_stable_schema() -> None:
+    """Ranked target-fit rows should include parameters, fit, and summaries."""
+    scored_runs = (
+        _scored_run(4, {"migration_rate": 0.002, "climate_stress": 0.1}),
+        _scored_run(2, {"migration_rate": 0.003, "climate_stress": 0.2}),
+    )
+
+    fieldnames = scored_sweep_run_fieldnames(scored_runs)
+    rows = scored_sweep_run_rows(scored_runs)
+    csv_text = scored_sweep_runs_to_csv(scored_runs)
+
+    assert fieldnames[:4] == (
+        "rank",
+        "run_index",
+        "sampled_climate_stress",
+        "sampled_migration_rate",
+    )
+    assert rows[0]["rank"] == "1"
+    assert rows[0]["run_index"] == "4"
+    assert rows[0]["fit_observation_count"] == "1"
+    assert rows[0]["fit_chi_square"] == "4"
+    assert rows[0]["summary_final_ancestry"] == "0.2"
+    assert csv_text.startswith("rank,run_index,sampled_climate_stress,")
+
+
+def test_write_scored_sweep_runs_csv_creates_parent_directory(
+    tmp_path: Path,
+) -> None:
+    """Target-fit CSV writers should create parent directories."""
+    output_path = tmp_path / "sweeps" / "target-fit.csv"
+
+    returned_path = write_scored_sweep_runs_csv(
+        (_scored_run(0, {"migration_rate": 0.002}),),
+        output_path,
+    )
+
+    assert returned_path == output_path
+    assert output_path.read_text(encoding="utf-8").startswith(
+        "rank,run_index,sampled_migration_rate"
+    )
+
+
 @pytest.mark.parametrize(
     "runs,match",
     [
@@ -110,6 +181,12 @@ def test_sweep_run_exports_reject_malformed_runs(
     """Malformed sweep collections should fail before CSV export."""
     with pytest.raises(ValueError, match=match):
         sweep_runs_to_csv(runs)
+
+
+def test_scored_sweep_run_exports_reject_empty_runs() -> None:
+    """Target-fit CSV export requires at least one scored run."""
+    with pytest.raises(ValueError, match="at least one"):
+        scored_sweep_runs_to_csv(())
 
 
 def test_sensitivity_result_rows_and_csv_use_fixed_schema() -> None:

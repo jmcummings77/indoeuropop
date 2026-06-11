@@ -14,6 +14,7 @@ from indoeuropop.sweep_workflows import (
     write_sweep_outputs,
 )
 from indoeuropop.sweeps import ParameterRange, SweepSpec, run_parameter_sweep
+from indoeuropop.targets import TargetDataset, TargetObservation
 
 
 def _spec(sample_count: int = 3) -> SweepSpec:
@@ -29,6 +30,24 @@ def _spec(sample_count: int = 3) -> SweepSpec:
         seed=17,
         source="steppe",
         region="britain",
+    )
+
+
+def _targets() -> TargetDataset:
+    """Return one synthetic target compatible with the workflow test spec."""
+    return TargetDataset.from_rows(
+        [
+            TargetObservation(
+                status="synthetic",
+                region="britain",
+                source="steppe",
+                time_bce=2900,
+                mean=0.05,
+                uncertainty=0.03,
+                citation_key="synthetic",
+                citation="Synthetic workflow target",
+            )
+        ]
     )
 
 
@@ -73,6 +92,49 @@ def test_run_sweep_workflow_writes_outputs_and_manifest(tmp_path: Path) -> None:
     assert manifest_payload["metadata"]["scenario"] == "synthetic"
 
 
+def test_run_sweep_workflow_can_score_targets_and_write_fit_csv(
+    tmp_path: Path,
+) -> None:
+    """Sweep workflows should materialize ranked target-fit diagnostics."""
+    target_path = tmp_path / "targets.csv"
+    target_fit_csv = tmp_path / "outputs" / "target-fit.csv"
+    manifest_json = tmp_path / "outputs" / "manifest.json"
+    target_path.write_text(
+        "\n".join(
+            [
+                "status,region,source,time_bce,mean,uncertainty,citation_key,citation,note",
+                'synthetic,britain,steppe,2900,0.05,0.03,key,"Synthetic",Example',
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_sweep_workflow(
+        _spec(sample_count=2),
+        targets=_targets(),
+        paths=SweepOutputPaths(
+            targets=target_path,
+            target_fit_csv=target_fit_csv,
+            manifest_json=manifest_json,
+        ),
+        fit_metric="root_mean_squared_error",
+    )
+    manifest_payload = json.loads(manifest_json.read_text(encoding="utf-8"))
+
+    assert len(result.scored_runs) == 2
+    assert result.target_fit_csv_path == target_fit_csv
+    assert target_fit_csv.read_text(encoding="utf-8").startswith(
+        "rank,run_index,sampled_migration_rate"
+    )
+    assert {artifact.role for artifact in result.artifacts} == {
+        "targets",
+        "target_fit",
+    }
+    assert manifest_payload["metadata"]["target_fit_metric"] == (
+        "root_mean_squared_error"
+    )
+
+
 def test_write_sweep_outputs_can_use_precomputed_sensitivity_results(
     tmp_path: Path,
 ) -> None:
@@ -101,6 +163,19 @@ def test_write_sweep_outputs_can_use_precomputed_sensitivity_results(
     assert result.artifacts[0].role == "sensitivity"
     assert result.manifest is None
     assert "migration_rate" in sensitivity_csv.read_text(encoding="utf-8")
+
+
+def test_write_sweep_outputs_requires_scored_runs_for_fit_csv(
+    tmp_path: Path,
+) -> None:
+    """A target-fit CSV path is invalid without scored sweep runs."""
+    runs = run_parameter_sweep(_spec(sample_count=2))
+
+    with pytest.raises(ValueError, match="target_fit_csv"):
+        write_sweep_outputs(
+            runs,
+            paths=SweepOutputPaths(target_fit_csv=tmp_path / "target-fit.csv"),
+        )
 
 
 def test_sweep_workflow_can_write_manifest_without_csv_artifacts(

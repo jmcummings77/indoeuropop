@@ -25,6 +25,11 @@ target.
 Latin-hypercube samples and ranks `ScoredSweepRun` records by fit. The default
 ranking metric is `chi_square`.
 
+`scored_sweep_runs_to_csv` and `write_scored_sweep_runs_csv` export ranked
+rows with sampled parameter values, aggregate fit metrics, and trajectory
+summary fields. `indoeuropop sweep --targets ... --target-fit-csv ...` exposes
+the same path from the CLI for small reviewable sweeps.
+
 These ranked runs are not posterior samples. They are a reproducible way to
 identify parameter regions worth deeper inference and robustness checks.
 

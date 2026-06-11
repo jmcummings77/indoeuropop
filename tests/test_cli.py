@@ -182,8 +182,73 @@ def test_cli_sweep_can_write_outputs(
     }
 
 
+def test_cli_sweep_can_write_target_fit_outputs(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The sweep command should rank deterministic runs against targets."""
+    target_path = tmp_path / "targets.csv"
+    target_fit_csv = tmp_path / "outputs" / "target-fit.csv"
+    manifest_path = tmp_path / "outputs" / "sweep-manifest.json"
+    target_path.write_text(
+        "\n".join(
+            [
+                "status,region,source,time_bce,mean,uncertainty,citation_key,citation,note",
+                'synthetic,britain,steppe,2900,0.1,0.05,key,"Synthetic",Example',
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "sweep",
+            "--config",
+            "examples/sweep.example.toml",
+            "--targets",
+            str(target_path),
+            "--target-fit-csv",
+            str(target_fit_csv),
+            "--manifest-json",
+            str(manifest_path),
+            "--fit-metric",
+            "root_mean_squared_error",
+        ]
+    )
+    captured = capsys.readouterr()
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert exit_code == 0
+    assert "best_target_fit=" in captured.out
+    assert "metric=root_mean_squared_error" in captured.out
+    assert "fit_root_mean_squared_error" in target_fit_csv.read_text(encoding="utf-8")
+    assert manifest_payload["metadata"]["target_fit_metric"] == (
+        "root_mean_squared_error"
+    )
+    assert {artifact["role"] for artifact in manifest_payload["artifacts"]} == {
+        "config",
+        "targets",
+        "target_fit",
+    }
+
+
 def test_cli_sweep_requires_config() -> None:
     """The sweep command should reject missing TOML configuration."""
     with raises(SystemExit) as exc_info:
         main(["sweep"])
+    assert exc_info.value.code == 2
+
+
+def test_cli_sweep_target_fit_requires_targets() -> None:
+    """The sweep command should reject target-fit CSVs without target data."""
+    with raises(SystemExit) as exc_info:
+        main(
+            [
+                "sweep",
+                "--config",
+                "examples/sweep.example.toml",
+                "--target-fit-csv",
+                "target-fit.csv",
+            ]
+        )
     assert exc_info.value.code == 2

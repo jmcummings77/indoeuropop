@@ -22,6 +22,7 @@ ArtifactRole = Literal[
     "emulator_validation",
     "sweep_runs",
     "sensitivity",
+    "target_fit",
     "other",
 ]
 
@@ -36,6 +37,7 @@ ARTIFACT_ROLES = frozenset(
         "emulator_validation",
         "sweep_runs",
         "sensitivity",
+        "target_fit",
         "other",
     }
 )
