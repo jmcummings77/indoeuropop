@@ -116,3 +116,12 @@ promotion metadata. In strict local-artifact mode it verifies that active and
 superseded curation files point at each other, linked decision records exist,
 validation CSVs exist, and the delta manifest still matches the referenced
 artifact paths and SHA-256 checksums.
+
+The same guardrail is available from the CLI:
+
+```bash
+uv run indoeuropop validate-curation-decisions \
+  --curation-decision-file curation/aadr-v66-central-europe-child-overrides.toml \
+  --curation-decision-file curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --require-artifacts
+```

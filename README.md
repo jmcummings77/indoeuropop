@@ -437,6 +437,15 @@ The promotion decision is recorded in
 `docs/central-europe-override-decision.md`. It treats the interaction-best file
 as the current review candidate, not as final demographic inference.
 
+Validate the promoted and superseded curation metadata directly from the CLI:
+
+```bash
+uv run indoeuropop validate-curation-decisions \
+  --curation-decision-file curation/aadr-v66-central-europe-child-overrides.toml \
+  --curation-decision-file curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --require-artifacts
+```
+
 Compare validation-guided narrowed and expanded parameter ranges against the
 current grid:
 
@@ -610,6 +619,8 @@ tracked normally.
   estimate evidence before changing simulator parameters.
 - Apply reviewed target-decision files to defer excluded, split, or rerun-pending
   targets from observation builds without deleting their curation evidence.
+- Validate active/superseded curation-decision metadata and linked local
+  artifacts from the CLI.
 - Document target curation windows, sample selections, and methods before
   creating target observations.
 - Compare simulated ancestry trajectories to target observations.

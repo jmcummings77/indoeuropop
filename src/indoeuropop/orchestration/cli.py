@@ -8,6 +8,11 @@ from pathlib import Path
 
 from indoeuropop.data.target_pipeline import load_and_build_target_dataset
 from indoeuropop.data.targets import load_target_dataset, write_target_dataset_csv
+from indoeuropop.orchestration.curation_decision_cli import (
+    CURATION_DECISION_COMMANDS,
+    add_curation_decision_arguments,
+    run_curation_decision_command,
+)
 from indoeuropop.orchestration.data_cli import (
     DATA_COMMANDS,
     add_data_arguments,
@@ -58,6 +63,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     data_exit_code = run_data_command(args, parser)
     if data_exit_code is not None:
         return data_exit_code
+    curation_decision_exit_code = run_curation_decision_command(args, parser)
+    if curation_decision_exit_code is not None:
+        return curation_decision_exit_code
     decision_exit_code = run_target_decision_command(args, parser)
     if decision_exit_code is not None:
         return decision_exit_code
@@ -196,6 +204,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "build-targets",
             "demo",
             "sweep",
+            *CURATION_DECISION_COMMANDS,
             *DATA_COMMANDS,
             *QPADM_COMMANDS,
             *TARGET_COMMANDS,
@@ -277,6 +286,7 @@ def _build_parser() -> argparse.ArgumentParser:
         help="use the tau-leap simulator instead of the deterministic simulator",
     )
     add_data_arguments(parser)
+    add_curation_decision_arguments(parser)
     add_target_arguments(parser)
     add_override_sensitivity_arguments(parser)
     add_report_arguments(parser)

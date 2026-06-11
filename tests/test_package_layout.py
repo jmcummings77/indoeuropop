@@ -20,6 +20,7 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "child_region_overrides": "indoeuropop.orchestration.child_region_overrides",
         "cli": "indoeuropop.orchestration.cli",
         "config": "indoeuropop.simulation.config",
+        "curation_decision_cli": "indoeuropop.orchestration.curation_decision_cli",
         "curation_decisions": "indoeuropop.data.curation_decisions",
         "data_cli": "indoeuropop.orchestration.data_cli",
         "data_sources": "indoeuropop.data.data_sources",

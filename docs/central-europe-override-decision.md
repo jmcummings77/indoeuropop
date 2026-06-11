@@ -60,6 +60,11 @@ Tiefbrunn demography.
   for the promoted and superseded override files. The strict mode checks linked
   decision records, reciprocal promotion metadata, generated validation CSVs,
   and delta-manifest checksums so stale local artifacts are caught by tests.
+  The equivalent local command is `uv run indoeuropop validate-curation-decisions
+  --curation-decision-file curation/aadr-v66-central-europe-child-overrides.toml
+  --curation-decision-file
+  curation/aadr-v66-central-europe-child-overrides-interaction-best.toml
+  --require-artifacts`.
 - Compare future candidates against this promoted file and against the broader
   structured baseline before changing default curation again.
 - Keep archaeological interpretation separate from the validation score until
