@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 
+import pytest
 from pytest import CaptureFixture, raises
 
 from indoeuropop.cli import main
@@ -15,6 +16,63 @@ def test_cli_demo_prints_summary(capsys: CaptureFixture[str]) -> None:
 
     assert exit_code == 0
     assert "final_steppe_ancestry=" in captured.out
+
+
+def test_cli_build_targets_writes_target_csv(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The CLI should build target observations from curated sample inputs."""
+    output_path = tmp_path / "outputs" / "targets.csv"
+
+    exit_code = main(
+        [
+            "build-targets",
+            "--sample-metadata",
+            "examples/sample-metadata.example.csv",
+            "--target-curation",
+            "examples/target-curation.example.csv",
+            "--ancestry-estimates",
+            "examples/sample-ancestry-estimates.example.csv",
+            "--target-output",
+            str(output_path),
+        ]
+    )
+    captured = capsys.readouterr()
+    output_text = output_path.read_text(encoding="utf-8")
+
+    assert exit_code == 0
+    assert "target_count=1" in captured.out
+    assert f"target_output={output_path}" in captured.out
+    assert output_text.startswith("status,region,source,time_bce")
+    assert "synthetic,britain,steppe,2900,0.08,0.03" in output_text
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["build-targets"],
+        [
+            "build-targets",
+            "--sample-metadata",
+            "examples/sample-metadata.example.csv",
+        ],
+        [
+            "build-targets",
+            "--sample-metadata",
+            "examples/sample-metadata.example.csv",
+            "--target-curation",
+            "examples/target-curation.example.csv",
+            "--ancestry-estimates",
+            "examples/sample-ancestry-estimates.example.csv",
+        ],
+    ],
+)
+def test_cli_build_targets_requires_pipeline_paths(argv: list[str]) -> None:
+    """The target-building command should reject incomplete input paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
 
 
 def test_cli_demo_can_write_plot_and_use_config(tmp_path: Path) -> None:

@@ -8,6 +8,11 @@ from indoeuropop.age_structure import (
     AgeStructureParameters,
     advance_age_structure,
 )
+from indoeuropop.ancestry_estimates import (
+    SampleAncestryEstimate,
+    SampleAncestryEstimateDataset,
+    load_sample_ancestry_estimates,
+)
 from indoeuropop.config import (
     SimulationConfig,
     default_config,
@@ -169,11 +174,20 @@ from indoeuropop.target_curation import (
     TargetCurationRecord,
     load_target_curation,
 )
+from indoeuropop.target_pipeline import (
+    TargetBuildOptions,
+    build_target_dataset,
+    load_and_build_target_dataset,
+)
 from indoeuropop.targets import (
+    TARGET_COLUMNS,
     TargetComparison,
     TargetDataset,
     TargetObservation,
     load_target_dataset,
+    target_dataset_to_csv,
+    target_observation_rows,
+    write_target_dataset_csv,
 )
 from indoeuropop.validation import (
     TargetSplit,
@@ -218,6 +232,7 @@ __all__ = [
     "SEXES",
     "SIMULATOR_KINDS",
     "SUSCEPTIBLE",
+    "TARGET_COLUMNS",
     "AgeStructureParameters",
     "AgeStructuredState",
     "AncestryComparison",
@@ -244,6 +259,8 @@ __all__ = [
     "RegionSampleCount",
     "ReproducibilityFingerprint",
     "ResolvedSourceParameters",
+    "SampleAncestryEstimate",
+    "SampleAncestryEstimateDataset",
     "SampleMetadataDataset",
     "SampleMetadataRecord",
     "ScoredSweepRun",
@@ -265,6 +282,7 @@ __all__ = [
     "SweepRun",
     "SweepSpec",
     "SweepWorkflowResult",
+    "TargetBuildOptions",
     "TargetComparison",
     "TargetCurationDataset",
     "TargetCurationRecord",
@@ -280,6 +298,7 @@ __all__ = [
     "advance_epidemic",
     "analyze_sensitivity",
     "artifact_from_path",
+    "build_target_dataset",
     "canonical_json_payload",
     "compare_ancestry_trajectories",
     "compare_deterministic_and_tau_leap",
@@ -296,8 +315,10 @@ __all__ = [
     "fingerprint_sweep_run",
     "has_errors",
     "latin_hypercube_samples",
+    "load_and_build_target_dataset",
     "load_config",
     "load_data_source_catalog",
+    "load_sample_ancestry_estimates",
     "load_sample_metadata",
     "load_sweep_spec",
     "load_target_curation",
@@ -341,8 +362,10 @@ __all__ = [
     "sweep_run_payload",
     "sweep_run_rows",
     "sweep_runs_to_csv",
+    "target_dataset_to_csv",
     "target_fit_provenance_records",
     "target_observation_provenance_records",
+    "target_observation_rows",
     "trajectory_summary_payload",
     "trajectory_summary_vector",
     "validate_emulator_predictions",
@@ -355,4 +378,5 @@ __all__ = [
     "write_simulation_outputs",
     "write_sweep_outputs",
     "write_sweep_runs_csv",
+    "write_target_dataset_csv",
 ]

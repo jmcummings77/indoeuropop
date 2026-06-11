@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from collections.abc import Iterable
 from dataclasses import dataclass
+from io import StringIO
 from math import isfinite
 from pathlib import Path
 from typing import Literal, cast
@@ -15,19 +16,19 @@ from indoeuropop.models import SimulationResult
 
 ObservationStatus = Literal["synthetic", "published"]
 
-REQUIRED_TARGET_COLUMNS = frozenset(
-    {
-        "status",
-        "region",
-        "source",
-        "time_bce",
-        "mean",
-        "uncertainty",
-        "citation_key",
-        "citation",
-        "note",
-    }
+TARGET_COLUMNS = (
+    "status",
+    "region",
+    "source",
+    "time_bce",
+    "mean",
+    "uncertainty",
+    "citation_key",
+    "citation",
+    "note",
 )
+
+REQUIRED_TARGET_COLUMNS = frozenset(TARGET_COLUMNS)
 
 
 @dataclass(frozen=True)
@@ -165,6 +166,35 @@ def load_target_dataset(path: str | Path) -> TargetDataset:
     return TargetDataset.from_rows(observations).require_observations()
 
 
+def target_observation_rows(
+    dataset: TargetDataset,
+) -> tuple[dict[str, str], ...]:
+    """Return target observations as CSV-ready rows."""
+    return tuple(_observation_row(observation) for observation in dataset.observations)
+
+
+def target_dataset_to_csv(dataset: TargetDataset) -> str:
+    """Return target observations serialized as CSV text."""
+    dataset.require_observations()
+    output = StringIO()
+    writer = csv.DictWriter(
+        output,
+        fieldnames=TARGET_COLUMNS,
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(target_observation_rows(dataset))
+    return output.getvalue()
+
+
+def write_target_dataset_csv(dataset: TargetDataset, path: str | Path) -> Path:
+    """Write target observations to a CSV file and return the path."""
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(target_dataset_to_csv(dataset), encoding="utf-8")
+    return output_path
+
+
 def _observation_from_row(
     row: dict[str, str | None], line_number: int
 ) -> TargetObservation:
@@ -184,6 +214,21 @@ def _observation_from_row(
         )
     except ValueError as error:
         raise ValueError(f"invalid target CSV row {line_number}: {error}") from error
+
+
+def _observation_row(observation: TargetObservation) -> dict[str, str]:
+    """Return one observation as a string-only CSV row."""
+    return {
+        "status": observation.status,
+        "region": observation.region,
+        "source": observation.source,
+        "time_bce": _value_text(observation.time_bce),
+        "mean": _value_text(observation.mean),
+        "uncertainty": _value_text(observation.uncertainty),
+        "citation_key": observation.citation_key,
+        "citation": observation.citation,
+        "note": observation.note,
+    }
 
 
 def _cell(row: dict[str, str | None], column: str) -> str:
@@ -208,6 +253,11 @@ def _unique(values: Iterable[str]) -> tuple[str, ...]:
         if value not in unique_values:
             unique_values.append(value)
     return tuple(unique_values)
+
+
+def _value_text(value: float) -> str:
+    """Return a stable string representation for numeric target values."""
+    return f"{value:.12g}"
 
 
 def _interpolated_ancestry(

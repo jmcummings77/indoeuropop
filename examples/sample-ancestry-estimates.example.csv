@@ -1,0 +1,2 @@
+status,sample_id,source,estimate,standard_error,method,note
+synthetic,SYN001,steppe,0.08,0.03,synthetic_ancestry_estimate,Example-only sample ancestry row; not historical evidence

@@ -49,6 +49,16 @@ Compare a demo run against the synthetic target example:
 uv run indoeuropop demo --targets examples/target-observations.example.csv
 ```
 
+Build target observations from curated sample-level inputs:
+
+```bash
+uv run indoeuropop build-targets \
+  --sample-metadata examples/sample-metadata.example.csv \
+  --target-curation examples/target-curation.example.csv \
+  --ancestry-estimates examples/sample-ancestry-estimates.example.csv \
+  --target-output results/built-targets.csv
+```
+
 Run a deterministic sweep from TOML:
 
 ```bash
@@ -74,6 +84,7 @@ uv run indoeuropop sweep \
 ```text
 src/indoeuropop/
   age_structure.py   deterministic age-class scaffold for model expansion
+  ancestry_estimates.py sample ancestry estimates before target aggregation
   cli.py             argparse entry point for smoke/demo runs
   config.py          simple TOML config loading
   data_sources.py    metadata catalog for target and future sample inputs
@@ -94,6 +105,7 @@ src/indoeuropop/
   sweep_reporting.py CSV exports for sweep and sensitivity diagnostics
   sweep_workflows.py reusable deterministic sweep output workflow helpers
   target_curation.py target derivation metadata before ancestry outputs
+  target_pipeline.py build target rows from curated sample-level inputs
   targets.py         target observation CSV loading and comparison helpers
   validation.py      calibration and validation target-split helpers
   visualization.py   Matplotlib helpers for outputs and debugging
@@ -105,6 +117,7 @@ docs/
   target-data-schema.md
   workflow-api.md
 examples/
+  sample-ancestry-estimates.example.csv
   sweep.example.toml
   target-observations.example.csv
 tests/
@@ -158,10 +171,13 @@ tests/
 - Write CLI experiment manifests with artifact checksums and simulation
   fingerprints.
 - Load synthetic or published target-observation CSV files.
+- Build target-observation CSVs from sample metadata, curation records, and
+  sample ancestry estimates.
 - Register local and planned external data sources with citations and optional
   SHA-256 checksums.
 - Load synthetic or published sample metadata rows without aggregating them into
   ancestry targets.
+- Load sample-level ancestry estimates before target aggregation.
 - Document target curation windows, sample selections, and methods before
   creating target observations.
 - Compare simulated ancestry trajectories to target observations.
@@ -169,7 +185,7 @@ tests/
 
 ## Not Yet Included
 
-- Ancient-DNA genotype or metadata ingestion.
+- Automated ancient-DNA genotype or external metadata ingestion.
 - AADR, Poseidon, SLiM, msprime, ABC-SMC, or predictive emulator integration.
 - Regionally calibrated parameter priors.
 - Scholarly claims about fitted causal mechanisms.

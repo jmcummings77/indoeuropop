@@ -8,9 +8,13 @@ import pytest
 
 from indoeuropop.models import PopulationState, SimulationResult
 from indoeuropop.targets import (
+    TARGET_COLUMNS,
     TargetDataset,
     TargetObservation,
     load_target_dataset,
+    target_dataset_to_csv,
+    target_observation_rows,
+    write_target_dataset_csv,
 )
 
 
@@ -152,6 +156,34 @@ def test_load_target_dataset_from_csv(tmp_path: Path) -> None:
     assert observation.citation_key == "key"
     assert observation.citation == "Synthetic citation"
     assert observation.note == "Note"
+
+
+def test_target_dataset_csv_exports_round_trip(tmp_path: Path) -> None:
+    """Target datasets should write the same schema accepted by the loader."""
+    observation = TargetObservation(
+        status="published",
+        region="britain",
+        source="steppe",
+        time_bce=2500,
+        mean=0.3,
+        uncertainty=0.1,
+        citation_key="key",
+        citation="Published citation",
+        note="Curated row",
+    )
+    dataset = TargetDataset.from_rows([observation])
+    output_path = tmp_path / "targets" / "published-targets.csv"
+
+    rows = target_observation_rows(dataset)
+    csv_text = target_dataset_to_csv(dataset)
+    returned_path = write_target_dataset_csv(dataset, output_path)
+    loaded = load_target_dataset(output_path)
+
+    assert TARGET_COLUMNS[0] == "status"
+    assert rows[0]["time_bce"] == "2500"
+    assert csv_text.startswith("status,region,source,time_bce")
+    assert returned_path == output_path
+    assert loaded.observations == (observation,)
 
 
 @pytest.mark.parametrize(

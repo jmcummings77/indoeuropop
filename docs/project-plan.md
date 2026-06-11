@@ -55,6 +55,9 @@ Phase 2: Scientific input layer.
   The first target-curation metadata layer documents sample selections, time
   windows, ancestry methods, and aggregation methods before any ancestry target
   values are written.
+  The first target-data pipeline loads sample-level ancestry estimates, joins
+  them to sample metadata and curation records, propagates uncertainty, and
+  writes target-observation CSVs without bundling published values.
 - Compare model output to targets through a validated observation interface,
   never by hard-coding target values inside simulator functions.
 

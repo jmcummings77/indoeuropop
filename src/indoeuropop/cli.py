@@ -8,7 +8,8 @@ from pathlib import Path
 
 from indoeuropop.config import default_config, load_config, load_sweep_spec
 from indoeuropop.sweep_workflows import SweepOutputPaths, run_sweep_workflow
-from indoeuropop.targets import load_target_dataset
+from indoeuropop.target_pipeline import load_and_build_target_dataset
+from indoeuropop.targets import load_target_dataset, write_target_dataset_csv
 from indoeuropop.workflows import (
     SimulationOutputPaths,
     SimulatorKind,
@@ -21,6 +22,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Run the IndoEuroPop command-line interface."""
     parser = _build_parser()
     args = parser.parse_args(argv)
+    if args.command == "build-targets":
+        return _run_build_targets_command(args, parser)
     if args.command == "sweep":
         return _run_sweep_command(args, parser)
     return _run_demo_command(args)
@@ -65,6 +68,27 @@ def _run_demo_command(args: argparse.Namespace) -> int:
         manifest_name="cli-demo",
         manifest_description="CLI demo smoke-run manifest",
     )
+    return 0
+
+
+def _run_build_targets_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI target-building command."""
+    for argument_name in ("sample_metadata", "target_curation", "ancestry_estimates"):
+        if getattr(args, argument_name) is None:
+            parser.error(f"build-targets requires --{argument_name.replace('_', '-')}")
+    if args.target_output is None:
+        parser.error("build-targets requires --target-output")
+
+    dataset = load_and_build_target_dataset(
+        sample_metadata_path=args.sample_metadata,
+        curation_path=args.target_curation,
+        estimates_path=args.ancestry_estimates,
+    )
+    write_target_dataset_csv(dataset, args.target_output)
+    print(f"target_count={len(dataset.observations)}")
+    print(f"target_output={args.target_output}")
     return 0
 
 
@@ -121,8 +145,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="indoeuropop")
     parser.add_argument(
         "command",
-        choices=("demo", "sweep"),
-        help="run a smoke simulation or deterministic sweep",
+        choices=("build-targets", "demo", "sweep"),
+        help="run a smoke simulation, deterministic sweep, or target builder",
     )
     parser.add_argument("--config", type=Path, help="path to a TOML config file")
     parser.add_argument("--plot", type=Path, help="optional output path for a plot")
@@ -130,6 +154,26 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--source", default="steppe", help="source label to summarize")
     parser.add_argument("--seed", type=int, default=7, help="seed for stochastic runs")
     parser.add_argument("--targets", type=Path, help="optional target CSV to compare")
+    parser.add_argument(
+        "--sample-metadata",
+        type=Path,
+        help="sample metadata CSV for target building",
+    )
+    parser.add_argument(
+        "--target-curation",
+        type=Path,
+        help="target curation CSV for target building",
+    )
+    parser.add_argument(
+        "--ancestry-estimates",
+        type=Path,
+        help="sample ancestry estimate CSV for target building",
+    )
+    parser.add_argument(
+        "--target-output",
+        type=Path,
+        help="output target observation CSV for target building",
+    )
     parser.add_argument(
         "--provenance-csv",
         type=Path,

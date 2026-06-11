@@ -21,6 +21,8 @@ Each target CSV must include these columns:
 The example file at `examples/target-observations.example.csv` is synthetic and
 must not be cited as historical evidence.
 
+`write_target_dataset_csv` writes this same schema from a built `TargetDataset`.
+
 ## Comparison Behavior
 
 `TargetDataset.compare(result)` linearly interpolates simulated ancestry to each
@@ -29,12 +31,13 @@ target time falls outside the simulation range. This is intentional: inference
 code should make time-window mismatches explicit rather than silently
 extrapolating.
 
-## Later Data Ingestion
+## Target Data Pipeline
 
-AADR or Poseidon ingestion should translate published sample metadata into this
-same target-observation interface. That later layer should preserve accession
-IDs, publication metadata, sample counts, and method notes before any regional
-aggregation happens.
+AADR or Poseidon ingestion should translate published sample metadata into the
+same sample metadata, target curation, and sample ancestry estimate inputs used
+by `build_target_dataset`. That pipeline preserves accession IDs, publication
+metadata, sample counts, method notes, and uncertainty assumptions before any
+regional aggregation happens.
 
 The data-source catalog in `examples/data-sources.example.toml` is the current
 place to register planned AADR/Poseidon inputs and local target files before
@@ -42,4 +45,4 @@ implementing that ingestion layer.
 
 Sample-level metadata belongs in the sample metadata schema first. Target CSV
 rows should be created only after a documented curation and aggregation step.
-That intermediate curation manifest is documented in `docs/target-curation.md`.
+That target-building path is documented in `docs/target-data-pipeline.md`.

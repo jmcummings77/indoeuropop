@@ -1,8 +1,8 @@
 # Target Curation Metadata
 
-Target curation files document how sample selections and methods will later
-produce target observation rows. They do not contain ancestry estimates and do
-not create `TargetObservation` objects by themselves.
+Target curation files document how sample selections and methods produce target
+observation rows when combined with sample metadata and sample ancestry
+estimates. They do not contain ancestry estimates by themselves.
 
 ## Columns
 
@@ -24,6 +24,7 @@ not be cited as historical evidence.
 
 ## Guardrail
 
-A curation row is a provenance bridge, not a result. A later target-building
-phase must still document genotype-derived estimates, uncertainty calculations,
-and regional aggregation rules before writing published target observations.
+A curation row is a provenance bridge, not a result. Published target
+observations should be written only after genotype-derived estimates,
+uncertainty calculations, and regional aggregation rules are documented in the
+target data pipeline inputs.
