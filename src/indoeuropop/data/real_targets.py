@@ -22,6 +22,10 @@ from indoeuropop.data.qpadm_estimates import (
     load_qpadm_estimate_table,
     qpadm_estimates_to_sample_ancestry_dataset,
 )
+from indoeuropop.data.target_decisions import (
+    apply_target_decisions,
+    load_target_decisions,
+)
 from indoeuropop.data.target_pipeline import (
     build_target_dataset,
     filter_target_inputs_for_estimates,
@@ -47,6 +51,7 @@ class AADRQpAdmTargetWorkflowConfig:
     ancestry_estimates_path: Path
     target_output_path: Path
     diagnostics_json_path: Path | None = None
+    target_decisions_path: Path | None = None
     dataset_id: str = DEFAULT_AADR_DATASET_ID
     source: str = DEFAULT_QPADM_SOURCE
     qpadm_method: str = DEFAULT_QPADM_METHOD
@@ -72,6 +77,10 @@ class AADRQpAdmTargetDiagnostics:
     target_observation_count: int
     dropped_target_ids: tuple[str, ...]
     target_counts_by_region: tuple[tuple[str, int], ...]
+    decision_retained_target_count: int = 0
+    decision_deferred_target_count: int = 0
+    decision_undecided_target_count: int = 0
+    decision_deferred_target_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -122,24 +131,57 @@ def run_aadr_qpadm_target_workflow(
         inputs.curation,
         ancestry_estimates,
     )
+    decision_filtered = (
+        None
+        if config.target_decisions_path is None
+        else apply_target_decisions(
+            filtered.sample_metadata,
+            filtered.curation,
+            load_target_decisions(config.target_decisions_path),
+        )
+    )
+    build_metadata = (
+        filtered.sample_metadata
+        if decision_filtered is None
+        else decision_filtered.sample_metadata
+    )
+    build_curation = (
+        filtered.curation if decision_filtered is None else decision_filtered.curation
+    )
     target_dataset = build_target_dataset(
-        filtered.sample_metadata,
-        filtered.curation,
+        build_metadata,
+        build_curation,
         ancestry_estimates,
     )
     write_target_dataset_csv(target_dataset, config.target_output_path)
+    decision_deferred_ids = (
+        () if decision_filtered is None else decision_filtered.deferred_target_ids
+    )
     diagnostics = AADRQpAdmTargetDiagnostics(
         requested_target_count=len(inputs.curation.records),
         selected_sample_count=inputs.sample_metadata.sample_count,
         raw_qpadm_row_count=qpadm_table_data_row_count(config.qpadm_estimates_path),
         parsed_qpadm_estimate_count=len(qpadm_estimates),
         retained_sample_estimate_count=ancestry_estimates.estimate_count,
-        retained_sample_count=filtered.sample_metadata.sample_count,
-        retained_target_count=len(filtered.curation.records),
-        dropped_target_count=len(filtered.dropped_target_ids),
+        retained_sample_count=build_metadata.sample_count,
+        retained_target_count=len(build_curation.records),
+        dropped_target_count=len(filtered.dropped_target_ids)
+        + len(decision_deferred_ids),
         target_observation_count=len(target_dataset.observations),
-        dropped_target_ids=filtered.dropped_target_ids,
+        dropped_target_ids=filtered.dropped_target_ids + decision_deferred_ids,
         target_counts_by_region=target_counts_by_region(target_dataset),
+        decision_retained_target_count=(
+            0
+            if decision_filtered is None
+            else len(decision_filtered.retained_target_ids)
+        ),
+        decision_deferred_target_count=len(decision_deferred_ids),
+        decision_undecided_target_count=(
+            0
+            if decision_filtered is None
+            else len(decision_filtered.undecided_target_ids)
+        ),
+        decision_deferred_target_ids=decision_deferred_ids,
     )
     if config.diagnostics_json_path is not None:
         write_aadr_qpadm_target_diagnostics_json(
@@ -180,6 +222,10 @@ def aadr_qpadm_target_diagnostics_payload(
         "target_observation_count": diagnostics.target_observation_count,
         "dropped_target_ids": list(diagnostics.dropped_target_ids),
         "target_counts_by_region": dict(diagnostics.target_counts_by_region),
+        "decision_retained_target_count": diagnostics.decision_retained_target_count,
+        "decision_deferred_target_count": diagnostics.decision_deferred_target_count,
+        "decision_undecided_target_count": diagnostics.decision_undecided_target_count,
+        "decision_deferred_target_ids": list(diagnostics.decision_deferred_target_ids),
     }
 
 

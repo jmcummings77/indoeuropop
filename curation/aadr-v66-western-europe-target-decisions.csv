@@ -1,0 +1,2 @@
+target_id,decision,reason,requested_group_id,reviewer,decision_date,note
+aadr-central-europe-steppe-germany-stkrstraubing-bellbeaker,rerun_qpadm,Audit found identical replicated qpAdm estimate standard error and p-value across all 12 samples; rerun or inspect source outgroups and table granularity before fitting,Germany_StkrStraubing_BellBeaker,Codex,2026-06-11,Exclude from comparison targets until qpAdm evidence is resolved

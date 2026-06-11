@@ -19,7 +19,8 @@ Without `--target-review-md`, the Markdown report is printed to stdout.
 
 ## Current AADR V66 Finding
 
-In the local AADR v66 western-Europe comparison, the largest residual is:
+In the pre-decision AADR v66 western-Europe comparison, the largest residual
+was:
 
 - `Germany_StkrStraubing_BellBeaker`
 - region: `central_europe`
@@ -37,15 +38,25 @@ parameter ranges. A smooth central-Europe trajectory cannot fit that very low
 late Bell Beaker target and the high earlier Corded Ware targets at the same
 time without more structured regional or group-specific modeling.
 
+That finding is now recorded in
+`curation/aadr-v66-western-europe-target-decisions.csv` as `rerun_qpadm`, so the
+decision-aware target build defers Stkr-Straubing before target comparison. In
+the current decision-aware comparison, the residual report contains 11 retained
+targets, zero z-score outliers, and a top retained residual of about `-1.297`
+for `Germany_Tiefbrunn_CordedWare-1`.
+
 ## Recommended Next Step
 
-Review the qpAdm source/outgroup model and target grouping for
-`Germany_StkrStraubing_BellBeaker`, then review whether the central Europe
-targets should be split into finer regions or culture/site-level trajectories
-before adding heavier inference.
+Review the dropped and decision-deferred target rows before treating the 11
+retained observations as representative. For Stkr-Straubing, review the qpAdm
+source/outgroup model and target grouping, then decide whether the central
+Europe targets should be split into finer regions or culture/site-level
+trajectories before adding heavier inference.
 
 Use the target-curation audit command to expand this residual into the exact
-curation row, sample metadata rows, and qpAdm estimate rows that produced it:
+curation row, sample metadata rows, and qpAdm estimate rows that produced it.
+This command should be run against a residual CSV generated before the
+Stkr-Straubing decision is applied:
 
 ```bash
 uv run indoeuropop audit-target-curation \

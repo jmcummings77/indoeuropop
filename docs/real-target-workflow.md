@@ -17,6 +17,7 @@ uv run indoeuropop build-aadr-qpadm-targets \
   --target-curation-out results/aadr-target-curation.csv \
   --ancestry-estimates-out results/sample-ancestry-estimates.csv \
   --target-output results/aadr-target-observations.csv \
+  --target-decisions curation/aadr-v66-western-europe-target-decisions.csv \
   --target-diagnostics-json results/aadr-target-diagnostics.json
 ```
 
@@ -27,6 +28,8 @@ The workflow performs these steps:
 - parse the qpAdm table and drop rows without usable in-range estimates and
   standard errors;
 - drop whole target rows when any curated sample lacks a retained estimate;
+- apply reviewed target decisions, deferring rows marked `exclude`, `split`, or
+  `rerun_qpadm`;
 - aggregate retained sample estimates into target observations;
 - write JSON diagnostics with selected, retained, and dropped counts.
 
@@ -40,6 +43,7 @@ The diagnostics JSON includes:
 - retained sample-estimate count;
 - retained sample and target counts;
 - dropped target IDs;
+- target-decision retained, deferred, and undecided counts;
 - target-observation counts by region.
 
 These diagnostics are review evidence, not final scientific validation. A
@@ -63,10 +67,24 @@ uv run indoeuropop compare-targets \
   --fit-metric root_mean_squared_error
 ```
 
-In the current local run, the full path produced 12 retained target
-observations from 301 selected AADR samples and 301 qpAdm individual rows. The
-first comparison sweep evaluated 24 deterministic samples; the best row had
-RMSE `0.280595` against the retained target observations.
+In the current local decision-aware run, the full path produced 11 retained
+target observations from 301 selected AADR samples and 301 qpAdm individual
+rows. The reviewed decision file deferred
+`Germany_StkrStraubing_BellBeaker` as `rerun_qpadm`. The first comparison sweep
+evaluated 24 deterministic samples; the best row had RMSE `0.254807` against
+the retained target observations.
+
+Apply reviewed decisions to already prepared target inputs when you want to
+inspect the filtered curation CSVs directly:
+
+```bash
+uv run indoeuropop apply-target-decisions \
+  --sample-metadata results/real-aadr-comparison/aadr-target-sample-metadata.csv \
+  --target-curation results/real-aadr-comparison/aadr-target-curation.csv \
+  --target-decisions curation/aadr-v66-western-europe-target-decisions.csv \
+  --sample-metadata-out results/real-aadr-comparison/decision-filtered-sample-metadata.csv \
+  --target-curation-out results/real-aadr-comparison/decision-filtered-target-curation.csv
+```
 
 Generate an outlier-focused Markdown review after the comparison step:
 

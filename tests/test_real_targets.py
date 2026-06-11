@@ -88,6 +88,69 @@ def test_run_aadr_qpadm_target_workflow_writes_outputs(tmp_path: Path) -> None:
     )
 
 
+def test_run_aadr_qpadm_target_workflow_applies_target_decisions(
+    tmp_path: Path,
+) -> None:
+    """Reviewed decisions should defer otherwise complete targets."""
+    aadr_dir = _tiny_aadr_dir(tmp_path)
+    groups_path = tmp_path / "groups.tsv"
+    qpadm_path = tmp_path / "qpadm.csv"
+    decisions_path = tmp_path / "target-decisions.csv"
+    groups_path.write_text(
+        "britain\tEngland_BellBeaker\ncentral_europe\tGermany_CordedWare\n",
+        encoding="utf-8",
+    )
+    qpadm_path.write_text(
+        "\n".join(
+            (
+                "Genetic ID,steppe_fraction,stderr,qpadm_pvalue",
+                "I001,0.25,0.05,0.5",
+                "I002,0.5,0.08,0.6",
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    decisions_path.write_text(
+        "\n".join(
+            (
+                "target_id,decision,reason,requested_group_id,reviewer,"
+                "decision_date,note",
+                "aadr-central-europe-steppe-germany-cordedware,rerun_qpadm,"
+                "qpAdm rerun needed,Germany_CordedWare,Codex,2026-06-11,",
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    config = AADRQpAdmTargetWorkflowConfig(
+        aadr_dir=aadr_dir,
+        aadr_groups_path=groups_path,
+        qpadm_estimates_path=qpadm_path,
+        sample_metadata_path=tmp_path / "out" / "sample-metadata.csv",
+        target_curation_path=tmp_path / "out" / "target-curation.csv",
+        ancestry_estimates_path=tmp_path / "out" / "sample-ancestry.csv",
+        target_output_path=tmp_path / "out" / "targets.csv",
+        diagnostics_json_path=tmp_path / "out" / "diagnostics.json",
+        target_decisions_path=decisions_path,
+    )
+
+    result = run_aadr_qpadm_target_workflow(config)
+    assert config.diagnostics_json_path is not None
+    payload = json.loads(config.diagnostics_json_path.read_text(encoding="utf-8"))
+
+    assert len(result.target_dataset.observations) == 1
+    assert result.target_dataset.observations[0].region == "britain"
+    assert result.diagnostics.retained_target_count == 1
+    assert result.diagnostics.dropped_target_count == 1
+    assert result.diagnostics.decision_deferred_target_count == 1
+    assert result.diagnostics.decision_undecided_target_count == 1
+    assert result.diagnostics.decision_deferred_target_ids == (
+        "aadr-central-europe-steppe-germany-cordedware",
+    )
+    assert payload["decision_deferred_target_count"] == 1
+
+
 def test_qpadm_table_data_row_count_handles_empty_file(tmp_path: Path) -> None:
     """Raw qpAdm row counting should be defensive for empty files."""
     path = tmp_path / "empty.csv"
@@ -202,6 +265,7 @@ def test_real_target_cli_reports_dropped_targets(
         aadr_group_match="exact",
         allow_missing_aadr_groups=False,
         default_standard_error=None,
+        target_decisions=None,
     )
 
     exit_code = run_build_aadr_qpadm_targets_command(
@@ -212,6 +276,63 @@ def test_real_target_cli_reports_dropped_targets(
 
     assert exit_code == 0
     assert "dropped_target=aadr-central-europe-steppe-germany-cordedware" in (
+        captured.out
+    )
+
+
+def test_real_target_cli_reports_decision_deferred_targets(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The real target CLI wrapper should print decision-deferred target IDs."""
+    aadr_dir = _tiny_aadr_dir(tmp_path)
+    groups_path = tmp_path / "groups.tsv"
+    qpadm_path = tmp_path / "qpadm.csv"
+    decisions_path = tmp_path / "target-decisions.csv"
+    output_dir = tmp_path / "outputs"
+    groups_path.write_text(
+        "region\taadr_group_id\nbritain\tEngland_BellBeaker\n"
+        "central_europe\tGermany_CordedWare\n",
+        encoding="utf-8",
+    )
+    qpadm_path.write_text(
+        "Genetic ID,steppe_fraction,stderr\nI001,0.25,0.05\nI002,0.5,0.08\n",
+        encoding="utf-8",
+    )
+    decisions_path.write_text(
+        "target_id,decision,reason,requested_group_id,reviewer,decision_date,note\n"
+        "aadr-central-europe-steppe-germany-cordedware,rerun_qpadm,"
+        "qpAdm rerun needed,Germany_CordedWare,Codex,2026-06-11,\n",
+        encoding="utf-8",
+    )
+    args = argparse.Namespace(
+        aadr_dir=aadr_dir,
+        aadr_groups=groups_path,
+        qpadm_estimates=qpadm_path,
+        sample_metadata_out=output_dir / "sample-metadata.csv",
+        target_curation_out=output_dir / "target-curation.csv",
+        ancestry_estimates_out=output_dir / "sample-ancestry.csv",
+        target_output=output_dir / "targets.csv",
+        target_diagnostics_json=None,
+        aadr_dataset_id="aadr-v66-p1-1240k",
+        source="steppe",
+        qpadm_method="qpadm_steppe",
+        aggregation_method="unweighted_mean",
+        aadr_group_match="exact",
+        allow_missing_aadr_groups=False,
+        default_standard_error=None,
+        target_decisions=decisions_path,
+    )
+
+    exit_code = run_build_aadr_qpadm_targets_command(
+        args,
+        argparse.ArgumentParser(),
+    )
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "decision_deferred_target_count=1" in captured.out
+    assert "decision_deferred_target=aadr-central-europe-steppe-germany-cordedware" in (
         captured.out
     )
 

@@ -30,6 +30,7 @@ def run_build_aadr_qpadm_targets_command(
         ),
         target_output_path=_required_path(args, parser, "target_output"),
         diagnostics_json_path=args.target_diagnostics_json,
+        target_decisions_path=args.target_decisions,
         dataset_id=args.aadr_dataset_id,
         source=args.source,
         qpadm_method=args.qpadm_method,
@@ -48,6 +49,11 @@ def run_build_aadr_qpadm_targets_command(
     )
     print(f"retained_target_count={diagnostics.retained_target_count}")
     print(f"dropped_target_count={diagnostics.dropped_target_count}")
+    if diagnostics.decision_deferred_target_count:
+        print(
+            "decision_deferred_target_count="
+            f"{diagnostics.decision_deferred_target_count}"
+        )
     print(f"target_observation_count={diagnostics.target_observation_count}")
     print(f"sample_metadata={config.sample_metadata_path}")
     print(f"target_curation={config.target_curation_path}")
@@ -57,6 +63,8 @@ def run_build_aadr_qpadm_targets_command(
         print(f"target_diagnostics={config.diagnostics_json_path}")
     for target_id in diagnostics.dropped_target_ids:
         print(f"dropped_target={target_id}")
+    for target_id in diagnostics.decision_deferred_target_ids:
+        print(f"decision_deferred_target={target_id}")
     return 0
 
 

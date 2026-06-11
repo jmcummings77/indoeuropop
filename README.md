@@ -135,7 +135,19 @@ uv run indoeuropop build-aadr-qpadm-targets \
   --target-curation-out results/aadr-target-curation.csv \
   --ancestry-estimates-out results/sample-ancestry-estimates.csv \
   --target-output results/aadr-target-observations.csv \
+  --target-decisions curation/aadr-v66-western-europe-target-decisions.csv \
   --target-diagnostics-json results/aadr-target-diagnostics.json
+```
+
+Apply reviewed target decisions to already prepared target inputs:
+
+```bash
+uv run indoeuropop apply-target-decisions \
+  --sample-metadata results/real-aadr-comparison/aadr-target-sample-metadata.csv \
+  --target-curation results/real-aadr-comparison/aadr-target-curation.csv \
+  --target-decisions curation/aadr-v66-western-europe-target-decisions.csv \
+  --sample-metadata-out results/real-aadr-comparison/decision-filtered-sample-metadata.csv \
+  --target-curation-out results/real-aadr-comparison/decision-filtered-target-curation.csv
 ```
 
 Build target observations from curated sample-level inputs:
@@ -336,6 +348,8 @@ tracked normally.
   western-Europe qpAdm target observations.
 - Audit residual outliers against curation rows, sample metadata, and qpAdm
   estimate evidence before changing simulator parameters.
+- Apply reviewed target-decision files to defer excluded, split, or rerun-pending
+  targets from observation builds without deleting their curation evidence.
 - Document target curation windows, sample selections, and methods before
   creating target observations.
 - Compare simulated ancestry trajectories to target observations.

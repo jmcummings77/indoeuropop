@@ -178,6 +178,11 @@ def add_data_arguments(parser: argparse.ArgumentParser) -> None:
         help="optional JSON diagnostics for real target-data builds",
     )
     parser.add_argument(
+        "--target-decisions",
+        type=Path,
+        help="reviewed target-decision CSV for target filtering",
+    )
+    parser.add_argument(
         "--ancestry-method",
         default="external_autosomal_steppe_required",
         help="ancestry method label to write into prepared AADR curation rows",

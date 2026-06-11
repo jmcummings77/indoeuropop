@@ -8,6 +8,8 @@ target grouping issue, or an input-join issue.
 
 By default, the command audits the residual with the largest absolute z-score.
 Use `--target-id` or `--requested-group-id` to audit a specific target.
+For deferred targets such as Stkr-Straubing, run the audit against a residual
+CSV generated before applying the target-decision file.
 
 ## CLI
 
@@ -43,3 +45,8 @@ That pattern should be reviewed as target evidence before changing simulator
 parameters. The next scientific step is to inspect the external qpAdm table
 granularity and source/outgroup model, then decide whether this site-level
 target should be rerun, excluded, split, or retained with an explicit caveat.
+
+The current project decision is recorded in
+`curation/aadr-v66-western-europe-target-decisions.csv` as `rerun_qpadm`, which
+defers this target from regenerated target observations until the qpAdm handoff
+is reviewed.

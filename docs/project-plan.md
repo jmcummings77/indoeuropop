@@ -134,7 +134,9 @@ Phase 4: Inference and validation.
   precede simulator parameter changes. A target-curation audit workflow can now
   join one residual outlier back to curation rows, sample metadata, and qpAdm
   estimate evidence so reviewers can distinguish simulator misses from
-  target-construction problems.
+  target-construction problems. Reviewed target-decision CSVs can now defer
+  excluded, split, or qpAdm-rerun-pending targets before observation builds
+  while preserving the original curation evidence.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
