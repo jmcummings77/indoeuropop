@@ -6,6 +6,7 @@ import argparse
 from collections.abc import Sequence
 from pathlib import Path
 
+from indoeuropop.aadr import write_aadr_sample_metadata_csv
 from indoeuropop.config import default_config, load_config, load_sweep_spec
 from indoeuropop.data_sources import load_data_source_catalog
 from indoeuropop.source_downloader import (
@@ -32,6 +33,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_build_targets_command(args, parser)
     if args.command == "download-sources":
         return _run_download_sources_command(args, parser)
+    if args.command == "load-aadr":
+        return _run_load_aadr_command(args, parser)
     if args.command == "sweep":
         return _run_sweep_command(args, parser)
     return _run_demo_command(args)
@@ -132,6 +135,24 @@ def _run_download_sources_command(
     return 0
 
 
+def _run_load_aadr_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI AADR metadata loading command."""
+    if args.aadr_dir is None:
+        parser.error("load-aadr requires --aadr-dir")
+    if args.sample_metadata_out is None:
+        parser.error("load-aadr requires --sample-metadata-out")
+    output_path = write_aadr_sample_metadata_csv(
+        args.aadr_dir,
+        args.sample_metadata_out,
+        dataset_id=args.aadr_dataset_id,
+        limit=args.aadr_limit,
+    )
+    print(f"aadr_sample_metadata={output_path}")
+    return 0
+
+
 def _run_sweep_command(
     args: argparse.Namespace, parser: argparse.ArgumentParser
 ) -> int:
@@ -185,13 +206,29 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="indoeuropop")
     parser.add_argument(
         "command",
-        choices=("build-targets", "demo", "download-sources", "sweep"),
+        choices=("build-targets", "demo", "download-sources", "load-aadr", "sweep"),
         help=(
             "run a smoke simulation, deterministic sweep, source download, "
-            "or target builder"
+            "AADR load, or target builder"
         ),
     )
     parser.add_argument("--config", type=Path, help="path to a TOML config file")
+    parser.add_argument("--aadr-dir", type=Path, help="directory containing AADR files")
+    parser.add_argument(
+        "--aadr-dataset-id",
+        default="aadr-v66-p1-1240k",
+        help="dataset ID to assign to exported AADR sample metadata",
+    )
+    parser.add_argument(
+        "--aadr-limit",
+        type=int,
+        help="optional row limit for AADR metadata loading",
+    )
+    parser.add_argument(
+        "--sample-metadata-out",
+        type=Path,
+        help="output sample metadata CSV for AADR loading",
+    )
     parser.add_argument(
         "--data-sources",
         type=Path,

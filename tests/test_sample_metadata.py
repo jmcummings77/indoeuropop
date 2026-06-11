@@ -5,26 +5,14 @@ from pathlib import Path
 import pytest
 
 from indoeuropop.sample_metadata import (
+    SAMPLE_METADATA_COLUMNS,
     RegionSampleCount,
     SampleMetadataDataset,
     SampleMetadataRecord,
     load_sample_metadata,
-)
-
-SAMPLE_METADATA_COLUMNS = (
-    "status",
-    "dataset_id",
-    "sample_id",
-    "accession_id",
-    "publication_key",
-    "publication",
-    "region",
-    "site",
-    "time_bce",
-    "date_uncertainty",
-    "sex",
-    "method",
-    "note",
+    sample_metadata_rows,
+    sample_metadata_to_csv,
+    write_sample_metadata_csv,
 )
 
 
@@ -179,6 +167,23 @@ def test_load_sample_metadata_reads_csv(tmp_path: Path) -> None:
     assert dataset.records[0].note == "First row"
     assert dataset.records[1].note == ""
     assert dataset.records[0].sex == "female"
+
+
+def test_sample_metadata_csv_exports_round_trip(tmp_path: Path) -> None:
+    """Sample metadata datasets should write the same schema they load."""
+    dataset = SampleMetadataDataset.from_rows((_record("SYN001"),))
+    output_path = tmp_path / "metadata" / "sample-metadata.csv"
+
+    rows = sample_metadata_rows(dataset)
+    csv_text = sample_metadata_to_csv(dataset)
+    returned_path = write_sample_metadata_csv(dataset, output_path)
+    loaded = load_sample_metadata(output_path)
+
+    assert SAMPLE_METADATA_COLUMNS[0] == "status"
+    assert rows[0]["time_bce"] == "2900"
+    assert csv_text.startswith("status,dataset_id,sample_id")
+    assert returned_path == output_path
+    assert loaded.records == dataset.records
 
 
 def test_load_sample_metadata_rejects_missing_header(tmp_path: Path) -> None:

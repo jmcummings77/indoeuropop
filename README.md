@@ -58,6 +58,14 @@ uv run indoeuropop download-sources \
   --download-manifest-csv results/downloads.csv
 ```
 
+Export local AADR annotations as sample metadata:
+
+```bash
+uv run indoeuropop load-aadr \
+  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --sample-metadata-out data/aadr-sample-metadata.csv
+```
+
 Build target observations from curated sample-level inputs:
 
 ```bash
@@ -92,6 +100,7 @@ uv run indoeuropop sweep \
 
 ```text
 src/indoeuropop/
+  aadr.py            local AADR annotation loading and metadata export
   age_structure.py   deterministic age-class scaffold for model expansion
   ancestry_estimates.py sample ancestry estimates before target aggregation
   cli.py             argparse entry point for smoke/demo runs
@@ -121,6 +130,7 @@ src/indoeuropop/
   visualization.py   Matplotlib helpers for outputs and debugging
   workflows.py       reusable configured-run and reporting assembly helpers
 docs/
+  aadr-loading.md
   experiment-manifests.md
   project-plan.md    implementation roadmap and scientific guardrails
   source-downloads.md
@@ -188,6 +198,7 @@ tests/
   SHA-256 checksums.
 - Download or copy cataloged source files into a raw-data cache with optional
   checksum verification and a manifest CSV.
+- Load local AADR annotation files into the project sample metadata schema.
 - Load synthetic or published sample metadata rows without aggregating them into
   ancestry targets.
 - Load sample-level ancestry estimates before target aggregation.

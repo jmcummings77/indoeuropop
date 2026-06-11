@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from collections.abc import Iterable
 from dataclasses import dataclass
+from io import StringIO
 from math import isfinite
 from pathlib import Path
 from typing import Literal, cast
@@ -15,23 +16,23 @@ SampleSex = Literal["female", "male", "unknown", "not_reported"]
 SAMPLE_METADATA_STATUSES = frozenset({"synthetic", "published"})
 SAMPLE_SEX_LABELS = frozenset({"female", "male", "unknown", "not_reported"})
 
-REQUIRED_SAMPLE_METADATA_COLUMNS = frozenset(
-    {
-        "status",
-        "dataset_id",
-        "sample_id",
-        "accession_id",
-        "publication_key",
-        "publication",
-        "region",
-        "site",
-        "time_bce",
-        "date_uncertainty",
-        "sex",
-        "method",
-        "note",
-    }
+SAMPLE_METADATA_COLUMNS = (
+    "status",
+    "dataset_id",
+    "sample_id",
+    "accession_id",
+    "publication_key",
+    "publication",
+    "region",
+    "site",
+    "time_bce",
+    "date_uncertainty",
+    "sex",
+    "method",
+    "note",
 )
+
+REQUIRED_SAMPLE_METADATA_COLUMNS = frozenset(SAMPLE_METADATA_COLUMNS)
 
 
 @dataclass(frozen=True)
@@ -175,6 +176,38 @@ def load_sample_metadata(path: str | Path) -> SampleMetadataDataset:
     return SampleMetadataDataset.from_rows(records).require_records()
 
 
+def sample_metadata_rows(
+    dataset: SampleMetadataDataset,
+) -> tuple[dict[str, str], ...]:
+    """Return sample metadata as CSV-ready rows."""
+    return tuple(_sample_metadata_row(record) for record in dataset.records)
+
+
+def sample_metadata_to_csv(dataset: SampleMetadataDataset) -> str:
+    """Return sample metadata serialized as CSV text."""
+    dataset.require_records()
+    output = StringIO()
+    writer = csv.DictWriter(
+        output,
+        fieldnames=SAMPLE_METADATA_COLUMNS,
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(sample_metadata_rows(dataset))
+    return output.getvalue()
+
+
+def write_sample_metadata_csv(
+    dataset: SampleMetadataDataset,
+    path: str | Path,
+) -> Path:
+    """Write sample metadata to a CSV file and return the path."""
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(sample_metadata_to_csv(dataset), encoding="utf-8")
+    return output_path
+
+
 def _record_from_row(
     row: dict[str, str | None], line_number: int
 ) -> SampleMetadataRecord:
@@ -199,6 +232,25 @@ def _record_from_row(
         raise ValueError(
             f"invalid sample metadata CSV row {line_number}: {error}"
         ) from error
+
+
+def _sample_metadata_row(record: SampleMetadataRecord) -> dict[str, str]:
+    """Return one sample metadata record as a string-only CSV row."""
+    return {
+        "status": record.status,
+        "dataset_id": record.dataset_id,
+        "sample_id": record.sample_id,
+        "accession_id": record.accession_id,
+        "publication_key": record.publication_key,
+        "publication": record.publication,
+        "region": record.region,
+        "site": record.site,
+        "time_bce": _value_text(record.time_bce),
+        "date_uncertainty": _value_text(record.date_uncertainty),
+        "sex": record.sex,
+        "method": record.method,
+        "note": record.note,
+    }
 
 
 def _cell(row: dict[str, str | None], column: str) -> str:
@@ -238,3 +290,8 @@ def _unique(values: Iterable[str]) -> tuple[str, ...]:
         if value not in unique_values:
             unique_values.append(value)
     return tuple(unique_values)
+
+
+def _value_text(value: float) -> str:
+    """Return a stable string representation for numeric metadata values."""
+    return f"{value:.12g}"

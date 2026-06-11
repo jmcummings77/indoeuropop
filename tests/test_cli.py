@@ -79,6 +79,52 @@ def test_cli_download_sources_materializes_catalog_entries(
     )
 
 
+def test_cli_load_aadr_writes_sample_metadata(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The CLI should normalize local AADR annotations to sample metadata."""
+    aadr_dir = _tiny_aadr_dir(tmp_path)
+    output_path = tmp_path / "outputs" / "aadr-sample-metadata.csv"
+
+    exit_code = main(
+        [
+            "load-aadr",
+            "--aadr-dir",
+            str(aadr_dir),
+            "--sample-metadata-out",
+            str(output_path),
+            "--aadr-limit",
+            "1",
+        ]
+    )
+    captured = capsys.readouterr()
+    output_text = output_path.read_text(encoding="utf-8")
+
+    assert exit_code == 0
+    assert f"aadr_sample_metadata={output_path}" in captured.out
+    assert output_text.startswith("status,dataset_id,sample_id")
+    assert "published,aadr-v66-p1-1240k,I001.SG" in output_text
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["load-aadr"],
+        [
+            "load-aadr",
+            "--aadr-dir",
+            "aadr",
+        ],
+    ],
+)
+def test_cli_load_aadr_requires_paths(argv: list[str]) -> None:
+    """The AADR command should reject incomplete input paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
+
+
 @pytest.mark.parametrize(
     "argv",
     [
@@ -359,3 +405,52 @@ def test_cli_sweep_target_fit_requires_targets() -> None:
             ]
         )
     assert exc_info.value.code == 2
+
+
+def _tiny_aadr_dir(tmp_path: Path) -> Path:
+    """Create a tiny AADR quartet for CLI tests."""
+    root = tmp_path / "aadr"
+    root.mkdir()
+    header = "\t".join(
+        (
+            "Genetic ID (suffices)",
+            "Persistent Genetic ID",
+            "Individual ID",
+            "First publication: Abbreviation for earliest paper",
+            "Publication abbreviation",
+            "doi for publication of this representation of the data",
+            "Link to the most permanent repository hosting these data",
+            "Date mean in BP in years before 1950 CE",
+            "Date standard deviation in BP",
+            "Full Date One of two formats",
+            "Group ID",
+            "Locality",
+            "Political Entity",
+            "Molecular Sex",
+            "ASSESSMENT",
+        )
+    )
+    row = "\t".join(
+        (
+            "I001.SG",
+            "123",
+            "I001",
+            "FirstPublication",
+            "PublicationKey",
+            "https://doi.org/example",
+            "ENA:PRJEB00000",
+            "4250",
+            "173",
+            "2600-2000 BCE",
+            "Greece_EBA",
+            "Example Site",
+            "Greece",
+            "F",
+            "Pass",
+        )
+    )
+    (root / "tiny.anno").write_text(f"{header}\n{row}\n", encoding="utf-8")
+    (root / "tiny.ind").write_text("I001.SG F Greece_EBA\n", encoding="utf-8")
+    (root / "tiny.snp").write_text("rs1 1 0.0 1 A G\n", encoding="utf-8")
+    (root / "tiny.geno").write_text("0\n", encoding="utf-8")
+    return root

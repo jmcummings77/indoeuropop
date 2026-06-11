@@ -61,6 +61,8 @@ Phase 2: Scientific input layer.
   Catalog-driven source downloads can now materialize local or external source
   artifacts into a raw-data cache with optional checksums and a download
   manifest; exact AADR/Poseidon release URLs remain catalog decisions.
+  Local AADR `.anno` files can now be normalized into the project sample
+  metadata schema from a downloaded AADR quartet without parsing genotype data.
 - Compare model output to targets through a validated observation interface,
   never by hard-coding target values inside simulator functions.
 
