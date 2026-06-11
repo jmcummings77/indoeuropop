@@ -25,11 +25,11 @@ The workflow performs these steps:
 
 - load reviewed AADR group selections;
 - prepare selected AADR sample metadata and target curation rows;
+- apply reviewed target decisions, deferring rows marked `exclude`, `split`, or
+  `rerun_qpadm`;
 - parse the qpAdm table and drop rows without usable in-range estimates and
   standard errors;
 - drop whole target rows when any curated sample lacks a retained estimate;
-- apply reviewed target decisions, deferring rows marked `exclude`, `split`, or
-  `rerun_qpadm`;
 - aggregate retained sample estimates into target observations;
 - write JSON diagnostics with selected, retained, and dropped counts.
 
@@ -69,10 +69,12 @@ uv run indoeuropop compare-targets \
 
 In the current local decision-aware run, the full path produced 11 retained
 target observations from 301 selected AADR samples and 301 qpAdm individual
-rows. The reviewed decision file deferred
-`Germany_StkrStraubing_BellBeaker` as `rerun_qpadm`. The first comparison sweep
-evaluated 24 deterministic samples; the best row had RMSE `0.254807` against
-the retained target observations.
+rows. The reviewed decision file deferred 27 targets as `rerun_qpadm`: 25 for
+out-of-range qpAdm point estimates, one for out-of-range qpAdm standard errors,
+and `Germany_StkrStraubing_BellBeaker` for replicated group-level qpAdm
+evidence that needs review. The first comparison sweep evaluated 24
+deterministic samples; the best row had RMSE `0.254807` against the retained
+target observations.
 
 Apply reviewed decisions to already prepared target inputs when you want to
 inspect the filtered curation CSVs directly:

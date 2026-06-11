@@ -136,7 +136,9 @@ Phase 4: Inference and validation.
   estimate evidence so reviewers can distinguish simulator misses from
   target-construction problems. Reviewed target-decision CSVs can now defer
   excluded, split, or qpAdm-rerun-pending targets before observation builds
-  while preserving the original curation evidence.
+  while preserving the original curation evidence. The first AADR v66
+  western-Europe decision pass now classifies all currently non-retained target
+  rows as qpAdm-rerun-pending before estimate filtering.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;

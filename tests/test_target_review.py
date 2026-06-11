@@ -97,6 +97,26 @@ def test_target_residual_review_recommends_dropped_target_review(
     assert "dropped target rows" in review.recommendation
 
 
+def test_target_residual_review_recommends_decision_deferred_review(
+    tmp_path: Path,
+) -> None:
+    """Decision-deferred target runs should name reviewed deferrals."""
+    residuals_path = tmp_path / "target-residuals.csv"
+    residuals_path.write_text(
+        _residual_csv().replace("4.8", "0.8").replace("0.48", "0.08"),
+        encoding="utf-8",
+    )
+    rows = load_target_residual_review_rows(residuals_path)
+
+    review = TargetResidualReview(
+        rows=rows,
+        diagnostics={"dropped_target_count": 5, "decision_deferred_target_count": 3},
+    )
+
+    assert review.outliers == ()
+    assert "decision-deferred target rows" in review.recommendation
+
+
 def test_target_residual_review_recommends_parameter_refinement(
     tmp_path: Path,
 ) -> None:

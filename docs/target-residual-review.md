@@ -40,16 +40,18 @@ time without more structured regional or group-specific modeling.
 
 That finding is now recorded in
 `curation/aadr-v66-western-europe-target-decisions.csv` as `rerun_qpadm`, so the
-decision-aware target build defers Stkr-Straubing before target comparison. In
+decision-aware target build defers Stkr-Straubing before target comparison. The
+same decision file now also defers the other currently non-retained target rows
+whose qpAdm point estimates or standard errors are outside accepted ranges. In
 the current decision-aware comparison, the residual report contains 11 retained
 targets, zero z-score outliers, and a top retained residual of about `-1.297`
 for `Germany_Tiefbrunn_CordedWare-1`.
 
 ## Recommended Next Step
 
-Review the dropped and decision-deferred target rows before treating the 11
-retained observations as representative. For Stkr-Straubing, review the qpAdm
-source/outgroup model and target grouping, then decide whether the central
+Rerun or revise the qpAdm source/outgroup setup for the 27 decision-deferred
+targets before treating the 11 retained observations as representative. For
+Stkr-Straubing, also review target grouping and decide whether the central
 Europe targets should be split into finer regions or culture/site-level
 trajectories before adding heavier inference.
 

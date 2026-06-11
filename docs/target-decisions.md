@@ -1,9 +1,10 @@
 # Target Decisions
 
 Target-decision files record reviewed choices about whether curated targets
-should enter target-observation builds. They are applied after qpAdm estimate
-availability filtering and before target aggregation, so a problematic target
-can be deferred without deleting its curation row or source evidence.
+should enter target-observation builds. In the real AADR plus qpAdm workflow,
+they are applied to the full requested curation before qpAdm estimate
+availability filtering, so decisions can document targets whose current
+external qpAdm rows are already unusable.
 
 ## Schema
 
@@ -33,8 +34,11 @@ uv run indoeuropop apply-target-decisions \
   --target-curation-out results/real-aadr-comparison/decision-filtered-target-curation.csv
 ```
 
-The current committed decision file marks
-`Germany_StkrStraubing_BellBeaker` as `rerun_qpadm` because the curation audit
+The current committed decision file defers every target row that is not retained
+by the local AADR v66 comparison build. Most are marked `rerun_qpadm` because
+all selected samples have steppe fractions outside the valid `0-1` range in the
+current external table. `Germany_OsterhofenAltenmarkt_BellBeaker` is deferred
+because its standard errors are outside the accepted range.
+`Germany_StkrStraubing_BellBeaker` remains deferred because the curation audit
 found identical replicated qpAdm estimate, standard error, and p-value rows
-across all 12 selected samples. It is therefore deferred from comparison
-targets until the qpAdm handoff is reviewed.
+across all 12 selected samples.

@@ -126,37 +126,39 @@ def run_aadr_qpadm_target_workflow(
         ancestry_estimates,
         config.ancestry_estimates_path,
     )
-    filtered = filter_target_inputs_for_estimates(
-        inputs.sample_metadata,
-        inputs.curation,
-        ancestry_estimates,
-    )
     decision_filtered = (
         None
         if config.target_decisions_path is None
         else apply_target_decisions(
-            filtered.sample_metadata,
-            filtered.curation,
+            inputs.sample_metadata,
+            inputs.curation,
             load_target_decisions(config.target_decisions_path),
         )
     )
-    build_metadata = (
-        filtered.sample_metadata
+    decision_deferred_ids = (
+        () if decision_filtered is None else decision_filtered.deferred_target_ids
+    )
+    retained_inputs_metadata = (
+        inputs.sample_metadata
         if decision_filtered is None
         else decision_filtered.sample_metadata
     )
-    build_curation = (
-        filtered.curation if decision_filtered is None else decision_filtered.curation
+    retained_inputs_curation = (
+        inputs.curation if decision_filtered is None else decision_filtered.curation
     )
+    filtered = filter_target_inputs_for_estimates(
+        retained_inputs_metadata,
+        retained_inputs_curation,
+        ancestry_estimates,
+    )
+    build_metadata = filtered.sample_metadata
+    build_curation = filtered.curation
     target_dataset = build_target_dataset(
         build_metadata,
         build_curation,
         ancestry_estimates,
     )
     write_target_dataset_csv(target_dataset, config.target_output_path)
-    decision_deferred_ids = (
-        () if decision_filtered is None else decision_filtered.deferred_target_ids
-    )
     diagnostics = AADRQpAdmTargetDiagnostics(
         requested_target_count=len(inputs.curation.records),
         selected_sample_count=inputs.sample_metadata.sample_count,

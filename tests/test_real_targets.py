@@ -105,7 +105,7 @@ def test_run_aadr_qpadm_target_workflow_applies_target_decisions(
             (
                 "Genetic ID,steppe_fraction,stderr,qpadm_pvalue",
                 "I001,0.25,0.05,0.5",
-                "I002,0.5,0.08,0.6",
+                "I002,1.5,0.08,0.6",
             )
         )
         + "\n",

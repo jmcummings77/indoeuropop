@@ -90,11 +90,11 @@ uv run indoeuropop compare-targets \
   --fit-metric root_mean_squared_error
 ```
 
-In the local AADR v66.1 run, this comparison evaluated 24 deterministic sweep
-samples against 12 retained target observations. The best exploratory run had
-RMSE `0.280595`, reduced chi-square `1.886537`, and maximum absolute z-score
-`4.269364`. Treat those as review diagnostics only; they are not calibrated
-inference.
+In the current decision-aware local AADR v66.1 run, this comparison evaluated
+24 deterministic sweep samples against 11 retained target observations. The
+best exploratory run had RMSE `0.254807`, and the residual review found no
+absolute z-score outliers. Treat those as review diagnostics only; they are not
+calibrated inference.
 
 Generate a Markdown review of the residual table with:
 
@@ -105,5 +105,7 @@ uv run indoeuropop review-target-residuals \
   --target-review-md results/real-aadr-comparison/target-residual-review.md
 ```
 
-The current largest residual is `Germany_StkrStraubing_BellBeaker`, where the
-target mean is much lower than the smooth central-Europe trajectory.
+In the pre-decision comparison, the largest residual was
+`Germany_StkrStraubing_BellBeaker`, where the target mean was much lower than
+the smooth central-Europe trajectory. That target is now decision-deferred as
+`rerun_qpadm`.

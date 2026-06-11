@@ -133,6 +133,11 @@ class TargetResidualReview:
                 "Review qpAdm model choices and target curation before widening "
                 "simulator parameter ranges."
             )
+        if _diagnostic_int(self.diagnostics, "decision_deferred_target_count") > 0:
+            return (
+                "Review decision-deferred target rows before treating retained "
+                "targets as representative."
+            )
         if _diagnostic_int(self.diagnostics, "dropped_target_count") > len(self.rows):
             return (
                 "Review dropped target rows before treating retained targets as "
