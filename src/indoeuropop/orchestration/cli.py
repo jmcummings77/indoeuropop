@@ -27,6 +27,11 @@ from indoeuropop.orchestration.workflows import (
     run_configured_simulation,
     write_simulation_outputs,
 )
+from indoeuropop.reporting.target_review import (
+    load_target_residual_review,
+    target_residual_review_markdown,
+    write_target_residual_review_markdown,
+)
 from indoeuropop.simulation.config import default_config, load_config, load_sweep_spec
 
 
@@ -38,6 +43,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_build_targets_command(args, parser)
     if args.command == "compare-targets":
         return _run_compare_targets_command(args, parser)
+    if args.command == "review-target-residuals":
+        return _run_review_target_residuals_command(args, parser)
     data_exit_code = run_data_command(args, parser)
     if data_exit_code is not None:
         return data_exit_code
@@ -205,12 +212,52 @@ def _run_compare_targets_command(
     return 0
 
 
+def _run_review_target_residuals_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI target-residual review command."""
+    if args.target_residuals is None:
+        parser.error("review-target-residuals requires --target-residuals")
+    review = load_target_residual_review(
+        args.target_residuals,
+        diagnostics_path=args.target_diagnostics_json,
+        outlier_z_threshold=args.outlier_z_threshold,
+    )
+    if args.target_review_md is None:
+        print(target_residual_review_markdown(review), end="")
+    else:
+        output_path = write_target_residual_review_markdown(
+            review, args.target_review_md
+        )
+        print(f"target_review={output_path}")
+
+    top_row = review.ranked_rows[0]
+    print(f"residual_count={len(review.rows)}")
+    print(f"outlier_count={len(review.outliers)}")
+    print(
+        "top_residual="
+        f"{top_row.region},"
+        f"{top_row.requested_group_id or 'unknown'},"
+        f"z={top_row.z_score:.6f},"
+        f"residual={top_row.residual:.6f}"
+    )
+    print(f"recommendation={review.recommendation}")
+    return 0
+
+
 def _build_parser() -> argparse.ArgumentParser:
     """Create the CLI argument parser."""
     parser = argparse.ArgumentParser(prog="indoeuropop")
     parser.add_argument(
         "command",
-        choices=("build-targets", "compare-targets", "demo", "sweep", *DATA_COMMANDS),
+        choices=(
+            "build-targets",
+            "compare-targets",
+            "demo",
+            "review-target-residuals",
+            "sweep",
+            *DATA_COMMANDS,
+        ),
         help="run a CLI workflow",
     )
     parser.add_argument("--config", type=Path, help="path to a TOML config file")
@@ -268,6 +315,22 @@ def _build_parser() -> argparse.ArgumentParser:
         "--target-residuals-csv",
         type=Path,
         help="optional output path for best-run target residual CSV rows",
+    )
+    parser.add_argument(
+        "--target-residuals",
+        type=Path,
+        help="target residual CSV input for review reporting",
+    )
+    parser.add_argument(
+        "--target-review-md",
+        type=Path,
+        help="optional output path for target residual review Markdown",
+    )
+    parser.add_argument(
+        "--outlier-z-threshold",
+        type=float,
+        default=2.0,
+        help="absolute z-score threshold for target residual review outliers",
     )
     parser.add_argument(
         "--sensitivity-outcome",

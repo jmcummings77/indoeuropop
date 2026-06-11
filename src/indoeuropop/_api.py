@@ -206,6 +206,16 @@ from indoeuropop.reporting.target_comparison import (
     target_comparisons_to_csv,
     write_target_comparisons_csv,
 )
+from indoeuropop.reporting.target_review import (
+    TARGET_RESIDUAL_REVIEW_COLUMNS,
+    TargetResidualRegionSummary,
+    TargetResidualReview,
+    TargetResidualReviewRow,
+    load_target_residual_review,
+    load_target_residual_review_rows,
+    target_residual_review_markdown,
+    write_target_residual_review_markdown,
+)
 from indoeuropop.reporting.visualization import (
     plot_ancestry,
     plot_ancestry_comparison,
@@ -256,6 +266,7 @@ __all__ = [
     "SUSCEPTIBLE",
     "TARGET_COLUMNS",
     "TARGET_COMPARISON_FIELDS",
+    "TARGET_RESIDUAL_REVIEW_COLUMNS",
     "AgeStructureParameters",
     "AgeStructuredState",
     "AncestryComparison",
@@ -316,6 +327,9 @@ __all__ = [
     "TargetDataset",
     "TargetFit",
     "TargetObservation",
+    "TargetResidualRegionSummary",
+    "TargetResidualReview",
+    "TargetResidualReviewRow",
     "TargetSplit",
     "TimeWindow",
     "TrajectorySummary",
@@ -352,6 +366,8 @@ __all__ = [
     "load_sweep_spec",
     "load_target_curation",
     "load_target_dataset",
+    "load_target_residual_review",
+    "load_target_residual_review_rows",
     "parameters_with_overrides",
     "plot_ancestry",
     "plot_ancestry_comparison",
@@ -402,6 +418,7 @@ __all__ = [
     "target_fit_provenance_records",
     "target_observation_provenance_records",
     "target_observation_rows",
+    "target_residual_review_markdown",
     "trajectory_summary_payload",
     "trajectory_summary_vector",
     "validate_emulator_predictions",
@@ -417,4 +434,5 @@ __all__ = [
     "write_sweep_runs_csv",
     "write_target_comparisons_csv",
     "write_target_dataset_csv",
+    "write_target_residual_review_markdown",
 ]

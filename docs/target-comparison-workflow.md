@@ -95,3 +95,15 @@ samples against 12 retained target observations. The best exploratory run had
 RMSE `0.280595`, reduced chi-square `1.886537`, and maximum absolute z-score
 `4.269364`. Treat those as review diagnostics only; they are not calibrated
 inference.
+
+Generate a Markdown review of the residual table with:
+
+```bash
+uv run indoeuropop review-target-residuals \
+  --target-residuals results/real-aadr-comparison/target-residuals.csv \
+  --target-diagnostics-json results/real-aadr-comparison/aadr-target-diagnostics.json \
+  --target-review-md results/real-aadr-comparison/target-residual-review.md
+```
+
+The current largest residual is `Germany_StkrStraubing_BellBeaker`, where the
+target mean is much lower than the smooth central-Europe trajectory.

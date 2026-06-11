@@ -67,3 +67,12 @@ In the current local run, the full path produced 12 retained target
 observations from 301 selected AADR samples and 301 qpAdm individual rows. The
 first comparison sweep evaluated 24 deterministic samples; the best row had
 RMSE `0.280595` against the retained target observations.
+
+Generate an outlier-focused Markdown review after the comparison step:
+
+```bash
+uv run indoeuropop review-target-residuals \
+  --target-residuals results/real-aadr-comparison/target-residuals.csv \
+  --target-diagnostics-json results/real-aadr-comparison/aadr-target-diagnostics.json \
+  --target-review-md results/real-aadr-comparison/target-residual-review.md
+```

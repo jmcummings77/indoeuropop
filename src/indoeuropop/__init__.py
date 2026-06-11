@@ -41,6 +41,7 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "target_comparison": "indoeuropop.orchestration.target_comparison",
     "target_curation": "indoeuropop.data.target_curation",
     "target_pipeline": "indoeuropop.data.target_pipeline",
+    "target_review": "indoeuropop.reporting.target_review",
     "targets": "indoeuropop.data.targets",
     "validation": "indoeuropop.analysis.validation",
     "visualization": "indoeuropop.reporting.visualization",

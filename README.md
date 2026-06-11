@@ -196,6 +196,15 @@ uv run indoeuropop compare-targets \
   --fit-metric root_mean_squared_error
 ```
 
+Review the best-run residuals:
+
+```bash
+uv run indoeuropop review-target-residuals \
+  --target-residuals results/real-aadr-comparison/target-residuals.csv \
+  --target-diagnostics-json results/real-aadr-comparison/aadr-target-diagnostics.json \
+  --target-review-md results/real-aadr-comparison/target-residual-review.md
+```
+
 ## Package Layout
 
 ```text
@@ -222,6 +231,7 @@ docs/
   sweep-workflows.md
   target-comparison-workflow.md
   target-data-schema.md
+  target-residual-review.md
   workflow-api.md
 examples/
   sample-ancestry-estimates.example.csv
@@ -272,6 +282,7 @@ tracked normally.
 - Score simulations and deterministic sweeps against target observations.
 - Run a target-comparison workflow that writes ranked fits, best-run residuals,
   overlay plots, and a checksummed manifest.
+- Generate Markdown target-residual review reports from comparison artifacts.
 - Split targets into calibration and validation sets for held-out fit checks.
 - Compare deterministic and tau-leap ancestry trajectories for debugging.
 - Validate simulation outputs for time-order, label, extinction, and growth

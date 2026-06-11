@@ -128,7 +128,10 @@ Phase 4: Inference and validation.
   manifest for supplied target observations. A committed AADR v66
   western-Europe review config now runs a multi-region deterministic sweep
   against retained real target observations generated from the local AADR and
-  external qpAdm workflow.
+  external qpAdm workflow. Target-comparison residual CSVs can now be converted
+  into Markdown review reports that rank outliers, summarize regions, include
+  target-build diagnostics, and recommend whether qpAdm/curation review should
+  precede simulator parameter changes.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
@@ -170,7 +173,8 @@ Every simulator should support quick plots for:
   generate overlay plots for deterministic versus seeded tau-leap runs.
 - comparison of best-ranked deterministic sweep trajectories against target
   observations. The target-comparison workflow now generates overlay plots and
-  per-target residual CSV rows for review.
+  per-target residual CSV rows for review, and the residual-review workflow now
+  turns those rows into a Markdown outlier report.
 
 Plots should be generated through package functions so tests can verify that
 figures build in headless environments.
