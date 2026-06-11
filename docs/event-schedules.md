@@ -35,4 +35,5 @@ epidemic_mortality_delta = 0.01
 
 Climate stress reduces fertility and adds a small shared mortality penalty.
 Epidemic mortality is still an exogenous hazard in this phase; compartmental
-transmission models belong in a later model-expansion step.
+transmission experiments live in the separate epidemic-compartments scaffold and
+are not yet wired into scheduled forcing windows.

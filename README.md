@@ -58,6 +58,7 @@ src/indoeuropop/
   data_sources.py    metadata catalog for target and future sample inputs
   debugging.py       trajectory comparison helpers for simulation debugging
   diagnostics.py     sanity checks for simulation output quality
+  epidemics.py       compartmental epidemic scaffold
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
   reporting.py       CSV export helpers for provenance and diagnostics
@@ -84,6 +85,8 @@ tests/
   source-count states for existing diagnostics and plots.
 - Represent sex-structured counts and estimate expected newborn source
   contributions under explicit sex-specific reproductive weights.
+- Represent susceptible, infected, recovered, and deceased counts for explicit
+  epidemic transmission experiments.
 - Run a small deterministic mean-field scenario.
 - Run a seeded tau-leap stochastic scenario for smoke testing.
 - Load the same inputs from TOML.

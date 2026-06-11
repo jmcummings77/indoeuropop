@@ -75,6 +75,10 @@ Phase 3: Model expansion.
   the main simulator yet.
 - Add epidemic compartments if plague is modeled as transmission rather than as
   an exogenous hazard.
+  The first compartmental scaffold can represent susceptible/infected/recovered
+  and deceased counts, project one deterministic region-level mixing step, and
+  collapse living counts back to the source-count state without changing the
+  main simulator yet.
 
 Phase 4: Inference and validation.
 
