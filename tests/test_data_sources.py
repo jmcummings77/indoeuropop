@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.data_sources import (
+from indoeuropop.data.data_sources import (
     DataSourceCatalog,
     DataSourceRecord,
     load_data_source_catalog,

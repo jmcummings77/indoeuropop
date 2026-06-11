@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.aadr import (
+from indoeuropop.data.aadr import (
     AADRDataFiles,
     discover_aadr_files,
     load_aadr_sample_metadata,
     write_aadr_sample_metadata_csv,
 )
-from indoeuropop.sample_metadata import load_sample_metadata
+from indoeuropop.data.sample_metadata import load_sample_metadata
 
 GENETIC_ID_COLUMN = "Genetic ID (suffices)"
 FIRST_PUBLICATION_COLUMN = (

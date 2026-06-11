@@ -9,8 +9,12 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.data_sources import DataSourceCatalog, DataSourceRecord, sha256_file
-from indoeuropop.source_downloader import (
+from indoeuropop.data.data_sources import (
+    DataSourceCatalog,
+    DataSourceRecord,
+    sha256_file,
+)
+from indoeuropop.data.source_downloader import (
     DownloadOptions,
     _output_filename,
     _safe_filename,

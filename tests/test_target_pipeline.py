@@ -2,13 +2,13 @@
 
 import pytest
 
-from indoeuropop.ancestry_estimates import (
+from indoeuropop.data.ancestry_estimates import (
     SampleAncestryEstimate,
     SampleAncestryEstimateDataset,
 )
-from indoeuropop.sample_metadata import SampleMetadataDataset, SampleMetadataRecord
-from indoeuropop.target_curation import TargetCurationDataset, TargetCurationRecord
-from indoeuropop.target_pipeline import (
+from indoeuropop.data.sample_metadata import SampleMetadataDataset, SampleMetadataRecord
+from indoeuropop.data.target_curation import TargetCurationDataset, TargetCurationRecord
+from indoeuropop.data.target_pipeline import (
     TargetBuildOptions,
     _mean,
     _target_uncertainty,

@@ -3,14 +3,18 @@
 import numpy as np
 import pytest
 
-from indoeuropop.events import ForcingWindow, MigrationPulse, SimulationSchedule
 from indoeuropop.models import PopulationState, SimulationParameters
-from indoeuropop.parameterization import (
+from indoeuropop.models.parameterization import (
     ParameterSet,
     RegionParameters,
     SourceParameters,
 )
 from indoeuropop.simulation import run_deterministic, run_tau_leap
+from indoeuropop.simulation.events import (
+    ForcingWindow,
+    MigrationPulse,
+    SimulationSchedule,
+)
 
 
 def test_deterministic_simulation_is_bounded_and_time_runs_down() -> None:

@@ -3,7 +3,7 @@
 import pytest
 
 from indoeuropop.models import PopulationState
-from indoeuropop.sex_bias import (
+from indoeuropop.models.sex_bias import (
     FEMALE,
     MALE,
     SexBiasParameters,

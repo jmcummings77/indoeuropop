@@ -5,16 +5,20 @@ from pathlib import Path
 
 import pytest
 
+from indoeuropop.analysis.sensitivity import SensitivityResult
+from indoeuropop.data.targets import TargetDataset, TargetObservation
 from indoeuropop.models import PopulationState, SimulationParameters
-from indoeuropop.sensitivity import SensitivityResult
-from indoeuropop.sweep_workflows import (
+from indoeuropop.orchestration.sweep_workflows import (
     SweepOutputPaths,
     run_sweep_workflow,
     sweep_experiment_manifest,
     write_sweep_outputs,
 )
-from indoeuropop.sweeps import ParameterRange, SweepSpec, run_parameter_sweep
-from indoeuropop.targets import TargetDataset, TargetObservation
+from indoeuropop.orchestration.sweeps import (
+    ParameterRange,
+    SweepSpec,
+    run_parameter_sweep,
+)
 
 
 def _spec(sample_count: int = 3) -> SweepSpec:

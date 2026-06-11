@@ -2,20 +2,23 @@
 
 import pytest
 
-from indoeuropop.emulator_training import (
+from indoeuropop.analysis.emulator_training import (
     EmulatorTrainingDataset,
     emulator_training_dataset_from_sweep_runs,
 )
-from indoeuropop.emulator_validation import (
+from indoeuropop.analysis.emulator_validation import (
     EmulatorPrediction,
     EmulatorValidationCase,
     EmulatorValidationReport,
     validate_emulator_predictions,
 )
+from indoeuropop.analysis.summary import TrajectorySummary
+from indoeuropop.analysis.summary_statistics import (
+    SummaryVector,
+    trajectory_summary_vector,
+)
 from indoeuropop.models import SimulationParameters
-from indoeuropop.summary import TrajectorySummary
-from indoeuropop.summary_statistics import SummaryVector, trajectory_summary_vector
-from indoeuropop.sweeps import SweepRun
+from indoeuropop.orchestration.sweeps import SweepRun
 
 
 def _summary(final_ancestry: float = 0.2) -> TrajectorySummary:

@@ -2,7 +2,8 @@
 
 import pytest
 
-from indoeuropop.age_structure import (
+from indoeuropop.models import PopulationState
+from indoeuropop.models.age_structure import (
     ADULT,
     ELDER,
     JUVENILE,
@@ -10,7 +11,6 @@ from indoeuropop.age_structure import (
     AgeStructureParameters,
     advance_age_structure,
 )
-from indoeuropop.models import PopulationState
 
 
 def test_age_structured_state_derives_totals_and_ancestry() -> None:

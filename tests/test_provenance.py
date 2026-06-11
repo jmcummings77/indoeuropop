@@ -4,17 +4,17 @@ from typing import cast
 
 import pytest
 
-from indoeuropop.fitting import score_result_against_targets
+from indoeuropop.analysis.fitting import score_result_against_targets
+from indoeuropop.analysis.summary import summarize_trajectory
+from indoeuropop.data.targets import TargetDataset, TargetObservation
 from indoeuropop.models import PopulationState, SimulationResult
-from indoeuropop.provenance import (
+from indoeuropop.reporting.provenance import (
     ProvenanceRecord,
     RecordKind,
     summary_provenance_records,
     target_fit_provenance_records,
     target_observation_provenance_records,
 )
-from indoeuropop.summary import summarize_trajectory
-from indoeuropop.targets import TargetDataset, TargetObservation
 
 
 def _published_target() -> TargetObservation:

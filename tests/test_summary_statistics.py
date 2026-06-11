@@ -2,8 +2,8 @@
 
 import pytest
 
-from indoeuropop.summary import TrajectorySummary
-from indoeuropop.summary_statistics import (
+from indoeuropop.analysis.summary import TrajectorySummary
+from indoeuropop.analysis.summary_statistics import (
     SummaryStatistic,
     SummaryVector,
     trajectory_summary_vector,

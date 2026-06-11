@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.config import default_config, load_config, load_sweep_spec
+from indoeuropop.simulation.config import default_config, load_config, load_sweep_spec
 
 
 def test_default_config_is_runnable() -> None:

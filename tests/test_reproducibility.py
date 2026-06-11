@@ -4,8 +4,10 @@ from typing import cast
 
 import pytest
 
+from indoeuropop.analysis.summary import TrajectorySummary
 from indoeuropop.models import PopulationState, SimulationParameters, SimulationResult
-from indoeuropop.reproducibility import (
+from indoeuropop.orchestration.sweeps import SweepRun
+from indoeuropop.reporting.reproducibility import (
     FingerprintKind,
     ReproducibilityFingerprint,
     canonical_json_payload,
@@ -20,8 +22,6 @@ from indoeuropop.reproducibility import (
     sweep_run_payload,
     trajectory_summary_payload,
 )
-from indoeuropop.summary import TrajectorySummary
-from indoeuropop.sweeps import SweepRun
 
 
 def _summary(final_ancestry: float = 0.25) -> TrajectorySummary:

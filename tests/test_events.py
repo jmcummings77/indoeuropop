@@ -4,13 +4,13 @@ from typing import Any, cast
 
 import pytest
 
-from indoeuropop.events import (
+from indoeuropop.models import SimulationParameters
+from indoeuropop.simulation.events import (
     ForcingWindow,
     MigrationPulse,
     SimulationSchedule,
     TimeWindow,
 )
-from indoeuropop.models import SimulationParameters
 
 
 def test_time_window_contains_inclusive_bce_bounds() -> None:

@@ -2,8 +2,7 @@
 
 from pathlib import Path
 
-from indoeuropop.diagnostics import DiagnosticIssue
-from indoeuropop.provenance import ProvenanceRecord
+from indoeuropop.analysis.diagnostics import DiagnosticIssue
 from indoeuropop.reporting import (
     diagnostic_issue_records,
     provenance_fieldnames,
@@ -11,6 +10,7 @@ from indoeuropop.reporting import (
     provenance_rows,
     write_provenance_csv,
 )
+from indoeuropop.reporting.provenance import ProvenanceRecord
 
 
 def test_diagnostic_issue_records_preserve_issue_context() -> None:

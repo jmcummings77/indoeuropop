@@ -2,10 +2,10 @@
 
 import pytest
 
+from indoeuropop.analysis.sensitivity import analyze_sensitivity
+from indoeuropop.analysis.summary import TrajectorySummary
 from indoeuropop.models import SimulationParameters
-from indoeuropop.sensitivity import analyze_sensitivity
-from indoeuropop.summary import TrajectorySummary
-from indoeuropop.sweeps import SweepRun
+from indoeuropop.orchestration.sweeps import SweepRun
 
 
 def _run(

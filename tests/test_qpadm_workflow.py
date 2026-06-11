@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.qpadm_workflow import (
+from indoeuropop.data.qpadm_workflow import (
     QpAdmRunConfig,
     qpadm_run_command,
     qpadm_run_manifest,

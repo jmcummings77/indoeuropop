@@ -2,17 +2,17 @@
 
 import pytest
 
-from indoeuropop.fitting import (
+from indoeuropop.analysis.fitting import (
     ScoredSweepRun,
     rank_scored_runs,
     run_scored_parameter_sweep,
     score_result_against_targets,
     score_target_fit,
 )
+from indoeuropop.analysis.summary import TrajectorySummary
+from indoeuropop.data.targets import TargetDataset, TargetObservation
 from indoeuropop.models import PopulationState, SimulationParameters, SimulationResult
-from indoeuropop.summary import TrajectorySummary
-from indoeuropop.sweeps import ParameterRange, SweepRun, SweepSpec
-from indoeuropop.targets import TargetDataset, TargetObservation
+from indoeuropop.orchestration.sweeps import ParameterRange, SweepRun, SweepSpec
 
 
 def _target(mean: float, uncertainty: float = 0.1) -> TargetObservation:

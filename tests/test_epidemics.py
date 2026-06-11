@@ -2,7 +2,8 @@
 
 import pytest
 
-from indoeuropop.epidemics import (
+from indoeuropop.models import PopulationState
+from indoeuropop.simulation.epidemics import (
     DECEASED,
     INFECTED,
     RECOVERED,
@@ -11,7 +12,6 @@ from indoeuropop.epidemics import (
     EpidemicState,
     advance_epidemic,
 )
-from indoeuropop.models import PopulationState
 
 
 def test_epidemic_state_derives_totals_prevalence_and_population_state() -> None:

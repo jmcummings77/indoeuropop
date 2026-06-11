@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from pytest import CaptureFixture, raises
 
-from indoeuropop.cli import main
+from indoeuropop.orchestration.cli import main
 
 
 def test_cli_demo_prints_summary(capsys: CaptureFixture[str]) -> None:

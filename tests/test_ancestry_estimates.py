@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.ancestry_estimates import (
+from indoeuropop.data.ancestry_estimates import (
     ANCESTRY_ESTIMATE_COLUMNS,
     SampleAncestryEstimate,
     SampleAncestryEstimateDataset,

@@ -6,10 +6,9 @@ from typing import cast
 
 import pytest
 
-from indoeuropop.config import default_config
-from indoeuropop.experiments import ExperimentArtifact
-from indoeuropop.targets import TargetDataset, TargetObservation
-from indoeuropop.workflows import (
+from indoeuropop.data.targets import TargetDataset, TargetObservation
+from indoeuropop.orchestration.experiments import ExperimentArtifact
+from indoeuropop.orchestration.workflows import (
     SIMULATOR_KINDS,
     SimulationOutputPaths,
     SimulationRun,
@@ -19,6 +18,7 @@ from indoeuropop.workflows import (
     simulation_provenance_records,
     write_simulation_outputs,
 )
+from indoeuropop.simulation.config import default_config
 
 
 def _target_dataset() -> TargetDataset:

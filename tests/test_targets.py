@@ -6,8 +6,7 @@ from typing import Any, cast
 import numpy as np
 import pytest
 
-from indoeuropop.models import PopulationState, SimulationResult
-from indoeuropop.targets import (
+from indoeuropop.data.targets import (
     TARGET_COLUMNS,
     TargetDataset,
     TargetObservation,
@@ -16,6 +15,7 @@ from indoeuropop.targets import (
     target_observation_rows,
     write_target_dataset_csv,
 )
+from indoeuropop.models import PopulationState, SimulationResult
 
 
 def test_target_observation_bounds_and_dataset_filters() -> None:

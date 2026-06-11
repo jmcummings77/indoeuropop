@@ -2,7 +2,7 @@
 
 import pytest
 
-from indoeuropop.diagnostics import has_errors, validate_simulation_result
+from indoeuropop.analysis.diagnostics import has_errors, validate_simulation_result
 from indoeuropop.models import PopulationState, SimulationResult
 
 

@@ -4,12 +4,9 @@ from typing import cast
 
 import pytest
 
-from indoeuropop.fitting import score_result_against_targets
-from indoeuropop.models import PopulationState, SimulationParameters, SimulationResult
-from indoeuropop.summary import TrajectorySummary
-from indoeuropop.sweeps import ParameterRange, SweepRun, SweepSpec
-from indoeuropop.targets import TargetDataset, TargetObservation
-from indoeuropop.validation import (
+from indoeuropop.analysis.fitting import score_result_against_targets
+from indoeuropop.analysis.summary import TrajectorySummary
+from indoeuropop.analysis.validation import (
     TargetSplit,
     ValidatedSweepRun,
     ValidationFit,
@@ -19,6 +16,9 @@ from indoeuropop.validation import (
     score_result_on_split,
     split_targets_by_region,
 )
+from indoeuropop.data.targets import TargetDataset, TargetObservation
+from indoeuropop.models import PopulationState, SimulationParameters, SimulationResult
+from indoeuropop.orchestration.sweeps import ParameterRange, SweepRun, SweepSpec
 
 
 def _target(region: str, mean: float, uncertainty: float = 0.1) -> TargetObservation:

@@ -7,12 +7,12 @@ code and data, compatible pieces were fair to incorporate directly.
 ## Incorporated
 
 - A tolerant qpAdm-table conversion concept, adapted into
-  `indoeuropop.qpadm_estimates` so externally computed ancestry estimates can
+  `indoeuropop.data.qpadm_estimates` so externally computed ancestry estimates can
   enter the existing target-data pipeline.
 - A coordinate/date-based AADR group-suggestion concept, adapted into
-  `indoeuropop.aadr_groups` so local AADR releases can produce reviewable
+  `indoeuropop.data.aadr_groups` so local AADR releases can produce reviewable
   group-selection candidates instead of relying only on hand-written labels.
-- Data-oriented CLI separation into `indoeuropop.data_cli`, keeping the main
+- Data-oriented CLI separation into `indoeuropop.orchestration.data_cli`, keeping the main
   CLI small while exposing AADR loading, AADR target preparation, group
   suggestions, source downloads, and qpAdm conversion through one entry point.
 

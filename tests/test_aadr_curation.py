@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from indoeuropop.aadr_curation import (
+from indoeuropop.data.aadr_curation import (
     AADRGroupSelection,
     AADRTargetInputOptions,
     build_aadr_target_inputs,
@@ -13,12 +13,12 @@ from indoeuropop.aadr_curation import (
     prepare_aadr_target_inputs,
     write_aadr_target_inputs,
 )
-from indoeuropop.sample_metadata import (
+from indoeuropop.data.sample_metadata import (
     SampleMetadataDataset,
     SampleMetadataRecord,
     load_sample_metadata,
 )
-from indoeuropop.target_curation import load_target_curation
+from indoeuropop.data.target_curation import load_target_curation
 
 
 def _record(

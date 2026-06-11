@@ -2,7 +2,7 @@
 
 import pytest
 
-from indoeuropop.debugging import (
+from indoeuropop.analysis.debugging import (
     compare_ancestry_trajectories,
     compare_deterministic_and_tau_leap,
 )

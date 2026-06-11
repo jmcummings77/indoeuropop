@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-indoeuropop = "indoeuropop.cli:main"
+indoeuropop = "indoeuropop.orchestration.cli:main"
 
 [dependency-groups]
 dev = [

@@ -6,7 +6,7 @@ from typing import cast
 
 import pytest
 
-from indoeuropop.experiments import (
+from indoeuropop.orchestration.experiments import (
     ARTIFACT_ROLES,
     EXPERIMENT_MANIFEST_SCHEMA_VERSION,
     ArtifactRole,
@@ -18,7 +18,7 @@ from indoeuropop.experiments import (
     experiment_manifest_records,
     write_experiment_manifest_json,
 )
-from indoeuropop.reproducibility import fingerprint_payload
+from indoeuropop.reporting.reproducibility import fingerprint_payload
 
 
 def test_artifact_from_path_records_checksum_and_metadata(tmp_path: Path) -> None:

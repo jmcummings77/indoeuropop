@@ -4,11 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.fitting import ScoredSweepRun, score_target_fit
+from indoeuropop.analysis.fitting import ScoredSweepRun, score_target_fit
+from indoeuropop.analysis.sensitivity import SensitivityResult
+from indoeuropop.analysis.summary import TrajectorySummary
+from indoeuropop.data.targets import TargetComparison, TargetObservation
 from indoeuropop.models import SimulationParameters
-from indoeuropop.sensitivity import SensitivityResult
-from indoeuropop.summary import TrajectorySummary
-from indoeuropop.sweep_reporting import (
+from indoeuropop.orchestration.sweeps import SweepRun
+from indoeuropop.reporting.sweep_reporting import (
     scored_sweep_run_fieldnames,
     scored_sweep_run_rows,
     scored_sweep_runs_to_csv,
@@ -21,8 +23,6 @@ from indoeuropop.sweep_reporting import (
     write_sensitivity_csv,
     write_sweep_runs_csv,
 )
-from indoeuropop.sweeps import SweepRun
-from indoeuropop.targets import TargetComparison, TargetObservation
 
 
 def _run(

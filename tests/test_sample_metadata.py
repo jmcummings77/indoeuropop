@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.sample_metadata import (
+from indoeuropop.data.sample_metadata import (
     SAMPLE_METADATA_COLUMNS,
     RegionSampleCount,
     SampleMetadataDataset,

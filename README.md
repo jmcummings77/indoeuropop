@@ -153,40 +153,14 @@ uv run indoeuropop sweep \
 
 ```text
 src/indoeuropop/
-  aadr.py            local AADR annotation loading and metadata export
-  aadr_curation.py   AADR group selections to target-pipeline inputs
-  aadr_groups.py     AADR group-selection suggestions for human review
-  age_structure.py   deterministic age-class scaffold for model expansion
-  ancestry_estimates.py sample ancestry estimates before target aggregation
-  cli.py             argparse entry point for smoke/demo runs
-  config.py          simple TOML config loading
-  data_cli.py        data-oriented command handlers for the CLI
-  data_sources.py    metadata catalog for target and future sample inputs
-  debugging.py       trajectory comparison helpers for simulation debugging
-  diagnostics.py     sanity checks for simulation output quality
-  emulator_training.py matrix-ready sweep outputs for future emulators
-  emulator_validation.py compare future emulator predictions to simulator runs
-  epidemics.py       compartmental epidemic scaffold
-  experiments.py     experiment manifests for reproducible output bundles
-  models.py          typed state, parameter, and result dataclasses
-  provenance.py      explicit simulated/observed/derived output records
-  qpadm_estimates.py convert external qpAdm-style tables to sample estimates
-  qpadm_workflow.py preflight and manifest external qpAdm runs
-  reporting.py       CSV export helpers for provenance and diagnostics
-  reproducibility.py canonical output fingerprints for audit trails
-  sample_metadata.py typed sample metadata staging for later ingestion
-  simulation.py      deterministic and tau-leap simulation skeletons
-  source_downloader.py catalog-driven raw source downloads
-  sex_bias.py        sex-structured reproduction scaffold
-  summary_statistics.py named summary vectors for future inference inputs
-  sweep_reporting.py CSV exports for sweep and sensitivity diagnostics
-  sweep_workflows.py reusable deterministic sweep output workflow helpers
-  target_curation.py target derivation metadata before ancestry outputs
-  target_pipeline.py build target rows from curated sample-level inputs
-  targets.py         target observation CSV loading and comparison helpers
-  validation.py      calibration and validation target-split helpers
-  visualization.py   Matplotlib helpers for outputs and debugging
-  workflows.py       reusable configured-run and reporting assembly helpers
+  __init__.py        public exports and legacy module import aliases
+  _api.py            top-level `from indoeuropop import ...` export surface
+  analysis/          diagnostics, fitting, validation, summaries, emulators
+  data/              AADR loading, source catalogs, estimates, target building
+  models/            shared state types plus age and sex structure helpers
+  orchestration/     CLI commands, experiment manifests, sweeps, workflows
+  reporting/         provenance, reproducibility, CSV exports, plots
+  simulation/        config loading, event schedules, epidemic and run engines
 docs/
   aadr-group-suggestions.md
   aadr-loading.md
@@ -211,6 +185,10 @@ scripts/
 tests/
   test_*.py          100% coverage tests for logic-bearing modules
 ```
+
+Root-level `/data/` and `/results/` are ignored for local raw data, f2 caches,
+and generated artifacts. The package code under `src/indoeuropop/data/` is
+tracked normally.
 
 ## Current Capabilities
 

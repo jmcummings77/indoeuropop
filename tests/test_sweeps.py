@@ -5,16 +5,16 @@ from typing import Any, cast
 import numpy as np
 import pytest
 
-from indoeuropop.events import MigrationPulse, SimulationSchedule
 from indoeuropop.models import PopulationState, SimulationParameters
-from indoeuropop.parameterization import ParameterSet, RegionParameters
-from indoeuropop.sweeps import (
+from indoeuropop.models.parameterization import ParameterSet, RegionParameters
+from indoeuropop.orchestration.sweeps import (
     ParameterRange,
     SweepSpec,
     latin_hypercube_samples,
     parameters_with_overrides,
     run_parameter_sweep,
 )
+from indoeuropop.simulation.events import MigrationPulse, SimulationSchedule
 
 
 def test_parameter_range_scales_unit_values() -> None:

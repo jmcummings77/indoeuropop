@@ -2,8 +2,8 @@
 
 import pytest
 
+from indoeuropop.analysis.summary import summarize_trajectory
 from indoeuropop.models import PopulationState, SimulationResult
-from indoeuropop.summary import summarize_trajectory
 
 
 def test_summarize_trajectory_reports_ancestry_and_population_metrics() -> None:

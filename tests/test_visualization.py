@@ -2,9 +2,9 @@
 
 from matplotlib.figure import Figure
 
-from indoeuropop.debugging import compare_ancestry_trajectories
+from indoeuropop.analysis.debugging import compare_ancestry_trajectories
 from indoeuropop.models import PopulationState, SimulationResult
-from indoeuropop.visualization import (
+from indoeuropop.reporting.visualization import (
     plot_ancestry,
     plot_ancestry_comparison,
     plot_population_total,

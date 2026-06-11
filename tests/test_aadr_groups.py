@@ -4,8 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.aadr_curation import AADRGroupSelection, load_aadr_group_selections
-from indoeuropop.aadr_groups import (
+from indoeuropop.data.aadr_curation import (
+    AADRGroupSelection,
+    load_aadr_group_selections,
+)
+from indoeuropop.data.aadr_groups import (
     AADRGroupRecord,
     AADRGroupSuggestionOptions,
     AADRRegionBox,

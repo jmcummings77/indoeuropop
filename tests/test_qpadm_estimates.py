@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.ancestry_estimates import load_sample_ancestry_estimates
-from indoeuropop.qpadm_estimates import (
+from indoeuropop.data.ancestry_estimates import load_sample_ancestry_estimates
+from indoeuropop.data.qpadm_estimates import (
     QpAdmEstimate,
     load_qpadm_estimate_table,
     load_qpadm_sample_ancestry_estimates,

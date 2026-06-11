@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.sample_metadata import SampleMetadataDataset, SampleMetadataRecord
-from indoeuropop.target_curation import (
+from indoeuropop.data.sample_metadata import SampleMetadataDataset, SampleMetadataRecord
+from indoeuropop.data.target_curation import (
     TARGET_CURATION_COLUMNS,
     TargetCurationDataset,
     TargetCurationRecord,

@@ -5,7 +5,7 @@ from typing import Any, cast
 import pytest
 
 from indoeuropop.models import SimulationParameters
-from indoeuropop.parameterization import (
+from indoeuropop.models.parameterization import (
     ParameterSet,
     RegionParameters,
     SourceParameters,
