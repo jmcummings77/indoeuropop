@@ -39,3 +39,56 @@ identify parameter regions worth deeper inference and robustness checks.
 calibration targets while preserving held-out validation fit. This makes
 over-tuned parameter regions easier to spot before introducing ABC-SMC,
 Bayesian optimization, or emulator code.
+
+`indoeuropop validate-targets` exposes the same check from the CLI. By default
+it performs leave-one-region-out validation. Set `--validation-field
+note:requested_group_id` for a leave-one-target-group-out diagnostic when target
+rows include semicolon-delimited note metadata from the AADR/qpAdm builder. The
+command can write ranked validation CSV rows, a Markdown summary, and a
+checksummed manifest.
+
+## Parameter Refinement
+
+`indoeuropop refine-target-parameters` uses held-out validation to generate
+diagnostic narrowed and expanded sweep grids around validation-best sampled
+values. It writes:
+
+- a scenario summary CSV;
+- a parameter-range comparison CSV;
+- a Markdown report;
+- an optional checksummed manifest.
+
+The command accepts `--priority-validation-value` for holdouts that should
+improve and `--protected-validation-value` for holdouts that should not degrade.
+This makes parameter-grid refinement reviewable before adding heavier inference
+or changing model structure.
+
+## Target-Aligned Structure
+
+`indoeuropop structure-target-regions` projects selected target rows into
+child model regions before another comparison, validation, or refinement pass.
+The default structure field is `note:requested_group_id`, and
+`--structure-region` limits the split to one or more parent regions.
+
+The generated sweep TOML is loadable by the same comparison commands. It
+splits selected parent initial counts evenly across child regions and copies
+parent migration pulses plus parameter overrides. Treat that as a debugging and
+curation scaffold; child-region priors should be reviewed before interpreting a
+fit change as historical evidence.
+
+`indoeuropop apply-child-region-overrides` applies reviewed partial TOML
+overrides to a structured sweep config. The override file can specify child
+counts, migration pulses, region parameter tables, and source parameter tables.
+Pulse overrides replace inherited pulses for the same child region by default;
+append mode is available through `[options] replace_migration_pulses = false`.
+
+`indoeuropop review-override-deltas` compares two validation fit CSV files and
+writes fold-level override-minus-baseline deltas. Use priority values for folds
+that should improve and protected values for folds that should not degrade
+before promoting an override into committed curation.
+
+The current tracked central-Europe candidate is
+`curation/aadr-v66-central-europe-child-overrides.toml`. It documents Britain
+as the protected holdout and sets the explicit protected-fold tolerance to
+`0.03` RMSE; pass the same value with `--refinement-tolerance 0.03` when running
+the override-delta acceptance report.

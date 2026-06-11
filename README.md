@@ -139,6 +139,31 @@ uv run indoeuropop build-aadr-qpadm-targets \
   --target-diagnostics-json results/aadr-target-diagnostics.json
 ```
 
+After running the focused external qpAdm rerun, merge the rerun table with the
+baseline estimates and write a pre/post target-availability review:
+
+```bash
+uv run indoeuropop ingest-qpadm-reruns \
+  --aadr-dir data \
+  --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
+  --qpadm-estimates data/qpadm/steppe-estimates.csv \
+  --qpadm-rerun-estimates data/qpadm/steppe-rerun-estimates.csv \
+  --sample-metadata-out results/qpadm-rerun/aadr-target-sample-metadata.csv \
+  --target-curation-out results/qpadm-rerun/aadr-target-curation.csv \
+  --ancestry-estimates-out results/qpadm-rerun/merged-sample-ancestry-estimates.csv \
+  --target-output results/qpadm-rerun/aadr-target-observations.csv \
+  --baseline-target-output results/qpadm-rerun/baseline-target-observations.csv \
+  --accepted-target-output results/qpadm-rerun/accepted-target-observations.csv \
+  --qpadm-rerun-comparison-csv results/qpadm-rerun/qpadm-rerun-comparison.csv \
+  --qpadm-rerun-report-md results/qpadm-rerun/qpadm-rerun-report.md \
+  --target-decisions curation/aadr-v66-western-europe-target-decisions.csv \
+  --target-diagnostics-json results/qpadm-rerun/qpadm-rerun-diagnostics.json
+```
+
+Use `results/qpadm-rerun/accepted-target-observations.csv` for model
+comparison; the broader `aadr-target-observations.csv` is a buildability review
+surface that can still include targets awaiting a reviewed decision.
+
 Apply reviewed target decisions to already prepared target inputs:
 
 ```bash
@@ -207,6 +232,149 @@ uv run indoeuropop compare-targets \
   --manifest-json results/real-aadr-comparison/target-comparison-manifest.json \
   --fit-metric root_mean_squared_error
 ```
+
+Run held-out validation on accepted post-rerun targets:
+
+```bash
+uv run indoeuropop validate-targets \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/qpadm-rerun/accepted-target-observations.csv \
+  --validation-fit-csv results/qpadm-rerun/accepted-validation-fit.csv \
+  --validation-report-md results/qpadm-rerun/accepted-validation-report.md \
+  --manifest-json results/qpadm-rerun/accepted-validation-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
+For a more granular leave-one-target-group-out diagnostic, use the target-note
+metadata key written by the AADR/qpAdm target builder:
+
+```bash
+uv run indoeuropop validate-targets \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/qpadm-rerun/accepted-target-observations.csv \
+  --validation-field note:requested_group_id \
+  --validation-fit-csv results/qpadm-rerun/accepted-group-validation-fit.csv \
+  --validation-report-md results/qpadm-rerun/accepted-group-validation-report.md \
+  --manifest-json results/qpadm-rerun/accepted-group-validation-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
+In the current local accepted-target validation, both leave-one-region-out folds
+selected run `9`. Holding out Britain gave validation RMSE `0.122664`; holding
+out central Europe gave validation RMSE `0.305043`. Leave-one-requested-group
+validation again selected run `9` for every fold, with the largest validation
+RMSE on `Germany_Tiefbrunn_CordedWare-1` (`0.630451`).
+
+Project target-note groups into explicit child model regions when a broad
+region is too coarse for the validation question:
+
+```bash
+uv run indoeuropop structure-target-regions \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/qpadm-rerun/accepted-target-observations.csv \
+  --structure-region central_europe \
+  --structured-targets-out results/qpadm-rerun/central-europe-structured-targets.csv \
+  --structured-config-out results/qpadm-rerun/central-europe-structured-comparison.toml
+```
+
+The generated config splits selected parent initial counts evenly across the
+target-aligned child regions and copies parent pulses and parameter overrides
+to those children. That is an infrastructure scaffold for reviewing structure;
+it is not evidence that those child regions have distinct historical dynamics
+until child-specific priors or overrides are curated.
+
+Apply reviewed child-region overrides before rerunning comparison or
+validation:
+
+```bash
+uv run indoeuropop apply-child-region-overrides \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides.toml \
+  --overridden-config-out results/qpadm-rerun/central-europe-curated-comparison.toml
+```
+
+Override TOML files can replace a child region's starting counts, migration
+pulses, and parameter tables:
+
+```toml
+[counts.central_europe__germany_tiefbrunn_cordedware_1]
+local = 760
+steppe = 42
+
+[[migration_pulses]]
+region = "central_europe__germany_tiefbrunn_cordedware_1"
+start_bce = 2980
+end_bce = 2450
+annual_rate = 0.00014
+
+[region_parameters.central_europe__germany_tiefbrunn_cordedware_1]
+migration_rate = 0.0002
+
+[source_parameters.central_europe__germany_tiefbrunn_cordedware_1.steppe]
+reproductive_multiplier = 1.18
+```
+
+Migration pulses in the override file replace inherited pulses for the same
+regions by default. Add `[options] replace_migration_pulses = false` to append
+them instead.
+
+The checked-in central-Europe override is a review candidate, not a final
+historical prior. Its metadata sets Britain as the protected holdout and
+records an explicit protected-fold tolerance of `0.03` RMSE for the current
+validation gate.
+
+Rerun validation after applying the curated override:
+
+```bash
+uv run indoeuropop validate-targets \
+  --config results/qpadm-rerun/central-europe-curated-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --validation-field region \
+  --validation-fit-csv results/qpadm-rerun/central-europe-curated-validation-fit.csv \
+  --validation-report-md results/qpadm-rerun/central-europe-curated-validation-report.md \
+  --manifest-json results/qpadm-rerun/central-europe-curated-validation-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
+Review whether an override improved priority folds without degrading protected
+folds beyond the committed tolerance:
+
+```bash
+uv run indoeuropop review-override-deltas \
+  --baseline-validation-fit-csv results/qpadm-rerun/central-europe-structured-validation-fit.csv \
+  --override-validation-fit-csv results/qpadm-rerun/central-europe-curated-validation-fit.csv \
+  --priority-validation-value central_europe__germany_tiefbrunn_cordedware_1 \
+  --priority-validation-value central_europe__germany_manchingoberstimm_bellbeaker \
+  --protected-validation-value britain \
+  --refinement-tolerance 0.03 \
+  --override-delta-csv results/qpadm-rerun/central-europe-curated-override-delta.csv \
+  --override-delta-report-md results/qpadm-rerun/central-europe-curated-override-delta.md \
+  --manifest-json results/qpadm-rerun/central-europe-curated-override-delta-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
+Compare validation-guided narrowed and expanded parameter ranges against the
+current grid:
+
+```bash
+uv run indoeuropop refine-target-parameters \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/qpadm-rerun/accepted-target-observations.csv \
+  --priority-validation-value central_europe \
+  --protected-validation-value britain \
+  --refinement-summary-csv results/qpadm-rerun/accepted-region-refinement-summary.csv \
+  --refinement-ranges-csv results/qpadm-rerun/accepted-region-refinement-ranges.csv \
+  --refinement-report-md results/qpadm-rerun/accepted-region-refinement-report.md \
+  --manifest-json results/qpadm-rerun/accepted-region-refinement-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
+For the current accepted targets, the narrowed grid improves central Europe by
+RMSE `0.010448` but degrades Britain by `0.019410`; the expanded grid improves
+central Europe by `0.007753` but degrades Britain by `0.061346`. A
+leave-one-requested-group refinement focused on
+`Germany_Tiefbrunn_CordedWare-1` reduces that group's RMSE by `0.031027` in the
+expanded grid, but degrades the protected Britain groups by up to `0.168369`.
 
 Review the best-run residuals:
 
@@ -305,6 +473,10 @@ tracked normally.
 - Score simulations and deterministic sweeps against target observations.
 - Run a target-comparison workflow that writes ranked fits, best-run residuals,
   overlay plots, and a checksummed manifest.
+- Run held-out target-validation workflows by region or target-note metadata
+  key, with ranked validation rows, Markdown summaries, and manifests.
+- Compare baseline, narrowed, and expanded validation-guided parameter grids
+  while tracking priority improvements and protected holdout degradation.
 - Generate Markdown target-residual review reports from comparison artifacts.
 - Split targets into calibration and validation sets for held-out fit checks.
 - Compare deterministic and tau-leap ancestry trajectories for debugging.
@@ -346,6 +518,8 @@ tracked normally.
   committed target seed, and an auditable JSON manifest.
 - Plan qpAdm reruns from reviewed target decisions, grouped by failure reason
   with JSON and annotated AADR group-selection TSV outputs.
+- Merge external qpAdm rerun outputs with baseline estimates and compare
+  target availability before updating reviewed target decisions.
 - Run an exploratory multi-region comparison sweep against retained AADR v66
   western-Europe qpAdm target observations.
 - Audit residual outliers against curation rows, sample metadata, and qpAdm

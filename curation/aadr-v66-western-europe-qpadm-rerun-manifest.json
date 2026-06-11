@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "kind": "qpadm_rerun_manifest",
-  "target_count": 27,
+  "target_count": 25,
   "failure_groups": [
     {
       "failure_reason": "invalid_steppe_fraction",
-      "target_count": 25,
+      "target_count": 23,
       "targets": [
         {
           "target_id": "aadr-britain-steppe-england-bellbeaker-ohigheef",
@@ -34,14 +34,6 @@
         {
           "target_id": "aadr-britain-steppe-england-bellbeaker-mediumeef-omediumeef",
           "requested_group_id": "England_BellBeaker_mediumEEF-omediumEEF",
-          "region": "britain",
-          "sample_count": 2,
-          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
-          "note": "Invalid qpAdm point estimates prevent a complete target observation"
-        },
-        {
-          "target_id": "aadr-britain-steppe-scotland-bellbeaker",
-          "requested_group_id": "Scotland_BellBeaker",
           "region": "britain",
           "sample_count": 2,
           "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
@@ -165,14 +157,6 @@
           "region": "central_europe",
           "sample_count": 3,
           "decision_reason": "All 3 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
-          "note": "Invalid qpAdm point estimates prevent a complete target observation"
-        },
-        {
-          "target_id": "aadr-central-europe-steppe-germany-manchingoberstimm-bellbeaker",
-          "requested_group_id": "Germany_ManchingOberstimm_BellBeaker",
-          "region": "central_europe",
-          "sample_count": 2,
-          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
           "note": "Invalid qpAdm point estimates prevent a complete target observation"
         },
         {

@@ -903,10 +903,14 @@ def test_cli_sweep_target_fit_requires_targets() -> None:
     [
         ["compare-targets"],
         ["compare-targets", "--config", "examples/sweep.example.toml"],
+        ["refine-target-parameters"],
+        ["refine-target-parameters", "--config", "examples/sweep.example.toml"],
+        ["validate-targets"],
+        ["validate-targets", "--config", "examples/sweep.example.toml"],
     ],
 )
 def test_cli_compare_targets_requires_inputs(argv: list[str]) -> None:
-    """The compare-targets command should require config and targets."""
+    """Target analysis commands should require config and targets."""
     with raises(SystemExit) as exc_info:
         main(argv)
     assert exc_info.value.code == 2

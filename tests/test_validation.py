@@ -8,13 +8,16 @@ from indoeuropop.analysis.fitting import score_result_against_targets
 from indoeuropop.analysis.summary import TrajectorySummary
 from indoeuropop.analysis.validation import (
     TargetSplit,
+    TargetValidationFold,
     ValidatedSweepRun,
     ValidationFit,
     ValidationSplitName,
     rank_validated_runs,
     run_validated_parameter_sweep,
     score_result_on_split,
+    split_targets_by_holdout_value,
     split_targets_by_region,
+    target_holdout_values,
 )
 from indoeuropop.data.targets import TargetDataset, TargetObservation
 from indoeuropop.models import PopulationState, SimulationParameters, SimulationResult
@@ -32,6 +35,7 @@ def _target(region: str, mean: float, uncertainty: float = 0.1) -> TargetObserva
         uncertainty=uncertainty,
         citation_key="synthetic",
         citation="Synthetic validation target",
+        note=f"requested_group_id={region}_group",
     )
 
 
@@ -131,6 +135,54 @@ def test_split_targets_by_region_partitions_holdout_regions() -> None:
     )
 
 
+def test_target_holdout_values_supports_fields_and_note_keys() -> None:
+    """Holdout labels should come from target fields or semicolon note keys."""
+    targets = _targets()
+
+    assert target_holdout_values(targets, "region") == ("britain", "iberia", "gaul")
+    assert target_holdout_values(targets, "source") == ("steppe",)
+    assert target_holdout_values(targets, "citation_key") == ("synthetic",)
+    assert target_holdout_values(targets, "note:requested_group_id") == (
+        "britain_group",
+        "iberia_group",
+        "gaul_group",
+    )
+
+
+def test_split_targets_by_holdout_value_supports_note_keys() -> None:
+    """Validation splits should hold out one arbitrary target-note value."""
+    split = split_targets_by_holdout_value(
+        _targets(),
+        "note:requested_group_id",
+        "iberia_group",
+    )
+
+    assert tuple(target.region for target in split.calibration.observations) == (
+        "britain",
+        "gaul",
+    )
+    assert tuple(target.region for target in split.validation.observations) == (
+        "iberia",
+    )
+
+
+@pytest.mark.parametrize(
+    "holdout_field,holdout_value,match",
+    [
+        ("unknown", "britain", "holdout_field"),
+        ("note:", "britain", "target note key"),
+        ("note:missing", "britain", "target note missing"),
+        ("region", "", "holdout_value"),
+    ],
+)
+def test_split_targets_by_holdout_value_rejects_invalid_selectors(
+    holdout_field: str, holdout_value: str, match: str
+) -> None:
+    """Holdout selector errors should explain the unsupported field or key."""
+    with pytest.raises(ValueError, match=match):
+        split_targets_by_holdout_value(_targets(), holdout_field, holdout_value)
+
+
 @pytest.mark.parametrize(
     "validation_regions",
     [
@@ -212,6 +264,21 @@ def test_rank_validated_runs_rejects_unknown_metric_and_split() -> None:
         rank_validated_runs((run,), metric="unknown")
     with pytest.raises(ValueError, match="unsupported validation split"):
         rank_validated_runs((run,), split=cast(ValidationSplitName, "unknown"))
+
+
+def test_target_validation_fold_exposes_best_run_and_validates_fields() -> None:
+    """Validation folds should expose the first calibration-ranked run."""
+    run = _validated_run(index=1, calibration_mean=0.2, validation_mean=0.3)
+    split = split_targets_by_region(_targets(), validation_regions=("iberia",))
+    fold = TargetValidationFold("region", "iberia", split, (run,))
+
+    assert fold.best_run == run
+    with pytest.raises(ValueError, match="holdout_field"):
+        TargetValidationFold("", "iberia", split, (run,))
+    with pytest.raises(ValueError, match="holdout_value"):
+        TargetValidationFold("region", "", split, (run,))
+    with pytest.raises(ValueError, match="at least one"):
+        TargetValidationFold("region", "iberia", split, ())
 
 
 def test_run_validated_parameter_sweep_scores_calibration_and_validation() -> None:

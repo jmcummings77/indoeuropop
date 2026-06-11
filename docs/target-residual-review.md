@@ -40,20 +40,29 @@ time without more structured regional or group-specific modeling.
 
 That finding is now recorded in
 `curation/aadr-v66-western-europe-target-decisions.csv` as `rerun_qpadm`, so the
-decision-aware target build defers Stkr-Straubing before target comparison. The
-same decision file now also defers the other currently non-retained target rows
-whose qpAdm point estimates or standard errors are outside accepted ranges. In
-the current decision-aware comparison, the residual report contains 11 retained
-targets, zero z-score outliers, and a top retained residual of about `-1.297`
-for `Germany_Tiefbrunn_CordedWare-1`.
+decision-aware target build defers Stkr-Straubing before target comparison. A
+focused qpAdm rerun rescued `Scotland_BellBeaker` and
+`Germany_ManchingOberstimm_BellBeaker` as high-uncertainty
+`retain_with_caveat` targets, while the other currently non-retained target
+rows remain deferred. In the current accepted post-rerun comparison, the
+residual report contains 13 retained targets, zero z-score outliers, and a top
+retained residual of about `-1.297` for `Germany_Tiefbrunn_CordedWare-1`.
 
 ## Recommended Next Step
 
-Rerun or revise the qpAdm source/outgroup setup for the 27 decision-deferred
-targets before treating the 11 retained observations as representative. For
-Stkr-Straubing, also review target grouping and decide whether the central
-Europe targets should be split into finer regions or culture/site-level
-trajectories before adding heavier inference. The committed rerun manifest at
+Held-out validation now runs on the 13 accepted retained-with-caveat targets.
+The current leave-one-region-out and leave-one-requested-group-out diagnostics
+still identify run `9` as the best calibration-ranked row, with the largest
+group-level held-out RMSE on `Germany_Tiefbrunn_CordedWare-1`. Validation-guided
+refinement has now compared baseline, narrowed, and expanded sweep grids. The
+generated grids improve central Europe or Tiefbrunn modestly, but each one
+degrades protected Britain holdouts. That tradeoff argues for structural
+changes before simply widening the current parameter grid. In parallel,
+continue revising the qpAdm source/outgroup setup for the 25 decision-deferred
+targets before treating the retained observations as representative of western
+Europe. For Stkr-Straubing, also review target grouping and decide whether the
+central Europe targets should be split into finer regions or culture/site-level
+trajectories. The committed rerun manifest at
 `curation/aadr-v66-western-europe-qpadm-rerun-manifest.json` groups those
 targets by failure reason, and
 `curation/aadr-v66-western-europe-qpadm-rerun-targets.tsv` can be used as an

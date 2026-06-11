@@ -12,6 +12,7 @@ from indoeuropop.analysis.fitting import (
     score_result_against_targets,
 )
 from indoeuropop.analysis.summary import summarize_trajectory
+from indoeuropop.data.target_notes import target_note_value
 from indoeuropop.data.targets import TargetDataset, TargetObservation
 from indoeuropop.models import SimulationResult
 from indoeuropop.orchestration.sweeps import (
@@ -74,6 +75,30 @@ class ValidatedSweepRun:
         return self.fit.generalization_gap(metric)
 
 
+@dataclass(frozen=True)
+class TargetValidationFold:
+    """One held-out target split and its calibration-ranked sweep results."""
+
+    holdout_field: str
+    holdout_value: str
+    target_split: TargetSplit
+    runs: tuple[ValidatedSweepRun, ...]
+
+    def __post_init__(self) -> None:
+        """Validate fold identity and require at least one scored run."""
+        if not self.holdout_field:
+            raise ValueError("holdout_field must be non-empty")
+        if not self.holdout_value:
+            raise ValueError("holdout_value must be non-empty")
+        if not self.runs:
+            raise ValueError("runs must contain at least one validated sweep run")
+
+    @property
+    def best_run(self) -> ValidatedSweepRun:
+        """Return the calibration-best run for this validation fold."""
+        return self.runs[0]
+
+
 def split_targets_by_region(
     targets: TargetDataset, validation_regions: Iterable[str]
 ) -> TargetSplit:
@@ -86,6 +111,37 @@ def split_targets_by_region(
     validation: list[TargetObservation] = []
     for observation in targets.observations:
         if observation.region in validation_region_set:
+            validation.append(observation)
+        else:
+            calibration.append(observation)
+
+    return TargetSplit(
+        calibration=TargetDataset.from_rows(calibration),
+        validation=TargetDataset.from_rows(validation),
+    )
+
+
+def target_holdout_values(
+    targets: TargetDataset, holdout_field: str = "region"
+) -> tuple[str, ...]:
+    """Return unique holdout labels for a target field or note metadata key."""
+    target_dataset = targets.require_observations()
+    return _unique(
+        _holdout_value(observation, holdout_field)
+        for observation in target_dataset.observations
+    )
+
+
+def split_targets_by_holdout_value(
+    targets: TargetDataset, holdout_field: str, holdout_value: str
+) -> TargetSplit:
+    """Split targets by holding out one field or note-metadata value."""
+    if not holdout_value:
+        raise ValueError("holdout_value must be non-empty")
+    calibration: list[TargetObservation] = []
+    validation: list[TargetObservation] = []
+    for observation in targets.require_observations().observations:
+        if _holdout_value(observation, holdout_field) == holdout_value:
             validation.append(observation)
         else:
             calibration.append(observation)
@@ -184,3 +240,27 @@ def _require_split(split: ValidationSplitName) -> None:
     """Validate a split selector."""
     if split not in ("calibration", "validation"):
         raise ValueError(f"unsupported validation split: {split}")
+
+
+def _holdout_value(observation: TargetObservation, holdout_field: str) -> str:
+    """Return one holdout label from an observation or its note metadata."""
+    if holdout_field == "region":
+        return observation.region
+    if holdout_field == "source":
+        return observation.source
+    if holdout_field == "citation_key":
+        return observation.citation_key
+    if holdout_field.startswith("note:"):
+        return target_note_value(observation.note, holdout_field.removeprefix("note:"))
+    raise ValueError(
+        "holdout_field must be one of region, source, citation_key, or note:<key>"
+    )
+
+
+def _unique(values: Iterable[str]) -> tuple[str, ...]:
+    """Return unique strings while preserving insertion order."""
+    unique_values: list[str] = []
+    for value in values:
+        if value not in unique_values:
+            unique_values.append(value)
+    return tuple(unique_values)

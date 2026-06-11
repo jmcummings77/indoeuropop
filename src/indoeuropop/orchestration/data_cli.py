@@ -132,6 +132,31 @@ def add_data_arguments(parser: argparse.ArgumentParser) -> None:
         help="optional annotated AADR group-selection TSV for qpAdm reruns",
     )
     parser.add_argument(
+        "--qpadm-rerun-estimates",
+        type=Path,
+        help="externally produced qpAdm rerun estimate table",
+    )
+    parser.add_argument(
+        "--baseline-target-output",
+        type=Path,
+        help="optional baseline target CSV before qpAdm rerun ingestion",
+    )
+    parser.add_argument(
+        "--accepted-target-output",
+        type=Path,
+        help="optional decision-filtered target CSV after qpAdm rerun ingestion",
+    )
+    parser.add_argument(
+        "--qpadm-rerun-comparison-csv",
+        type=Path,
+        help="output CSV comparing baseline and post-rerun target availability",
+    )
+    parser.add_argument(
+        "--qpadm-rerun-report-md",
+        type=Path,
+        help="output Markdown review report for qpAdm rerun ingestion",
+    )
+    parser.add_argument(
         "--ancestry-estimates-out",
         type=Path,
         help="output sample ancestry estimate CSV",
@@ -164,7 +189,6 @@ def add_data_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--dataset-id",
         action="append",
-        default=(),
         help="catalog dataset ID to download; can be repeated",
     )
     parser.add_argument(
@@ -217,7 +241,7 @@ def _run_download_sources_command(
             cache_dir=args.data_cache_dir,
             overwrite=args.overwrite,
         ),
-        dataset_ids=args.dataset_id,
+        dataset_ids=args.dataset_id or (),
     )
     if args.download_manifest_csv is not None:
         write_download_manifest_csv(downloads, args.download_manifest_csv)

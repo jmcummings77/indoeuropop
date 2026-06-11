@@ -14,14 +14,19 @@ from indoeuropop.orchestration.data_cli import (
     run_data_command,
 )
 from indoeuropop.orchestration.qpadm_cli import QPADM_COMMANDS, run_qpadm_command
-from indoeuropop.orchestration.report_cli import REPORT_COMMANDS, run_report_command
+from indoeuropop.orchestration.report_cli import (
+    REPORT_COMMANDS,
+    add_report_arguments,
+    run_report_command,
+)
 from indoeuropop.orchestration.sweep_workflows import (
     SweepOutputPaths,
     run_sweep_workflow,
 )
-from indoeuropop.orchestration.target_comparison import (
-    TargetComparisonOutputPaths,
-    run_target_comparison_workflow,
+from indoeuropop.orchestration.target_cli import (
+    TARGET_COMMANDS,
+    add_target_arguments,
+    run_target_command,
 )
 from indoeuropop.orchestration.target_decision_cli import (
     TARGET_DECISION_COMMANDS,
@@ -42,8 +47,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "build-targets":
         return _run_build_targets_command(args, parser)
-    if args.command == "compare-targets":
-        return _run_compare_targets_command(args, parser)
+    target_exit_code = run_target_command(args, parser)
+    if target_exit_code is not None:
+        return target_exit_code
     data_exit_code = run_data_command(args, parser)
     if data_exit_code is not None:
         return data_exit_code
@@ -172,54 +178,6 @@ def _run_sweep_command(
     return 0
 
 
-def _run_compare_targets_command(
-    args: argparse.Namespace, parser: argparse.ArgumentParser
-) -> int:
-    """Run the CLI deterministic target-comparison workflow."""
-    if args.config is None:
-        parser.error("compare-targets requires --config")
-    if args.targets is None:
-        parser.error("compare-targets requires --targets")
-    result = run_target_comparison_workflow(
-        load_sweep_spec(args.config),
-        load_target_dataset(args.targets),
-        paths=TargetComparisonOutputPaths(
-            config=args.config,
-            targets=args.targets,
-            sweep_runs_csv=args.sweep_runs_csv,
-            sensitivity_csv=args.sensitivity_csv,
-            target_fit_csv=args.target_fit_csv,
-            target_residuals_csv=args.target_residuals_csv,
-            plot=args.plot,
-            manifest_json=args.manifest_json,
-        ),
-        sensitivity_outcome=args.sensitivity_outcome,
-        fit_metric=args.fit_metric,
-        plot_source=args.source,
-        plot_region=args.region,
-        command=args.command,
-        manifest_name="cli-target-comparison",
-        manifest_description="CLI deterministic target-comparison manifest",
-    )
-    best_fit = result.best_run
-    print(f"comparison_run_count={len(result.sweep.runs)}")
-    print(
-        "best_target_fit="
-        f"run_index={best_fit.run.index},"
-        f"metric={args.fit_metric},"
-        f"value={best_fit.metric_value(args.fit_metric):.6f},"
-        f"observations={best_fit.fit.observation_count}"
-    )
-    print(f"target_residual_count={len(result.best_comparisons)}")
-    if result.target_residuals_csv_path is not None:
-        print(f"target_residuals_csv={result.target_residuals_csv_path}")
-    if result.plot_path is not None:
-        print(f"target_comparison_plot={result.plot_path}")
-    if result.manifest_json_path is not None:
-        print(f"manifest_json={result.manifest_json_path}")
-    return 0
-
-
 def _build_parser() -> argparse.ArgumentParser:
     """Create the CLI argument parser."""
     parser = argparse.ArgumentParser(prog="indoeuropop")
@@ -228,11 +186,11 @@ def _build_parser() -> argparse.ArgumentParser:
         choices=(
             "audit-target-curation",
             "build-targets",
-            "compare-targets",
             "demo",
             "sweep",
             *DATA_COMMANDS,
             *QPADM_COMMANDS,
+            *TARGET_COMMANDS,
             *TARGET_DECISION_COMMANDS,
             *REPORT_COMMANDS,
         ),
@@ -295,35 +253,6 @@ def _build_parser() -> argparse.ArgumentParser:
         help="optional output path for best-run target residual CSV rows",
     )
     parser.add_argument(
-        "--target-residuals",
-        type=Path,
-        help="target residual CSV input for review reporting",
-    )
-    parser.add_argument(
-        "--target-review-md",
-        type=Path,
-        help="optional output path for target residual review Markdown",
-    )
-    parser.add_argument(
-        "--target-audit-md",
-        type=Path,
-        help="optional output path for target curation audit Markdown",
-    )
-    parser.add_argument(
-        "--target-id",
-        help="target identifier to audit; defaults to the largest residual",
-    )
-    parser.add_argument(
-        "--requested-group-id",
-        help="requested AADR group identifier to audit",
-    )
-    parser.add_argument(
-        "--outlier-z-threshold",
-        type=float,
-        default=2.0,
-        help="absolute z-score threshold for target residual review outliers",
-    )
-    parser.add_argument(
         "--sensitivity-outcome",
         default="final_ancestry",
         help="trajectory summary field used for sweep sensitivity diagnostics",
@@ -339,6 +268,8 @@ def _build_parser() -> argparse.ArgumentParser:
         help="use the tau-leap simulator instead of the deterministic simulator",
     )
     add_data_arguments(parser)
+    add_target_arguments(parser)
+    add_report_arguments(parser)
     return parser
 
 

@@ -47,7 +47,7 @@ uv run indoeuropop plan-qpadm-reruns \
   --qpadm-rerun-groups-out curation/aadr-v66-western-europe-qpadm-rerun-targets.tsv
 ```
 
-The current rerun manifest contains 27 targets grouped as 25 invalid steppe
+The current rerun manifest contains 25 targets grouped as 23 invalid steppe
 fractions, one invalid standard-error target, and one replicated group-level
 estimate target. The TSV is annotated but still starts with `region` and
 `aadr_group_id`, so it can be passed back to `--aadr-groups` for a focused
@@ -131,14 +131,45 @@ uv run indoeuropop build-aadr-qpadm-targets \
   --target-diagnostics-json results/aadr-target-diagnostics.json
 ```
 
+## Ingest Rerun Estimates
+
+After `scripts/run_qpadm.R` writes the focused rerun table, compare the
+baseline and rerun-enhanced target builds before editing the reviewed target
+decision file:
+
+```bash
+uv run indoeuropop ingest-qpadm-reruns \
+  --aadr-dir data \
+  --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
+  --qpadm-estimates data/qpadm/steppe-estimates.csv \
+  --qpadm-rerun-estimates data/qpadm/steppe-rerun-estimates.csv \
+  --sample-metadata-out results/qpadm-rerun/aadr-target-sample-metadata.csv \
+  --target-curation-out results/qpadm-rerun/aadr-target-curation.csv \
+  --ancestry-estimates-out results/qpadm-rerun/merged-sample-ancestry-estimates.csv \
+  --target-output results/qpadm-rerun/aadr-target-observations.csv \
+  --baseline-target-output results/qpadm-rerun/baseline-target-observations.csv \
+  --accepted-target-output results/qpadm-rerun/accepted-target-observations.csv \
+  --qpadm-rerun-comparison-csv results/qpadm-rerun/qpadm-rerun-comparison.csv \
+  --qpadm-rerun-report-md results/qpadm-rerun/qpadm-rerun-report.md \
+  --target-decisions curation/aadr-v66-western-europe-target-decisions.csv \
+  --target-diagnostics-json results/qpadm-rerun/qpadm-rerun-diagnostics.json
+```
+
+The command prefers validated rerun sample estimates over baseline estimates
+with the same sample/source/method identity, writes the merged sample-ancestry
+CSV, writes baseline and post-rerun target CSVs, reports rescued or lost target
+observations, and can write a decision-filtered accepted target CSV for model
+comparison. It does not automatically change reviewed decisions.
+
 Keep `data/` and `results/` local. The source genotype release, f2 cache, qpAdm
 output, and built target CSVs can be regenerated and are intentionally ignored
 by Git.
 
-In the current local smoke run against
-`data`, qpAdm
-wrote 301 individual rows across 38 target groups. Strict conversion kept 63
-sample estimates with in-range steppe weights and usable standard errors. The
-reviewed decision file retains 11 aggregate target observations with caveats,
-defers 27 targets for qpAdm rerun, and leaves zero target decisions undecided.
+In the current local smoke run against `data`, the baseline qpAdm table contains
+301 individual rows across 38 target groups. Strict conversion kept 63 sample
+estimates with in-range steppe weights and usable standard errors. A focused
+rerun wrote 250 individual rows across 27 rerun groups; strict conversion kept
+4 sample estimates, rescuing two aggregate targets. The reviewed decision file
+now retains 13 aggregate target observations with caveats, defers 25 targets
+for further qpAdm rerun or review, and leaves zero target decisions undecided.
 Those counts are run evidence, not final scientific validation.

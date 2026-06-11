@@ -140,7 +140,10 @@ Phase 4: Inference and validation.
   western-Europe decision pass now classifies all currently non-retained target
   rows as qpAdm-rerun-pending before estimate filtering. A full decision pass
   now marks all reviewed targets as retained-with-caveat or rerun-pending, and
-  a qpAdm rerun manifest groups deferred targets by failure reason.
+  a qpAdm rerun manifest groups deferred targets by failure reason. External
+  rerun estimate tables can now be merged with baseline qpAdm estimates and
+  compared in a pre/post target-availability report; the same command can emit
+  a decision-filtered accepted target CSV for model comparison.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
@@ -149,9 +152,25 @@ Phase 4: Inference and validation.
   named, scaled vectors and deterministic root-mean-square distances for later
   inference inputs.
 - Hold out explicit target subsets before heavier inference.
-  The first validation-split scaffold can rank deterministic sweeps on
-  calibration targets while retaining fit metrics on held-out validation
-  targets.
+  The validation workflow can now run leave-one-region-out or target-note
+  metadata holdouts, write ranked validation rows, summarize fold diagnostics
+  in Markdown, and create checksummed manifests. The current accepted AADR
+  target pass uses both region and `note:requested_group_id` holdouts.
+  Validation-guided refinement now compares baseline, narrowed, and expanded
+  sweep grids while tracking priority holdout improvements and protected
+  holdout degradation. Target-aligned structural projection can now split
+  selected parent model regions into child regions from target-note metadata,
+  write a structured target CSV, and export a loadable sweep TOML for
+  comparison or validation. This is a scaffolding step before child-specific
+  priors, not a fitted structural inference result. Reviewed child-region
+  override TOML files can now replace child counts, migration pulses, and
+  region/source parameter tables before rerunning comparison or validation.
+  Override-delta reports now compare baseline and overridden validation CSVs,
+  highlight priority improvements and protected degradations, and emit
+  checksummed manifests for review artifacts. The first tracked review
+  candidate is `curation/aadr-v66-central-europe-child-overrides.toml`, which
+  records Britain as the protected holdout and a `0.03` RMSE protected-fold
+  tolerance.
 - Add emulator code only after full simulator outputs are reproducible.
   The first reproducibility scaffold fingerprints simulation results and sweep
   outputs with canonical JSON and SHA-256 digests for future audit trails.

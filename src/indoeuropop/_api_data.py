@@ -12,6 +12,18 @@ from indoeuropop.data.data_sources import (
     sha256_file,
     verify_record_checksum,
 )
+from indoeuropop.data.qpadm_rerun_ingestion import (
+    compare_qpadm_rerun_targets,
+    merge_sample_ancestry_estimate_datasets,
+    run_qpadm_rerun_ingestion_workflow,
+)
+from indoeuropop.data.qpadm_rerun_models import (
+    QPADM_RERUN_COMPARISON_COLUMNS,
+    QpAdmRerunIngestionConfig,
+    QpAdmRerunIngestionDiagnostics,
+    QpAdmRerunIngestionResult,
+    QpAdmRerunTargetComparison,
+)
 from indoeuropop.data.qpadm_reruns import (
     QPADM_RERUN_GROUP_COLUMNS,
     QPADM_RERUN_MANIFEST_SCHEMA_VERSION,
@@ -60,6 +72,11 @@ from indoeuropop.data.target_decisions import (
     write_decision_filtered_target_inputs,
     write_target_decisions_csv,
 )
+from indoeuropop.data.target_notes import (
+    append_target_note_metadata,
+    target_note_metadata,
+    target_note_value,
+)
 from indoeuropop.data.target_pipeline import (
     TargetBuildOptions,
     build_target_dataset,
@@ -77,6 +94,7 @@ from indoeuropop.data.targets import (
 )
 
 __all__ = [
+    "QPADM_RERUN_COMPARISON_COLUMNS",
     "QPADM_RERUN_GROUP_COLUMNS",
     "QPADM_RERUN_MANIFEST_SCHEMA_VERSION",
     "TARGET_COLUMNS",
@@ -89,8 +107,12 @@ __all__ = [
     "DownloadOptions",
     "DownloadedSource",
     "QpAdmRerunGroup",
+    "QpAdmRerunIngestionConfig",
+    "QpAdmRerunIngestionDiagnostics",
+    "QpAdmRerunIngestionResult",
     "QpAdmRerunManifest",
     "QpAdmRerunTarget",
+    "QpAdmRerunTargetComparison",
     "RegionSampleCount",
     "SampleAncestryEstimate",
     "SampleAncestryEstimateDataset",
@@ -106,9 +128,11 @@ __all__ = [
     "TargetDecisionDataset",
     "TargetDecisionRecord",
     "TargetObservation",
+    "append_target_note_metadata",
     "apply_target_decisions",
     "build_qpadm_rerun_manifest",
     "build_target_dataset",
+    "compare_qpadm_rerun_targets",
     "download_catalog_sources",
     "download_data_source",
     "load_and_build_target_dataset",
@@ -119,13 +143,17 @@ __all__ = [
     "load_target_curation",
     "load_target_dataset",
     "load_target_decisions",
+    "merge_sample_ancestry_estimate_datasets",
     "qpadm_rerun_group_rows",
     "qpadm_rerun_groups_tsv",
     "qpadm_rerun_manifest_payload",
+    "run_qpadm_rerun_ingestion_workflow",
     "sha256_file",
     "target_dataset_to_csv",
     "target_decision_rows",
     "target_decisions_to_csv",
+    "target_note_metadata",
+    "target_note_value",
     "target_observation_rows",
     "verify_record_checksum",
     "write_decision_filtered_target_inputs",
