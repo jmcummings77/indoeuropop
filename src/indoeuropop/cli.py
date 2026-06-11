@@ -7,19 +7,12 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from indoeuropop.config import default_config, load_config
-from indoeuropop.experiments import (
-    ExperimentArtifact,
-    artifact_from_path,
-    write_experiment_manifest_json,
-)
-from indoeuropop.reporting import write_provenance_csv
 from indoeuropop.targets import load_target_dataset
-from indoeuropop.visualization import plot_ancestry
 from indoeuropop.workflows import (
+    SimulationOutputPaths,
     SimulatorKind,
     run_configured_simulation,
-    simulation_experiment_manifest,
-    simulation_provenance_records,
+    write_simulation_outputs,
 )
 
 
@@ -49,34 +42,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"z={comparison.z_score:.3f}"
             )
 
-    if args.plot:
-        figure = plot_ancestry(run.result, source=args.source, region=args.region)
-        args.plot.parent.mkdir(parents=True, exist_ok=True)
-        figure.savefig(args.plot)
-
-    if args.provenance_csv:
-        write_provenance_csv(
-            simulation_provenance_records(
-                run,
-                source=args.source,
-                region=args.region,
-                dataset=dataset,
-            ),
-            args.provenance_csv,
-        )
-    if args.manifest_json:
-        write_experiment_manifest_json(
-            simulation_experiment_manifest(
-                run,
-                source=args.source,
-                region=args.region,
-                artifacts=_manifest_artifacts(args),
-                command=args.command,
-                name="cli-demo",
-                description="CLI demo smoke-run manifest",
-            ),
-            args.manifest_json,
-        )
+    write_simulation_outputs(
+        run,
+        source=args.source,
+        region=args.region,
+        dataset=dataset,
+        paths=SimulationOutputPaths(
+            config=args.config,
+            targets=args.targets,
+            plot=args.plot,
+            provenance_csv=args.provenance_csv,
+            manifest_json=args.manifest_json,
+        ),
+        command=args.command,
+        manifest_name="cli-demo",
+        manifest_description="CLI demo smoke-run manifest",
+    )
     return 0
 
 
@@ -106,22 +87,6 @@ def _build_parser() -> argparse.ArgumentParser:
         help="use the tau-leap simulator instead of the deterministic simulator",
     )
     return parser
-
-
-def _manifest_artifacts(args: argparse.Namespace) -> tuple[ExperimentArtifact, ...]:
-    """Return checksum-bearing manifest artifacts for CLI inputs and outputs."""
-    artifacts: list[ExperimentArtifact] = []
-    if args.config is not None:
-        artifacts.append(artifact_from_path("config", "config", args.config))
-    if args.targets is not None:
-        artifacts.append(artifact_from_path("targets", "targets", args.targets))
-    if args.plot is not None:
-        artifacts.append(artifact_from_path("plot", "plot", args.plot))
-    if args.provenance_csv is not None:
-        artifacts.append(
-            artifact_from_path("provenance_csv", "provenance", args.provenance_csv)
-        )
-    return tuple(artifacts)
 
 
 if __name__ == "__main__":

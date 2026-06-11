@@ -166,11 +166,14 @@ from indoeuropop.visualization import (
 )
 from indoeuropop.workflows import (
     SIMULATOR_KINDS,
+    SimulationOutputBundle,
+    SimulationOutputPaths,
     SimulationRun,
     SimulatorKind,
     run_configured_simulation,
     simulation_experiment_manifest,
     simulation_provenance_records,
+    write_simulation_outputs,
 )
 
 __all__ = [
@@ -223,6 +226,8 @@ __all__ = [
     "SexBiasParameters",
     "SexStructuredState",
     "SimulationConfig",
+    "SimulationOutputBundle",
+    "SimulationOutputPaths",
     "SimulationParameters",
     "SimulationResult",
     "SimulationRun",
@@ -307,4 +312,5 @@ __all__ = [
     "verify_record_checksum",
     "write_experiment_manifest_json",
     "write_provenance_csv",
+    "write_simulation_outputs",
 ]

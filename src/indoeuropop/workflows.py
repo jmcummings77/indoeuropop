@@ -4,11 +4,17 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
 from indoeuropop.config import SimulationConfig
 from indoeuropop.diagnostics import validate_simulation_result
-from indoeuropop.experiments import ExperimentArtifact, ExperimentManifest
+from indoeuropop.experiments import (
+    ExperimentArtifact,
+    ExperimentManifest,
+    artifact_from_path,
+    write_experiment_manifest_json,
+)
 from indoeuropop.fitting import score_result_against_targets
 from indoeuropop.models import SimulationResult
 from indoeuropop.provenance import (
@@ -17,7 +23,7 @@ from indoeuropop.provenance import (
     target_fit_provenance_records,
     target_observation_provenance_records,
 )
-from indoeuropop.reporting import diagnostic_issue_records
+from indoeuropop.reporting import diagnostic_issue_records, write_provenance_csv
 from indoeuropop.reproducibility import (
     ReproducibilityFingerprint,
     fingerprint_simulation_result,
@@ -25,6 +31,7 @@ from indoeuropop.reproducibility import (
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.summary import summarize_trajectory
 from indoeuropop.targets import TargetDataset
+from indoeuropop.visualization import plot_ancestry
 
 SimulatorKind = Literal["deterministic", "tau_leap"]
 
@@ -54,6 +61,29 @@ class SimulationRun:
     def fingerprint(self) -> ReproducibilityFingerprint:
         """Return the reproducibility fingerprint for this simulation output."""
         return fingerprint_simulation_result(self.result)
+
+
+@dataclass(frozen=True)
+class SimulationOutputPaths:
+    """Optional input and output paths for materializing run artifacts."""
+
+    config: Path | None = None
+    targets: Path | None = None
+    plot: Path | None = None
+    provenance_csv: Path | None = None
+    manifest_json: Path | None = None
+
+
+@dataclass(frozen=True)
+class SimulationOutputBundle:
+    """Files and records materialized for a simulation workflow run."""
+
+    provenance_records: tuple[ProvenanceRecord, ...]
+    artifacts: tuple[ExperimentArtifact, ...] = ()
+    manifest: ExperimentManifest | None = None
+    plot_path: Path | None = None
+    provenance_csv_path: Path | None = None
+    manifest_json_path: Path | None = None
 
 
 def run_configured_simulation(
@@ -118,6 +148,58 @@ def simulation_provenance_records(
     return tuple(records)
 
 
+def write_simulation_outputs(
+    run: SimulationRun,
+    *,
+    source: str,
+    region: str | None = None,
+    dataset: TargetDataset | None = None,
+    paths: SimulationOutputPaths | None = None,
+    command: str = "programmatic-run",
+    manifest_name: str = "simulation-run",
+    manifest_description: str = "Configured simulation run manifest",
+    manifest_metadata: Mapping[str, str] | None = None,
+) -> SimulationOutputBundle:
+    """Write requested plot, provenance, and manifest outputs for a run."""
+    output_paths = SimulationOutputPaths() if paths is None else paths
+    provenance_records = simulation_provenance_records(
+        run,
+        source=source,
+        region=region,
+        dataset=dataset,
+    )
+    if output_paths.plot is not None:
+        figure = plot_ancestry(run.result, source=source, region=region)
+        output_paths.plot.parent.mkdir(parents=True, exist_ok=True)
+        figure.savefig(output_paths.plot)
+    if output_paths.provenance_csv is not None:
+        write_provenance_csv(provenance_records, output_paths.provenance_csv)
+
+    artifacts: tuple[ExperimentArtifact, ...] = ()
+    manifest: ExperimentManifest | None = None
+    if output_paths.manifest_json is not None:
+        artifacts = _output_artifacts(output_paths)
+        manifest = simulation_experiment_manifest(
+            run,
+            source=source,
+            region=region,
+            artifacts=artifacts,
+            command=command,
+            name=manifest_name,
+            description=manifest_description,
+            metadata=manifest_metadata,
+        )
+        write_experiment_manifest_json(manifest, output_paths.manifest_json)
+    return SimulationOutputBundle(
+        provenance_records=provenance_records,
+        artifacts=artifacts,
+        manifest=manifest,
+        plot_path=output_paths.plot,
+        provenance_csv_path=output_paths.provenance_csv,
+        manifest_json_path=output_paths.manifest_json,
+    )
+
+
 def simulation_experiment_manifest(
     run: SimulationRun,
     *,
@@ -145,6 +227,22 @@ def simulation_experiment_manifest(
         fingerprints=(run.fingerprint(),),
         metadata=manifest_metadata,
     )
+
+
+def _output_artifacts(paths: SimulationOutputPaths) -> tuple[ExperimentArtifact, ...]:
+    """Return checksum-bearing artifacts for requested workflow paths."""
+    artifacts: list[ExperimentArtifact] = []
+    if paths.config is not None:
+        artifacts.append(artifact_from_path("config", "config", paths.config))
+    if paths.targets is not None:
+        artifacts.append(artifact_from_path("targets", "targets", paths.targets))
+    if paths.plot is not None:
+        artifacts.append(artifact_from_path("plot", "plot", paths.plot))
+    if paths.provenance_csv is not None:
+        artifacts.append(
+            artifact_from_path("provenance_csv", "provenance", paths.provenance_csv)
+        )
+    return tuple(artifacts)
 
 
 def _validated_simulator_kind(value: SimulatorKind) -> SimulatorKind:

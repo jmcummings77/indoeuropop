@@ -1,5 +1,7 @@
 """Tests for reusable simulation workflow helpers."""
 
+import json
+from pathlib import Path
 from typing import cast
 
 import pytest
@@ -9,11 +11,13 @@ from indoeuropop.experiments import ExperimentArtifact
 from indoeuropop.targets import TargetDataset, TargetObservation
 from indoeuropop.workflows import (
     SIMULATOR_KINDS,
+    SimulationOutputPaths,
     SimulationRun,
     SimulatorKind,
     run_configured_simulation,
     simulation_experiment_manifest,
     simulation_provenance_records,
+    write_simulation_outputs,
 )
 
 
@@ -137,3 +141,73 @@ def test_simulation_experiment_manifest_records_run_metadata() -> None:
         "seed": "",
         "scenario": "synthetic",
     }
+
+
+def test_write_simulation_outputs_materializes_requested_files(
+    tmp_path: Path,
+) -> None:
+    """Workflow output writing should create plots, reports, and manifests."""
+    config_path = tmp_path / "scenario.toml"
+    targets_path = tmp_path / "targets.csv"
+    plot_path = tmp_path / "plots" / "ancestry.png"
+    provenance_path = tmp_path / "reports" / "provenance.csv"
+    manifest_path = tmp_path / "manifests" / "run.json"
+    config_path.write_text("[simulation]\n", encoding="utf-8")
+    targets_path.write_text("synthetic target placeholder\n", encoding="utf-8")
+    run = run_configured_simulation(default_config())
+
+    bundle = write_simulation_outputs(
+        run,
+        source="steppe",
+        region="britain",
+        dataset=_target_dataset(),
+        paths=SimulationOutputPaths(
+            config=config_path,
+            targets=targets_path,
+            plot=plot_path,
+            provenance_csv=provenance_path,
+            manifest_json=manifest_path,
+        ),
+        command="test-run",
+        manifest_name="test-manifest",
+        manifest_description="Test manifest",
+        manifest_metadata={"scenario": "synthetic"},
+    )
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert plot_path.exists()
+    assert "target_mean" in provenance_path.read_text(encoding="utf-8")
+    assert bundle.plot_path == plot_path
+    assert bundle.provenance_csv_path == provenance_path
+    assert bundle.manifest_json_path == manifest_path
+    assert bundle.manifest is not None
+    assert bundle.manifest.name == "test-manifest"
+    assert {artifact.role for artifact in bundle.artifacts} == {
+        "config",
+        "targets",
+        "plot",
+        "provenance",
+    }
+    assert {record.name for record in bundle.provenance_records}.issuperset(
+        {"final_ancestry", "target_mean", "chi_square"}
+    )
+    assert manifest_payload["name"] == "test-manifest"
+    assert manifest_payload["metadata"]["scenario"] == "synthetic"
+
+
+def test_write_simulation_outputs_can_return_records_without_files() -> None:
+    """Workflow output writing should also work as an in-memory assembler."""
+    run = run_configured_simulation(default_config())
+
+    bundle = write_simulation_outputs(
+        run,
+        source="steppe",
+        region="britain",
+    )
+
+    assert bundle.artifacts == ()
+    assert bundle.manifest is None
+    assert bundle.plot_path is None
+    assert bundle.provenance_csv_path is None
+    assert bundle.manifest_json_path is None
+    assert "final_ancestry" in {record.name for record in bundle.provenance_records}

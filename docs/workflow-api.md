@@ -12,16 +12,22 @@ The first workflow scaffold supports:
 - simulation-result fingerprints;
 - provenance records for summaries, diagnostics, optional targets, and fit
   metrics;
-- experiment manifests for programmatic or CLI runs.
+- experiment manifests for programmatic or CLI runs;
+- one-call materialization of optional plot, provenance CSV, and manifest JSON
+  outputs.
 
 Example:
 
 ```python
+from pathlib import Path
+
 from indoeuropop import (
     default_config,
+    SimulationOutputPaths,
     run_configured_simulation,
     simulation_experiment_manifest,
     simulation_provenance_records,
+    write_simulation_outputs,
 )
 
 run = run_configured_simulation(default_config(), simulator="deterministic")
@@ -31,6 +37,16 @@ manifest = simulation_experiment_manifest(
     source="steppe",
     region="britain",
     command="notebook-smoke-run",
+)
+bundle = write_simulation_outputs(
+    run,
+    source="steppe",
+    region="britain",
+    paths=SimulationOutputPaths(
+        plot=Path("results/ancestry.png"),
+        provenance_csv=Path("results/provenance.csv"),
+        manifest_json=Path("results/manifest.json"),
+    ),
 )
 ```
 

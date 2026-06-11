@@ -102,6 +102,8 @@ tests/
 - Load the same inputs from TOML.
 - Run configured deterministic or tau-leap scenarios through reusable workflow
   helpers outside the CLI.
+- Materialize optional plot, provenance CSV, and manifest JSON outputs through
+  reusable workflow helpers.
 - Layer time-bounded migration pulses and climate/epidemic forcing windows over
   base parameters.
 - Override shared region rates and source-specific rates through parameter
