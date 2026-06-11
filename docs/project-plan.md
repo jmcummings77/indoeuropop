@@ -99,6 +99,8 @@ Phase 4: Inference and validation.
   calibration targets while retaining fit metrics on held-out validation
   targets.
 - Add emulator code only after full simulator outputs are reproducible.
+  The first reproducibility scaffold fingerprints simulation results and sweep
+  outputs with canonical JSON and SHA-256 digests for future audit trails.
 - Revalidate emulator and posterior results against the explicit simulator.
 
 ## Visualization And Debugging

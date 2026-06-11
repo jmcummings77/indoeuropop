@@ -22,3 +22,7 @@ converts aggregate fit metrics into derived records.
 
 The first scaffold does not create inferred records. A ranked sweep score is
 therefore still `derived`, not a posterior estimate.
+
+Reproducibility fingerprints can also be converted into derived provenance
+records. A fingerprint records canonical output identity; it is not a fit score
+or scientific validation.

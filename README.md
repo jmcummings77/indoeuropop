@@ -62,6 +62,7 @@ src/indoeuropop/
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
   reporting.py       CSV export helpers for provenance and diagnostics
+  reproducibility.py canonical output fingerprints for audit trails
   sample_metadata.py typed sample metadata staging for later ingestion
   simulation.py      deterministic and tau-leap simulation skeletons
   sex_bias.py        sex-structured reproduction scaffold
@@ -107,6 +108,8 @@ tests/
 - Label output values as simulated, observed, synthetic, derived, or future
   inferred records for reporting.
 - Export provenance and diagnostic records to rectangular CSV tables.
+- Fingerprint simulation results and sweep outputs with canonical SHA-256
+  digests.
 - Write CLI provenance reports for demo simulations.
 - Load synthetic or published target-observation CSV files.
 - Register local and planned external data sources with citations and optional
