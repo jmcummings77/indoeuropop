@@ -164,6 +164,14 @@ from indoeuropop.visualization import (
     plot_ancestry_comparison,
     plot_population_total,
 )
+from indoeuropop.workflows import (
+    SIMULATOR_KINDS,
+    SimulationRun,
+    SimulatorKind,
+    run_configured_simulation,
+    simulation_experiment_manifest,
+    simulation_provenance_records,
+)
 
 __all__ = [
     "ADULT",
@@ -180,6 +188,7 @@ __all__ = [
     "MALE",
     "RECOVERED",
     "SEXES",
+    "SIMULATOR_KINDS",
     "SUSCEPTIBLE",
     "AgeStructureParameters",
     "AgeStructuredState",
@@ -216,7 +225,9 @@ __all__ = [
     "SimulationConfig",
     "SimulationParameters",
     "SimulationResult",
+    "SimulationRun",
     "SimulationSchedule",
+    "SimulatorKind",
     "SourceParameters",
     "SummaryStatistic",
     "SummaryVector",
@@ -268,6 +279,7 @@ __all__ = [
     "provenance_rows",
     "rank_scored_runs",
     "rank_validated_runs",
+    "run_configured_simulation",
     "run_deterministic",
     "run_parameter_sweep",
     "run_scored_parameter_sweep",
@@ -277,7 +289,9 @@ __all__ = [
     "score_result_on_split",
     "score_target_fit",
     "sha256_file",
+    "simulation_experiment_manifest",
     "simulation_parameters_payload",
+    "simulation_provenance_records",
     "simulation_result_payload",
     "split_targets_by_region",
     "summarize_trajectory",

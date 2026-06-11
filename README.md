@@ -75,10 +75,12 @@ src/indoeuropop/
   targets.py         target observation CSV loading and comparison helpers
   validation.py      calibration and validation target-split helpers
   visualization.py   Matplotlib helpers for outputs and debugging
+  workflows.py       reusable configured-run and reporting assembly helpers
 docs/
   experiment-manifests.md
   project-plan.md    implementation roadmap and scientific guardrails
   target-data-schema.md
+  workflow-api.md
 examples/
   target-observations.example.csv
 tests/
@@ -98,6 +100,8 @@ tests/
 - Run a small deterministic mean-field scenario.
 - Run a seeded tau-leap stochastic scenario for smoke testing.
 - Load the same inputs from TOML.
+- Run configured deterministic or tau-leap scenarios through reusable workflow
+  helpers outside the CLI.
 - Layer time-bounded migration pulses and climate/epidemic forcing windows over
   base parameters.
 - Override shared region rates and source-specific rates through parameter

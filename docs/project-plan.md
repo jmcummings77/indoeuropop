@@ -36,6 +36,8 @@ Phase 1: Bootstrap and verify.
 - Keep runtime dependencies limited to NumPy and Matplotlib.
 - Enforce Black, Ruff, mypy, pytest, and 100% coverage.
 - Provide a CLI demo and plotting path so changes remain easy to inspect.
+  The first workflow API now exposes configured deterministic and tau-leap runs,
+  provenance records, and experiment manifests outside the CLI.
 
 Phase 2: Scientific input layer.
 
