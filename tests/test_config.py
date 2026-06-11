@@ -191,6 +191,31 @@ def test_example_sweep_spec_loads() -> None:
     )
 
 
+def test_aadr_v66_comparison_sweep_spec_loads() -> None:
+    """The real-data comparison sweep should cover retained AADR targets."""
+    spec = load_sweep_spec("curation/aadr-v66-western-europe-comparison.toml")
+
+    assert spec.start_bce == 3300
+    assert spec.end_bce == 1700
+    assert spec.sample_count == 24
+    assert spec.region is None
+    assert spec.initial_state.regions() == ("central_europe", "britain")
+    assert {pulse.region for pulse in spec.schedule.migration_pulses} == {
+        "britain",
+        "central_europe",
+    }
+    assert tuple(parameter_range.name for parameter_range in spec.parameter_ranges) == (
+        "migration_rate",
+        "fertility_rate",
+        "local_mortality_rate",
+        "steppe_mortality_rate",
+        "elite_reproductive_advantage",
+        "epidemic_mortality_rate",
+        "violence_mortality_rate",
+        "climate_stress",
+    )
+
+
 @pytest.mark.parametrize("contents", ["", "[parameters]\nmigration_rate = 0.1\n"])
 def test_load_config_requires_tables(tmp_path: Path, contents: str) -> None:
     """Required config tables should be validated explicitly."""

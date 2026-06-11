@@ -182,6 +182,20 @@ uv run indoeuropop compare-targets \
   --fit-metric root_mean_squared_error
 ```
 
+Compare the committed real-data review config against regenerated AADR/qpAdm
+targets:
+
+```bash
+uv run indoeuropop compare-targets \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/real-aadr-comparison/aadr-target-observations.csv \
+  --target-fit-csv results/real-aadr-comparison/target-fit.csv \
+  --target-residuals-csv results/real-aadr-comparison/target-residuals.csv \
+  --plot results/real-aadr-comparison/target-comparison.png \
+  --manifest-json results/real-aadr-comparison/target-comparison-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
 ## Package Layout
 
 ```text
@@ -215,6 +229,7 @@ examples/
   sweep-targets.example.csv
   target-observations.example.csv
 curation/
+  aadr-v66-western-europe-comparison.toml
   aadr-v66-western-europe-qpadm-targets.tsv
 scripts/
   run_qpadm.R        external ADMIXTOOLS 2 runner
@@ -295,6 +310,8 @@ tracked normally.
   ancestry estimate schema.
 - Plan external ADMIXTOOLS qpAdm runs with resolved genotype prefixes, a
   committed target seed, and an auditable JSON manifest.
+- Run an exploratory multi-region comparison sweep against retained AADR v66
+  western-Europe qpAdm target observations.
 - Document target curation windows, sample selections, and methods before
   creating target observations.
 - Compare simulated ancestry trajectories to target observations.

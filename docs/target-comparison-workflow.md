@@ -64,3 +64,34 @@ The workflow compares model outputs to whatever target CSV is supplied. It does
 not decide whether the target curation, qpAdm source model, outgroups, or
 uncertainties are scientifically adequate. Those checks remain part of the
 human review process before heavier inference.
+
+## AADR V66 Review Config
+
+The repository includes an exploratory multi-region sweep config for the
+retained western-Europe AADR v66 qpAdm targets:
+
+```text
+curation/aadr-v66-western-europe-comparison.toml
+```
+
+After `build-aadr-qpadm-targets` has written
+`results/real-aadr-comparison/aadr-target-observations.csv`, run:
+
+```bash
+uv run indoeuropop compare-targets \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/real-aadr-comparison/aadr-target-observations.csv \
+  --sweep-runs-csv results/real-aadr-comparison/sweep-runs.csv \
+  --sensitivity-csv results/real-aadr-comparison/sensitivity.csv \
+  --target-fit-csv results/real-aadr-comparison/target-fit.csv \
+  --target-residuals-csv results/real-aadr-comparison/target-residuals.csv \
+  --plot results/real-aadr-comparison/target-comparison.png \
+  --manifest-json results/real-aadr-comparison/target-comparison-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
+In the local AADR v66.1 run, this comparison evaluated 24 deterministic sweep
+samples against 12 retained target observations. The best exploratory run had
+RMSE `0.280595`, reduced chi-square `1.886537`, and maximum absolute z-score
+`4.269364`. Treat those as review diagnostics only; they are not calibrated
+inference.

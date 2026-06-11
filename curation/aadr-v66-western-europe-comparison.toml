@@ -1,0 +1,91 @@
+# Exploratory deterministic sweep for the retained AADR v66 western-Europe
+# qpAdm targets. This is a review configuration, not calibrated historical
+# inference.
+
+[simulation]
+start_bce = 3300
+end_bce = 1700
+step_years = 25
+
+[parameters]
+fertility_rate = 0.034
+local_mortality_rate = 0.031
+steppe_mortality_rate = 0.029
+migration_rate = 0.00005
+epidemic_mortality_rate = 0.0
+local_epidemic_risk = 1.0
+steppe_epidemic_risk = 0.85
+violence_mortality_rate = 0.0
+climate_stress = 0.0
+elite_reproductive_advantage = 1.05
+
+[counts.central_europe]
+local = 12000
+steppe = 25
+
+[counts.britain]
+local = 7000
+steppe = 5
+
+[sweep]
+sample_count = 24
+seed = 661
+source = "steppe"
+
+[[migration_pulses]]
+region = "central_europe"
+start_bce = 3000
+end_bce = 2300
+annual_rate = 0.00006
+
+[[migration_pulses]]
+region = "britain"
+start_bce = 2550
+end_bce = 1800
+annual_rate = 0.00008
+
+[[forcing_windows]]
+start_bce = 2900
+end_bce = 2600
+climate_stress_delta = 0.03
+epidemic_mortality_delta = 0.002
+
+[[parameter_ranges]]
+name = "migration_rate"
+low = 0.0
+high = 0.00003
+
+[[parameter_ranges]]
+name = "fertility_rate"
+low = 0.028
+high = 0.038
+
+[[parameter_ranges]]
+name = "local_mortality_rate"
+low = 0.03
+high = 0.034
+
+[[parameter_ranges]]
+name = "steppe_mortality_rate"
+low = 0.03
+high = 0.033
+
+[[parameter_ranges]]
+name = "elite_reproductive_advantage"
+low = 1.0
+high = 1.08
+
+[[parameter_ranges]]
+name = "epidemic_mortality_rate"
+low = 0.0
+high = 0.0005
+
+[[parameter_ranges]]
+name = "violence_mortality_rate"
+low = 0.0
+high = 0.0005
+
+[[parameter_ranges]]
+name = "climate_stress"
+low = 0.0
+high = 0.015

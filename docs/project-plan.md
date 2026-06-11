@@ -125,7 +125,10 @@ Phase 4: Inference and validation.
   scoring can rank deterministic sweep rows against supplied target CSVs and
   write a dedicated fit artifact. A first-class target-comparison workflow can
   now write ranked fits, best-run residuals, overlay plots, and a checksummed
-  manifest for supplied target observations.
+  manifest for supplied target observations. A committed AADR v66
+  western-Europe review config now runs a multi-region deterministic sweep
+  against retained real target observations generated from the local AADR and
+  external qpAdm workflow.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
