@@ -43,6 +43,10 @@ This layer is still exploratory. It does not perform ABC-SMC, Bayesian
 optimization, posterior ranking, or emulator training. Target-fit rows are
 ranked deterministic diagnostics against the supplied target file.
 
+For best-run residual CSVs and a trajectory-vs-target overlay plot, use the
+dedicated target comparison workflow documented in
+`docs/target-comparison-workflow.md`.
+
 CLI example:
 
 ```bash

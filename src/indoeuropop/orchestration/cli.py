@@ -17,6 +17,10 @@ from indoeuropop.orchestration.sweep_workflows import (
     SweepOutputPaths,
     run_sweep_workflow,
 )
+from indoeuropop.orchestration.target_comparison import (
+    TargetComparisonOutputPaths,
+    run_target_comparison_workflow,
+)
 from indoeuropop.orchestration.workflows import (
     SimulationOutputPaths,
     SimulatorKind,
@@ -32,6 +36,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "build-targets":
         return _run_build_targets_command(args, parser)
+    if args.command == "compare-targets":
+        return _run_compare_targets_command(args, parser)
     data_exit_code = run_data_command(args, parser)
     if data_exit_code is not None:
         return data_exit_code
@@ -151,12 +157,60 @@ def _run_sweep_command(
     return 0
 
 
+def _run_compare_targets_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI deterministic target-comparison workflow."""
+    if args.config is None:
+        parser.error("compare-targets requires --config")
+    if args.targets is None:
+        parser.error("compare-targets requires --targets")
+    result = run_target_comparison_workflow(
+        load_sweep_spec(args.config),
+        load_target_dataset(args.targets),
+        paths=TargetComparisonOutputPaths(
+            config=args.config,
+            targets=args.targets,
+            sweep_runs_csv=args.sweep_runs_csv,
+            sensitivity_csv=args.sensitivity_csv,
+            target_fit_csv=args.target_fit_csv,
+            target_residuals_csv=args.target_residuals_csv,
+            plot=args.plot,
+            manifest_json=args.manifest_json,
+        ),
+        sensitivity_outcome=args.sensitivity_outcome,
+        fit_metric=args.fit_metric,
+        plot_source=args.source,
+        plot_region=args.region,
+        command=args.command,
+        manifest_name="cli-target-comparison",
+        manifest_description="CLI deterministic target-comparison manifest",
+    )
+    best_fit = result.best_run
+    print(f"comparison_run_count={len(result.sweep.runs)}")
+    print(
+        "best_target_fit="
+        f"run_index={best_fit.run.index},"
+        f"metric={args.fit_metric},"
+        f"value={best_fit.metric_value(args.fit_metric):.6f},"
+        f"observations={best_fit.fit.observation_count}"
+    )
+    print(f"target_residual_count={len(result.best_comparisons)}")
+    if result.target_residuals_csv_path is not None:
+        print(f"target_residuals_csv={result.target_residuals_csv_path}")
+    if result.plot_path is not None:
+        print(f"target_comparison_plot={result.plot_path}")
+    if result.manifest_json_path is not None:
+        print(f"manifest_json={result.manifest_json_path}")
+    return 0
+
+
 def _build_parser() -> argparse.ArgumentParser:
     """Create the CLI argument parser."""
     parser = argparse.ArgumentParser(prog="indoeuropop")
     parser.add_argument(
         "command",
-        choices=("build-targets", "demo", "sweep", *DATA_COMMANDS),
+        choices=("build-targets", "compare-targets", "demo", "sweep", *DATA_COMMANDS),
         help="run a CLI workflow",
     )
     parser.add_argument("--config", type=Path, help="path to a TOML config file")
@@ -209,6 +263,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "--target-fit-csv",
         type=Path,
         help="optional output path for ranked sweep target-fit CSV rows",
+    )
+    parser.add_argument(
+        "--target-residuals-csv",
+        type=Path,
+        help="optional output path for best-run target residual CSV rows",
     )
     parser.add_argument(
         "--sensitivity-outcome",

@@ -168,6 +168,20 @@ uv run indoeuropop sweep \
   --fit-metric root_mean_squared_error
 ```
 
+Run a first-class target comparison workflow with best-run residuals and a
+diagnostic overlay plot:
+
+```bash
+uv run indoeuropop compare-targets \
+  --config examples/sweep.example.toml \
+  --targets examples/sweep-targets.example.csv \
+  --target-fit-csv results/target-fit.csv \
+  --target-residuals-csv results/target-residuals.csv \
+  --plot results/target-comparison.png \
+  --manifest-json results/target-comparison-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
 ## Package Layout
 
 ```text
@@ -192,11 +206,13 @@ docs/
   real-target-workflow.md
   source-downloads.md
   sweep-workflows.md
+  target-comparison-workflow.md
   target-data-schema.md
   workflow-api.md
 examples/
   sample-ancestry-estimates.example.csv
   sweep.example.toml
+  sweep-targets.example.csv
   target-observations.example.csv
 curation/
   aadr-v66-western-europe-qpadm-targets.tsv
@@ -239,6 +255,8 @@ tracked normally.
 - Convert trajectory summaries into named, scaled summary-statistic vectors.
 - Analyze sweep sensitivity with lightweight correlation diagnostics.
 - Score simulations and deterministic sweeps against target observations.
+- Run a target-comparison workflow that writes ranked fits, best-run residuals,
+  overlay plots, and a checksummed manifest.
 - Split targets into calibration and validation sets for held-out fit checks.
 - Compare deterministic and tau-leap ancestry trajectories for debugging.
 - Validate simulation outputs for time-order, label, extinction, and growth

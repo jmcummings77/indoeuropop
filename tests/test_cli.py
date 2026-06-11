@@ -827,6 +827,55 @@ def test_cli_sweep_can_write_target_fit_outputs(
     }
 
 
+def test_cli_compare_targets_writes_best_run_outputs(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The compare-targets command should write residuals and an overlay plot."""
+    residuals_csv = tmp_path / "outputs" / "target-residuals.csv"
+    target_fit_csv = tmp_path / "outputs" / "target-fit.csv"
+    plot_path = tmp_path / "outputs" / "target-comparison.png"
+    manifest_path = tmp_path / "outputs" / "target-comparison.json"
+
+    exit_code = main(
+        [
+            "compare-targets",
+            "--config",
+            "examples/sweep.example.toml",
+            "--targets",
+            "examples/sweep-targets.example.csv",
+            "--target-fit-csv",
+            str(target_fit_csv),
+            "--target-residuals-csv",
+            str(residuals_csv),
+            "--plot",
+            str(plot_path),
+            "--manifest-json",
+            str(manifest_path),
+            "--fit-metric",
+            "root_mean_squared_error",
+        ]
+    )
+    captured = capsys.readouterr()
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert exit_code == 0
+    assert "comparison_run_count=3" in captured.out
+    assert "best_target_fit=" in captured.out
+    assert "target_residual_count=2" in captured.out
+    assert "observed_mean" in residuals_csv.read_text(encoding="utf-8")
+    assert "fit_root_mean_squared_error" in target_fit_csv.read_text(encoding="utf-8")
+    assert plot_path.exists()
+    assert manifest_payload["name"] == "cli-target-comparison"
+    assert manifest_payload["metadata"]["best_fit_metric"] == (
+        "root_mean_squared_error"
+    )
+    assert {artifact["name"] for artifact in manifest_payload["artifacts"]} >= {
+        "target_residuals_csv",
+        "target_comparison_plot",
+    }
+
+
 def test_cli_sweep_requires_config() -> None:
     """The sweep command should reject missing TOML configuration."""
     with raises(SystemExit) as exc_info:
@@ -846,6 +895,20 @@ def test_cli_sweep_target_fit_requires_targets() -> None:
                 "target-fit.csv",
             ]
         )
+    assert exc_info.value.code == 2
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["compare-targets"],
+        ["compare-targets", "--config", "examples/sweep.example.toml"],
+    ],
+)
+def test_cli_compare_targets_requires_inputs(argv: list[str]) -> None:
+    """The compare-targets command should require config and targets."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
     assert exc_info.value.code == 2
 
 

@@ -123,7 +123,9 @@ Phase 4: Inference and validation.
   sensitivity CSV artifacts, and emit a sweep-collection manifest. Sweep specs
   can now be loaded from TOML and run through the CLI. Optional target-fit
   scoring can rank deterministic sweep rows against supplied target CSVs and
-  write a dedicated fit artifact.
+  write a dedicated fit artifact. A first-class target-comparison workflow can
+  now write ranked fits, best-run residuals, overlay plots, and a checksummed
+  manifest for supplied target observations.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
@@ -163,6 +165,9 @@ Every simulator should support quick plots for:
 - comparison of deterministic and stochastic runs using the same parameters.
   The first comparison helper reports pointwise ancestry differences and can
   generate overlay plots for deterministic versus seeded tau-leap runs.
+- comparison of best-ranked deterministic sweep trajectories against target
+  observations. The target-comparison workflow now generates overlay plots and
+  per-target residual CSV rows for review.
 
 Plots should be generated through package functions so tests can verify that
 figures build in headless environments.

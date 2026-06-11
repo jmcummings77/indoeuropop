@@ -38,6 +38,7 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "sweep_reporting": "indoeuropop.reporting.sweep_reporting",
     "sweep_workflows": "indoeuropop.orchestration.sweep_workflows",
     "sweeps": "indoeuropop.orchestration.sweeps",
+    "target_comparison": "indoeuropop.orchestration.target_comparison",
     "target_curation": "indoeuropop.data.target_curation",
     "target_pipeline": "indoeuropop.data.target_pipeline",
     "targets": "indoeuropop.data.targets",

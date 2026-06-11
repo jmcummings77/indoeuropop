@@ -140,6 +140,14 @@ from indoeuropop.orchestration.sweeps import (
     parameters_with_overrides,
     run_parameter_sweep,
 )
+from indoeuropop.orchestration.target_comparison import (
+    TargetComparisonOutputPaths,
+    TargetComparisonWorkflowResult,
+    run_sweep_run_simulation,
+    run_target_comparison_workflow,
+    target_comparison_artifacts,
+    target_comparison_experiment_manifest,
+)
 from indoeuropop.orchestration.workflows import (
     SIMULATOR_KINDS,
     SimulationOutputBundle,
@@ -192,10 +200,17 @@ from indoeuropop.reporting.sweep_reporting import (
     write_sensitivity_csv,
     write_sweep_runs_csv,
 )
+from indoeuropop.reporting.target_comparison import (
+    TARGET_COMPARISON_FIELDS,
+    target_comparison_rows,
+    target_comparisons_to_csv,
+    write_target_comparisons_csv,
+)
 from indoeuropop.reporting.visualization import (
     plot_ancestry,
     plot_ancestry_comparison,
     plot_population_total,
+    plot_target_comparison,
 )
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.simulation.config import (
@@ -240,6 +255,7 @@ __all__ = [
     "SIMULATOR_KINDS",
     "SUSCEPTIBLE",
     "TARGET_COLUMNS",
+    "TARGET_COMPARISON_FIELDS",
     "AgeStructureParameters",
     "AgeStructuredState",
     "AncestryComparison",
@@ -293,6 +309,8 @@ __all__ = [
     "SweepWorkflowResult",
     "TargetBuildOptions",
     "TargetComparison",
+    "TargetComparisonOutputPaths",
+    "TargetComparisonWorkflowResult",
     "TargetCurationDataset",
     "TargetCurationRecord",
     "TargetDataset",
@@ -338,6 +356,7 @@ __all__ = [
     "plot_ancestry",
     "plot_ancestry_comparison",
     "plot_population_total",
+    "plot_target_comparison",
     "population_state_payload",
     "provenance_fieldnames",
     "provenance_records_to_csv",
@@ -348,7 +367,9 @@ __all__ = [
     "run_deterministic",
     "run_parameter_sweep",
     "run_scored_parameter_sweep",
+    "run_sweep_run_simulation",
     "run_sweep_workflow",
+    "run_target_comparison_workflow",
     "run_tau_leap",
     "run_validated_parameter_sweep",
     "score_result_against_targets",
@@ -373,6 +394,10 @@ __all__ = [
     "sweep_run_payload",
     "sweep_run_rows",
     "sweep_runs_to_csv",
+    "target_comparison_artifacts",
+    "target_comparison_experiment_manifest",
+    "target_comparison_rows",
+    "target_comparisons_to_csv",
     "target_dataset_to_csv",
     "target_fit_provenance_records",
     "target_observation_provenance_records",
@@ -390,5 +415,6 @@ __all__ = [
     "write_simulation_outputs",
     "write_sweep_outputs",
     "write_sweep_runs_csv",
+    "write_target_comparisons_csv",
     "write_target_dataset_csv",
 ]

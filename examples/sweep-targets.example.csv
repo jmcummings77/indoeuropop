@@ -1,0 +1,3 @@
+status,region,source,time_bce,mean,uncertainty,citation_key,citation,note
+synthetic,britain,steppe,2950,0.05,0.03,synthetic_sweep_example,"Synthetic sweep comparison target; not observed ancient DNA","Illustrative row only"
+synthetic,britain,steppe,2900,0.08,0.04,synthetic_sweep_example,"Synthetic sweep comparison target; not observed ancient DNA","Illustrative row only"

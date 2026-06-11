@@ -45,3 +45,7 @@ The diagnostics JSON includes:
 These diagnostics are review evidence, not final scientific validation. A
 target row being retained only means the local metadata, curation, and qpAdm
 table are internally complete enough to build an observation.
+
+After reviewing the retained target observations, use
+`indoeuropop compare-targets` to rank deterministic sweep outputs against the
+target CSV and write best-run residual and overlay-plot diagnostics.
