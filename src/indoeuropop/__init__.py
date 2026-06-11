@@ -67,6 +67,14 @@ from indoeuropop.sample_metadata import (
     load_sample_metadata,
 )
 from indoeuropop.sensitivity import SensitivityResult, analyze_sensitivity
+from indoeuropop.sex_bias import (
+    FEMALE,
+    MALE,
+    SEXES,
+    SexBiasParameters,
+    SexStructuredState,
+    expected_births_by_source,
+)
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.summary import TrajectorySummary, summarize_trajectory
 from indoeuropop.sweeps import (
@@ -97,7 +105,10 @@ from indoeuropop.visualization import (
 __all__ = [
     "ADULT",
     "ELDER",
+    "FEMALE",
     "JUVENILE",
+    "MALE",
+    "SEXES",
     "AgeStructureParameters",
     "AgeStructuredState",
     "AncestryComparison",
@@ -117,6 +128,8 @@ __all__ = [
     "SampleMetadataRecord",
     "ScoredSweepRun",
     "SensitivityResult",
+    "SexBiasParameters",
+    "SexStructuredState",
     "SimulationConfig",
     "SimulationParameters",
     "SimulationResult",
@@ -138,6 +151,7 @@ __all__ = [
     "compare_deterministic_and_tau_leap",
     "default_config",
     "diagnostic_issue_records",
+    "expected_births_by_source",
     "has_errors",
     "latin_hypercube_samples",
     "load_config",

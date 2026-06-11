@@ -63,6 +63,7 @@ src/indoeuropop/
   reporting.py       CSV export helpers for provenance and diagnostics
   sample_metadata.py typed sample metadata staging for later ingestion
   simulation.py      deterministic and tau-leap simulation skeletons
+  sex_bias.py        sex-structured reproduction scaffold
   target_curation.py target derivation metadata before ancestry outputs
   targets.py         target observation CSV loading and comparison helpers
   visualization.py   Matplotlib helpers for outputs and debugging
@@ -81,6 +82,8 @@ tests/
 - Derive ancestry proportions from source counts.
 - Represent and project age-structured counts, then collapse them back to
   source-count states for existing diagnostics and plots.
+- Represent sex-structured counts and estimate expected newborn source
+  contributions under explicit sex-specific reproductive weights.
 - Run a small deterministic mean-field scenario.
 - Run a seeded tau-leap stochastic scenario for smoke testing.
 - Load the same inputs from TOML.

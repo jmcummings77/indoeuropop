@@ -69,6 +69,10 @@ Phase 3: Model expansion.
   apply deterministic births/deaths/transitions, and collapse back to the
   source-count state without changing the main simulator yet.
 - Add sex-biased reproduction only after the neutral source-count model is stable.
+  The first sex-bias scaffold can represent female/male counts, validate
+  source-specific reproductive multipliers, estimate expected newborn source
+  contributions, and collapse back to the source-count state without changing
+  the main simulator yet.
 - Add epidemic compartments if plague is modeled as transmission rather than as
   an exogenous hazard.
 

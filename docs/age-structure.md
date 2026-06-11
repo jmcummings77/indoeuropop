@@ -27,4 +27,6 @@ age-class transitions, keeping counts non-negative.
 This module is a transparent demographic scaffold. It does not define calibrated
 generation lengths, sex-biased inheritance, household structure, or historical
 fertility values. Those choices need explicit evidence and validation before
-being integrated into the main simulator.
+being integrated into the main simulator. A separate sex-biased reproduction
+scaffold now holds source-by-sex weighting experiments so age structure remains
+focused on generation composition.
