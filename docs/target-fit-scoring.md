@@ -27,3 +27,10 @@ ranking metric is `chi_square`.
 
 These ranked runs are not posterior samples. They are a reproducible way to
 identify parameter regions worth deeper inference and robustness checks.
+
+## Held-Out Targets
+
+`run_validated_parameter_sweep` ranks the same kind of deterministic sweep on
+calibration targets while preserving held-out validation fit. This makes
+over-tuned parameter regions easier to spot before introducing ABC-SMC,
+Bayesian optimization, or emulator code.

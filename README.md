@@ -67,6 +67,7 @@ src/indoeuropop/
   sex_bias.py        sex-structured reproduction scaffold
   target_curation.py target derivation metadata before ancestry outputs
   targets.py         target observation CSV loading and comparison helpers
+  validation.py      calibration and validation target-split helpers
   visualization.py   Matplotlib helpers for outputs and debugging
 docs/
   project-plan.md    implementation roadmap and scientific guardrails
@@ -97,6 +98,7 @@ tests/
 - Run seeded Latin-hypercube parameter sweeps and summarize trajectories.
 - Analyze sweep sensitivity with lightweight correlation diagnostics.
 - Score simulations and deterministic sweeps against target observations.
+- Split targets into calibration and validation sets for held-out fit checks.
 - Compare deterministic and tau-leap ancestry trajectories for debugging.
 - Validate simulation outputs for time-order, label, extinction, and growth
   diagnostics.

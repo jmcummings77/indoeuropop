@@ -91,6 +91,10 @@ Phase 4: Inference and validation.
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
   this ranking is exploratory and not a posterior.
+- Hold out explicit target subsets before heavier inference.
+  The first validation-split scaffold can rank deterministic sweeps on
+  calibration targets while retaining fit metrics on held-out validation
+  targets.
 - Add emulator code only after full simulator outputs are reproducible.
 - Revalidate emulator and posterior results against the explicit simulator.
 
