@@ -19,6 +19,20 @@ Each sample ancestry CSV must include:
 The example file at `examples/sample-ancestry-estimates.example.csv` is
 synthetic and must not be cited as historical evidence.
 
+## qpAdm Conversion
+
+Externally computed qpAdm-style tables can be converted into this schema:
+
+```bash
+uv run indoeuropop load-qpadm-estimates \
+  --qpadm-estimates data/qpadm/steppe-estimates.csv \
+  --ancestry-estimates-out results/sample-ancestry-estimates.csv
+```
+
+The converter accepts common sample, steppe-fraction, standard-error, and
+p-value column names. It does not run qpAdm or validate qpAdm model choice; that
+review belongs upstream of the conversion step.
+
 ## Guardrail
 
 Published target rows should be built only from published metadata, published

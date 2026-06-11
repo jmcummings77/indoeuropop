@@ -5,19 +5,13 @@ from pathlib import Path
 import pytest
 
 from indoeuropop.ancestry_estimates import (
+    ANCESTRY_ESTIMATE_COLUMNS,
     SampleAncestryEstimate,
     SampleAncestryEstimateDataset,
     load_sample_ancestry_estimates,
-)
-
-ESTIMATE_COLUMNS = (
-    "status",
-    "sample_id",
-    "source",
-    "estimate",
-    "standard_error",
-    "method",
-    "note",
+    sample_ancestry_estimate_rows,
+    sample_ancestry_estimates_to_csv,
+    write_sample_ancestry_estimates_csv,
 )
 
 
@@ -42,7 +36,7 @@ def _estimate(
 
 def _csv_text(*rows: tuple[str, ...]) -> str:
     """Return sample ancestry estimate CSV text from rows of cell values."""
-    header = ",".join(ESTIMATE_COLUMNS)
+    header = ",".join(ANCESTRY_ESTIMATE_COLUMNS)
     return "\n".join((header, *((",".join(row)) for row in rows)))
 
 
@@ -164,6 +158,22 @@ def test_load_sample_ancestry_estimates_reads_csv(tmp_path: Path) -> None:
     assert dataset.estimates[0].note == "First row"
     assert dataset.estimates[1].note == ""
     assert dataset.estimates[1].estimate == 0.3
+
+
+def test_sample_ancestry_estimates_csv_exports_round_trip(tmp_path: Path) -> None:
+    """Sample ancestry estimates should export through the public schema."""
+    output_path = tmp_path / "outputs" / "sample-ancestry.csv"
+    dataset = SampleAncestryEstimateDataset.from_rows((_estimate(),))
+
+    returned_path = write_sample_ancestry_estimates_csv(dataset, output_path)
+    output_text = sample_ancestry_estimates_to_csv(dataset)
+    rows = sample_ancestry_estimate_rows(dataset)
+    loaded = load_sample_ancestry_estimates(output_path)
+
+    assert returned_path == output_path
+    assert output_text.startswith("status,sample_id,source")
+    assert rows[0]["estimate"] == "0.2"
+    assert loaded.estimates[0].note == "Example estimate"
 
 
 def test_load_sample_ancestry_estimates_rejects_missing_header(

@@ -66,17 +66,33 @@ uv run indoeuropop load-aadr \
   --sample-metadata-out data/aadr-sample-metadata.csv
 ```
 
+Suggest reviewable AADR group selections from local annotation geography,
+chronology, and group labels:
+
+```bash
+uv run indoeuropop suggest-aadr-groups \
+  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-groups-out results/aadr-group-suggestions.tsv
+```
+
 Prepare real AADR sample metadata and curation inputs for later target
 building:
 
 ```bash
 uv run indoeuropop prepare-aadr-target-inputs \
   --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
-  --aadr-groups /Users/jmcummings/Claude/Projects/indoeuropop_claude/scripts/qpadm_targets.tsv \
-  --aadr-group-match prefix \
-  --allow-missing-aadr-groups \
+  --aadr-groups results/aadr-group-suggestions.tsv \
   --sample-metadata-out results/aadr-target-sample-metadata.csv \
   --target-curation-out results/aadr-target-curation.csv
+```
+
+Convert externally computed qpAdm-style steppe estimates into sample-level
+ancestry estimates:
+
+```bash
+uv run indoeuropop load-qpadm-estimates \
+  --qpadm-estimates data/qpadm/steppe-estimates.csv \
+  --ancestry-estimates-out results/sample-ancestry-estimates.csv
 ```
 
 Build target observations from curated sample-level inputs:
@@ -115,10 +131,12 @@ uv run indoeuropop sweep \
 src/indoeuropop/
   aadr.py            local AADR annotation loading and metadata export
   aadr_curation.py   AADR group selections to target-pipeline inputs
+  aadr_groups.py     AADR group-selection suggestions for human review
   age_structure.py   deterministic age-class scaffold for model expansion
   ancestry_estimates.py sample ancestry estimates before target aggregation
   cli.py             argparse entry point for smoke/demo runs
   config.py          simple TOML config loading
+  data_cli.py        data-oriented command handlers for the CLI
   data_sources.py    metadata catalog for target and future sample inputs
   debugging.py       trajectory comparison helpers for simulation debugging
   diagnostics.py     sanity checks for simulation output quality
@@ -128,6 +146,7 @@ src/indoeuropop/
   experiments.py     experiment manifests for reproducible output bundles
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
+  qpadm_estimates.py convert external qpAdm-style tables to sample estimates
   reporting.py       CSV export helpers for provenance and diagnostics
   reproducibility.py canonical output fingerprints for audit trails
   sample_metadata.py typed sample metadata staging for later ingestion
@@ -144,10 +163,13 @@ src/indoeuropop/
   visualization.py   Matplotlib helpers for outputs and debugging
   workflows.py       reusable configured-run and reporting assembly helpers
 docs/
+  aadr-group-suggestions.md
   aadr-loading.md
   aadr-target-inputs.md
+  alternative-implementation-evaluation.md
   experiment-manifests.md
   project-plan.md    implementation roadmap and scientific guardrails
+  qpadm-estimates.md
   source-downloads.md
   sweep-workflows.md
   target-data-schema.md
@@ -214,11 +236,15 @@ tests/
 - Download or copy cataloged source files into a raw-data cache with optional
   checksum verification and a manifest CSV.
 - Load local AADR annotation files into the project sample metadata schema.
+- Suggest reviewable AADR group-selection files from local annotation
+  coordinates, dates, and group labels.
 - Prepare AADR group selections as modeled-region sample metadata and
   target-curation inputs for later ancestry-estimate aggregation.
 - Load synthetic or published sample metadata rows without aggregating them into
   ancestry targets.
 - Load sample-level ancestry estimates before target aggregation.
+- Convert externally computed qpAdm-style estimate tables into the sample
+  ancestry estimate schema.
 - Document target curation windows, sample selections, and methods before
   creating target observations.
 - Compare simulated ancestry trajectories to target observations.

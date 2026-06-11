@@ -63,10 +63,15 @@ Phase 2: Scientific input layer.
   manifest; exact AADR/Poseidon release URLs remain catalog decisions.
   Local AADR `.anno` files can now be normalized into the project sample
   metadata schema from a downloaded AADR quartet without parsing genotype data.
+  AADR annotation geography, dates, and group labels can now produce first-pass
+  group-selection suggestions for human review before target preparation.
   Reviewed AADR group-selection files can now prepare modeled-region sample
   metadata and target-curation CSVs from the local AADR release, leaving
   sample-level ancestry estimates as the explicit required input before target
   observation aggregation.
+  Externally computed qpAdm-style steppe tables can now be converted into the
+  project sample-ancestry estimate schema without treating qpAdm as an internal
+  inference engine.
 - Compare model output to targets through a validated observation interface,
   never by hard-coding target values inside simulator functions.
 

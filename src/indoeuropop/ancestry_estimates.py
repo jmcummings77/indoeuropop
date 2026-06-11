@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from collections.abc import Iterable
 from dataclasses import dataclass
+from io import StringIO
 from math import isfinite
 from pathlib import Path
 from typing import Literal, cast
@@ -13,17 +14,17 @@ EstimateStatus = Literal["synthetic", "published"]
 
 ESTIMATE_STATUSES = frozenset({"synthetic", "published"})
 
-REQUIRED_ANCESTRY_ESTIMATE_COLUMNS = frozenset(
-    {
-        "status",
-        "sample_id",
-        "source",
-        "estimate",
-        "standard_error",
-        "method",
-        "note",
-    }
+ANCESTRY_ESTIMATE_COLUMNS = (
+    "status",
+    "sample_id",
+    "source",
+    "estimate",
+    "standard_error",
+    "method",
+    "note",
 )
+
+REQUIRED_ANCESTRY_ESTIMATE_COLUMNS = frozenset(ANCESTRY_ESTIMATE_COLUMNS)
 
 
 @dataclass(frozen=True)
@@ -166,6 +167,40 @@ def load_sample_ancestry_estimates(path: str | Path) -> SampleAncestryEstimateDa
     return SampleAncestryEstimateDataset.from_rows(estimates).require_estimates()
 
 
+def sample_ancestry_estimate_rows(
+    dataset: SampleAncestryEstimateDataset,
+) -> tuple[dict[str, str], ...]:
+    """Return sample ancestry estimates as CSV-ready rows."""
+    return tuple(_estimate_row(estimate) for estimate in dataset.estimates)
+
+
+def sample_ancestry_estimates_to_csv(
+    dataset: SampleAncestryEstimateDataset,
+) -> str:
+    """Return sample ancestry estimates serialized as CSV text."""
+    dataset.require_estimates()
+    output = StringIO()
+    writer = csv.DictWriter(
+        output,
+        fieldnames=ANCESTRY_ESTIMATE_COLUMNS,
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(sample_ancestry_estimate_rows(dataset))
+    return output.getvalue()
+
+
+def write_sample_ancestry_estimates_csv(
+    dataset: SampleAncestryEstimateDataset,
+    path: str | Path,
+) -> Path:
+    """Write sample ancestry estimates to a CSV file and return the path."""
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(sample_ancestry_estimates_to_csv(dataset), encoding="utf-8")
+    return output_path
+
+
 def _estimate_from_row(
     row: dict[str, str | None], line_number: int
 ) -> SampleAncestryEstimate:
@@ -184,6 +219,19 @@ def _estimate_from_row(
         raise ValueError(
             f"invalid sample ancestry CSV row {line_number}: {error}"
         ) from error
+
+
+def _estimate_row(estimate: SampleAncestryEstimate) -> dict[str, str]:
+    """Return one sample ancestry estimate as a string-only CSV row."""
+    return {
+        "status": estimate.status,
+        "sample_id": estimate.sample_id,
+        "source": estimate.source,
+        "estimate": _value_text(estimate.estimate),
+        "standard_error": _value_text(estimate.standard_error),
+        "method": estimate.method,
+        "note": estimate.note,
+    }
 
 
 def _cell(row: dict[str, str | None], column: str) -> str:
@@ -216,3 +264,8 @@ def _unique(values: Iterable[str]) -> tuple[str, ...]:
         if value not in unique_values:
             unique_values.append(value)
     return tuple(unique_values)
+
+
+def _value_text(value: float) -> str:
+    """Return a stable string representation for numeric estimate values."""
+    return f"{value:.12g}"

@@ -23,14 +23,24 @@ samples. The `aadr_group_id` column is matched against the AADR `Group ID`
 field. Use `--aadr-group-match prefix` when the reviewed label intentionally
 covers AADR release variants such as `England_EBA_C`.
 
+You can create a first-pass review file from local AADR annotation geography,
+dates, and group labels:
+
+```bash
+uv run indoeuropop suggest-aadr-groups \
+  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-groups-out results/aadr-group-suggestions.tsv
+```
+
+The suggestion file should still be reviewed before it is used for target
+preparation.
+
 ## CLI
 
 ```bash
 uv run indoeuropop prepare-aadr-target-inputs \
   --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
-  --aadr-groups /Users/jmcummings/Claude/Projects/indoeuropop_claude/scripts/qpadm_targets.tsv \
-  --aadr-group-match prefix \
-  --allow-missing-aadr-groups \
+  --aadr-groups results/aadr-group-suggestions.tsv \
   --sample-metadata-out results/aadr-target-sample-metadata.csv \
   --target-curation-out results/aadr-target-curation.csv
 ```

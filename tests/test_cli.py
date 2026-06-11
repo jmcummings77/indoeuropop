@@ -107,6 +107,36 @@ def test_cli_load_aadr_writes_sample_metadata(
     assert "published,aadr-v66-p1-1240k,I001.SG" in output_text
 
 
+def test_cli_load_qpadm_estimates_writes_sample_ancestry_csv(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The CLI should convert qpAdm-style rows to sample ancestry estimates."""
+    table_path = tmp_path / "qpadm.csv"
+    output_path = tmp_path / "outputs" / "sample-ancestry-estimates.csv"
+    table_path.write_text(
+        "Genetic ID,steppe_fraction,stderr,qpadm_pvalue\n" "I001.SG,0.8,0.04,0.2\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "load-qpadm-estimates",
+            "--qpadm-estimates",
+            str(table_path),
+            "--ancestry-estimates-out",
+            str(output_path),
+        ]
+    )
+    captured = capsys.readouterr()
+    output_text = output_path.read_text(encoding="utf-8")
+
+    assert exit_code == 0
+    assert f"sample_ancestry_estimates={output_path}" in captured.out
+    assert output_text.startswith("status,sample_id,source")
+    assert "published,I001.SG,steppe,0.8,0.04,qpadm_steppe" in output_text
+
+
 def test_cli_prepare_aadr_target_inputs_writes_real_input_csvs(
     tmp_path: Path,
     capsys: CaptureFixture[str],
@@ -156,6 +186,34 @@ def test_cli_prepare_aadr_target_inputs_writes_real_input_csvs(
     assert "qpAdm_pending" in curation_output.read_text(encoding="utf-8")
 
 
+def test_cli_suggest_aadr_groups_writes_group_tsv(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The CLI should suggest reviewable AADR region/group selections."""
+    aadr_dir = _tiny_aadr_dir(tmp_path)
+    output_path = tmp_path / "outputs" / "aadr-groups.tsv"
+
+    exit_code = main(
+        [
+            "suggest-aadr-groups",
+            "--aadr-dir",
+            str(aadr_dir),
+            "--aadr-groups-out",
+            str(output_path),
+            "--min-group-samples",
+            "1",
+        ]
+    )
+    captured = capsys.readouterr()
+    output_text = output_path.read_text(encoding="utf-8")
+
+    assert exit_code == 0
+    assert "aadr_group_count=1" in captured.out
+    assert f"aadr_groups={output_path}" in captured.out
+    assert "iberia\tGreece_EBA" in output_text
+
+
 @pytest.mark.parametrize(
     "argv",
     [
@@ -169,6 +227,20 @@ def test_cli_prepare_aadr_target_inputs_writes_real_input_csvs(
 )
 def test_cli_load_aadr_requires_paths(argv: list[str]) -> None:
     """The AADR command should reject incomplete input paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["load-qpadm-estimates"],
+        ["load-qpadm-estimates", "--qpadm-estimates", "qpadm.csv"],
+    ],
+)
+def test_cli_load_qpadm_estimates_requires_paths(argv: list[str]) -> None:
+    """The qpAdm conversion command should reject incomplete paths."""
     with raises(SystemExit) as exc_info:
         main(argv)
     assert exc_info.value.code == 2
@@ -199,6 +271,20 @@ def test_cli_load_aadr_requires_paths(argv: list[str]) -> None:
 )
 def test_cli_prepare_aadr_target_inputs_requires_paths(argv: list[str]) -> None:
     """The AADR target-input command should reject incomplete paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["suggest-aadr-groups"],
+        ["suggest-aadr-groups", "--aadr-dir", "aadr"],
+    ],
+)
+def test_cli_suggest_aadr_groups_requires_paths(argv: list[str]) -> None:
+    """The AADR group-suggestion command should reject incomplete paths."""
     with raises(SystemExit) as exc_info:
         main(argv)
     assert exc_info.value.code == 2
@@ -503,6 +589,8 @@ def _tiny_aadr_dir(tmp_path: Path) -> Path:
             "Date standard deviation in BP",
             "Full Date One of two formats",
             "Group ID",
+            "Latitude",
+            "Longitude",
             "Locality",
             "Political Entity",
             "Molecular Sex",
@@ -522,6 +610,8 @@ def _tiny_aadr_dir(tmp_path: Path) -> Path:
             "173",
             "2600-2000 BCE",
             "Greece_EBA",
+            "40.4",
+            "-3.7",
             "Example Site",
             "Greece",
             "F",
