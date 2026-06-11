@@ -31,6 +31,12 @@ from indoeuropop.emulator_training import (
     EmulatorTrainingRow,
     emulator_training_dataset_from_sweep_runs,
 )
+from indoeuropop.emulator_validation import (
+    EmulatorPrediction,
+    EmulatorValidationCase,
+    EmulatorValidationReport,
+    validate_emulator_predictions,
+)
 from indoeuropop.epidemics import (
     DECEASED,
     EPIDEMIC_COMPARTMENTS,
@@ -167,8 +173,11 @@ __all__ = [
     "DataSourceCatalog",
     "DataSourceRecord",
     "DiagnosticIssue",
+    "EmulatorPrediction",
     "EmulatorTrainingDataset",
     "EmulatorTrainingRow",
+    "EmulatorValidationCase",
+    "EmulatorValidationReport",
     "EpidemicParameters",
     "EpidemicState",
     "ForcingWindow",
@@ -258,6 +267,7 @@ __all__ = [
     "target_observation_provenance_records",
     "trajectory_summary_payload",
     "trajectory_summary_vector",
+    "validate_emulator_predictions",
     "validate_simulation_result",
     "verify_record_checksum",
     "write_provenance_csv",

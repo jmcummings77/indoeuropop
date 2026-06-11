@@ -59,6 +59,7 @@ src/indoeuropop/
   debugging.py       trajectory comparison helpers for simulation debugging
   diagnostics.py     sanity checks for simulation output quality
   emulator_training.py matrix-ready sweep outputs for future emulators
+  emulator_validation.py compare future emulator predictions to simulator runs
   epidemics.py       compartmental epidemic scaffold
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
@@ -113,6 +114,7 @@ tests/
   digests.
 - Prepare sweep runs as parameter and summary matrices for future emulator
   experiments.
+- Compare future emulator predictions against explicit simulator summaries.
 - Write CLI provenance reports for demo simulations.
 - Load synthetic or published target-observation CSV files.
 - Register local and planned external data sources with citations and optional

@@ -104,6 +104,8 @@ Phase 4: Inference and validation.
   The first emulator-training scaffold turns fingerprinted sweep runs into
   parameter and summary-statistic matrices without training a surrogate model.
 - Revalidate emulator and posterior results against the explicit simulator.
+  The first emulator-validation scaffold compares future emulator summary
+  predictions against explicit simulator summaries by run fingerprint.
 
 ## Visualization And Debugging
 
