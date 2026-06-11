@@ -107,6 +107,56 @@ def test_cli_filter_target_inputs_drops_incomplete_targets(
     assert "target-keep" in filtered_curation.read_text(encoding="utf-8")
 
 
+def test_cli_build_aadr_qpadm_targets_writes_real_target_outputs(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The real target workflow command should write targets and diagnostics."""
+    aadr_dir = _tiny_aadr_dir(tmp_path)
+    groups_path = tmp_path / "groups.tsv"
+    qpadm_path = tmp_path / "qpadm.csv"
+    output_dir = tmp_path / "outputs"
+    groups_path.write_text("greece\tGreece_EBA\n", encoding="utf-8")
+    qpadm_path.write_text(
+        "Genetic ID,steppe_fraction,stderr,qpadm_pvalue\nI001.SG,0.2,0.05,0.4\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "build-aadr-qpadm-targets",
+            "--aadr-dir",
+            str(aadr_dir),
+            "--aadr-groups",
+            str(groups_path),
+            "--qpadm-estimates",
+            str(qpadm_path),
+            "--sample-metadata-out",
+            str(output_dir / "sample-metadata.csv"),
+            "--target-curation-out",
+            str(output_dir / "target-curation.csv"),
+            "--ancestry-estimates-out",
+            str(output_dir / "sample-ancestry.csv"),
+            "--target-output",
+            str(output_dir / "targets.csv"),
+            "--target-diagnostics-json",
+            str(output_dir / "diagnostics.json"),
+        ]
+    )
+    captured = capsys.readouterr()
+    diagnostics = json.loads((output_dir / "diagnostics.json").read_text())
+
+    assert exit_code == 0
+    assert "target_observation_count=1" in captured.out
+    assert "dropped_target_count=0" in captured.out
+    assert diagnostics["retained_target_count"] == 1
+    assert (
+        (output_dir / "targets.csv")
+        .read_text(encoding="utf-8")
+        .startswith("status,region,source,time_bce")
+    )
+
+
 def test_cli_download_sources_materializes_catalog_entries(
     tmp_path: Path,
     capsys: CaptureFixture[str],
@@ -389,6 +439,20 @@ def test_cli_load_aadr_requires_paths(argv: list[str]) -> None:
 )
 def test_cli_load_qpadm_estimates_requires_paths(argv: list[str]) -> None:
     """The qpAdm conversion command should reject incomplete paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["build-aadr-qpadm-targets"],
+        ["build-aadr-qpadm-targets", "--aadr-dir", "aadr"],
+    ],
+)
+def test_cli_build_aadr_qpadm_targets_requires_paths(argv: list[str]) -> None:
+    """The real target workflow should reject incomplete paths."""
     with raises(SystemExit) as exc_info:
         main(argv)
     assert exc_info.value.code == 2

@@ -96,6 +96,21 @@ uv run indoeuropop build-targets \
   --target-output results/aadr-target-observations.csv
 ```
 
+Or run the Python-side conversion, filtering, aggregation, and diagnostics as
+one workflow:
+
+```bash
+uv run indoeuropop build-aadr-qpadm-targets \
+  --aadr-dir data \
+  --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
+  --qpadm-estimates data/qpadm/steppe-estimates.csv \
+  --sample-metadata-out results/aadr-target-sample-metadata.csv \
+  --target-curation-out results/aadr-target-curation.csv \
+  --ancestry-estimates-out results/sample-ancestry-estimates.csv \
+  --target-output results/aadr-target-observations.csv \
+  --target-diagnostics-json results/aadr-target-diagnostics.json
+```
+
 Keep `data/` and `results/` local. The source genotype release, f2 cache, qpAdm
 output, and built target CSVs can be regenerated and are intentionally ignored
 by Git.

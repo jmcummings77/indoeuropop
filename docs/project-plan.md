@@ -78,6 +78,11 @@ Phase 2: Scientific input layer.
   Target inputs can now be filtered after strict qpAdm conversion so unstable
   external models drop whole target rows rather than producing partial or
   silently clipped observations.
+  A single real target-data workflow can now start from local ignored AADR
+  files, reviewed group selections, and an external qpAdm table, then write
+  regenerated target observations plus JSON diagnostics. A committed local AADR
+  catalog records the expected v66.1 quartet filenames and checksums without
+  adding the data files to Git.
 - Compare model output to targets through a validated observation interface,
   never by hard-coding target values inside simulator functions.
 

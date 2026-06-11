@@ -41,8 +41,12 @@ from indoeuropop.data.target_curation import (
     write_target_curation_csv,
 )
 from indoeuropop.data.target_pipeline import filter_target_inputs_for_estimates
+from indoeuropop.orchestration.real_target_cli import (
+    run_build_aadr_qpadm_targets_command,
+)
 
 DATA_COMMANDS = (
+    "build-aadr-qpadm-targets",
     "download-sources",
     "filter-target-inputs",
     "load-aadr",
@@ -58,6 +62,8 @@ def run_data_command(
     parser: argparse.ArgumentParser,
 ) -> int | None:
     """Run a data command, returning `None` when the command is unrelated."""
+    if args.command == "build-aadr-qpadm-targets":
+        return run_build_aadr_qpadm_targets_command(args, parser)
     if args.command == "download-sources":
         return _run_download_sources_command(args, parser)
     if args.command == "filter-target-inputs":
@@ -166,6 +172,11 @@ def add_data_arguments(parser: argparse.ArgumentParser) -> None:
         help="optional output CSV manifest for downloaded sources",
     )
     parser.add_argument("--target-curation-out", type=Path, help="AADR curation CSV")
+    parser.add_argument(
+        "--target-diagnostics-json",
+        type=Path,
+        help="optional JSON diagnostics for real target-data builds",
+    )
     parser.add_argument(
         "--ancestry-method",
         default="external_autosomal_steppe_required",

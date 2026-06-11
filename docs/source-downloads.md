@@ -49,6 +49,10 @@ For Dataverse-hosted releases, use the Dataverse dataset or file-access URL in
 `uri` and set `download_filename` to a reviewed release filename. For Poseidon
 archives or packages, use the archive/API download URL for the selected package.
 
+`curation/local-aadr-v66-data-sources.toml` records the local AADR v66.1 quartet
+expected by the real target workflow. It stores file names and checksums only;
+the large release files stay in ignored root-level `data/`.
+
 ## Guardrail
 
 Downloaded archives are raw source artifacts. They are not target observations

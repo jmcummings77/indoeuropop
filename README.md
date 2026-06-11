@@ -123,6 +123,21 @@ uv run indoeuropop filter-target-inputs \
   --target-curation-out results/filtered-aadr-target-curation.csv
 ```
 
+Build the reviewed real AADR/qpAdm target observations and diagnostics in one
+workflow:
+
+```bash
+uv run indoeuropop build-aadr-qpadm-targets \
+  --aadr-dir data \
+  --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
+  --qpadm-estimates data/qpadm/steppe-estimates.csv \
+  --sample-metadata-out results/aadr-target-sample-metadata.csv \
+  --target-curation-out results/aadr-target-curation.csv \
+  --ancestry-estimates-out results/sample-ancestry-estimates.csv \
+  --target-output results/aadr-target-observations.csv \
+  --target-diagnostics-json results/aadr-target-diagnostics.json
+```
+
 Build target observations from curated sample-level inputs:
 
 ```bash
@@ -174,6 +189,7 @@ docs/
   project-plan.md    implementation roadmap and scientific guardrails
   qpadm-estimates.md
   qpadm-workflow.md
+  real-target-workflow.md
   source-downloads.md
   sweep-workflows.md
   target-data-schema.md

@@ -126,6 +126,21 @@ def test_load_data_source_catalog_reads_toml(tmp_path: Path) -> None:
     assert record.notes == "Not historical evidence"
 
 
+def test_committed_local_aadr_catalog_loads() -> None:
+    """The checked-in local AADR catalog should describe the full quartet."""
+    catalog = load_data_source_catalog("curation/local-aadr-v66-data-sources.toml")
+
+    assert catalog.ids() == (
+        "aadr-v66-p1-1240k-anno",
+        "aadr-v66-p1-1240k-geno",
+        "aadr-v66-p1-1240k-ind",
+        "aadr-v66-p1-1240k-snp",
+    )
+    assert all(record.kind == "aadr" for record in catalog.records)
+    assert all(record.status == "local" for record in catalog.records)
+    assert all(record.has_checksum for record in catalog.records)
+
+
 def test_load_data_source_catalog_rejects_malformed_toml(tmp_path: Path) -> None:
     """Catalog loader should reject missing or malformed data_sources tables."""
     catalog_path = tmp_path / "data-sources.toml"
