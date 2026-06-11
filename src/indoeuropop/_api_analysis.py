@@ -29,6 +29,16 @@ from indoeuropop.analysis.fitting import (
     score_result_against_targets,
     score_target_fit,
 )
+from indoeuropop.analysis.override_sensitivity import (
+    OverrideSensitivityCandidate,
+    OverrideSensitivityScenario,
+    rank_override_sensitivity_scenarios,
+    validation_metric_for,
+)
+from indoeuropop.analysis.override_sensitivity_candidates import (
+    child_override_count_reproduction_interaction_candidates,
+    child_override_sensitivity_candidates,
+)
 from indoeuropop.analysis.refinement import (
     ParameterRangeChange,
     ParameterRefinementCandidate,
@@ -65,6 +75,8 @@ __all__ = [
     "EmulatorTrainingRow",
     "EmulatorValidationCase",
     "EmulatorValidationReport",
+    "OverrideSensitivityCandidate",
+    "OverrideSensitivityScenario",
     "ParameterRangeChange",
     "ParameterRefinementCandidate",
     "ScoredSweepRun",
@@ -81,11 +93,14 @@ __all__ = [
     "analyze_sensitivity",
     "baseline_refinement_candidate",
     "centered_refinement_candidate",
+    "child_override_count_reproduction_interaction_candidates",
+    "child_override_sensitivity_candidates",
     "compare_ancestry_trajectories",
     "compare_deterministic_and_tau_leap",
     "emulator_training_dataset_from_sweep_runs",
     "has_errors",
     "mean_best_sampled_values",
+    "rank_override_sensitivity_scenarios",
     "rank_scored_runs",
     "rank_validated_runs",
     "run_scored_parameter_sweep",
@@ -100,4 +115,5 @@ __all__ = [
     "trajectory_summary_vector",
     "validate_emulator_predictions",
     "validate_simulation_result",
+    "validation_metric_for",
 ]

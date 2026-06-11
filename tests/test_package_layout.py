@@ -20,6 +20,7 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "child_region_overrides": "indoeuropop.orchestration.child_region_overrides",
         "cli": "indoeuropop.orchestration.cli",
         "config": "indoeuropop.simulation.config",
+        "curation_decisions": "indoeuropop.data.curation_decisions",
         "data_cli": "indoeuropop.orchestration.data_cli",
         "data_sources": "indoeuropop.data.data_sources",
         "debugging": "indoeuropop.analysis.debugging",
@@ -42,6 +43,14 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "qpadm_workflow": "indoeuropop.data.qpadm_workflow",
         "override_delta": "indoeuropop.reporting.override_delta",
         "override_delta_workflow": "indoeuropop.orchestration.override_delta",
+        "override_sensitivity": "indoeuropop.analysis.override_sensitivity",
+        "override_sensitivity_candidates": (
+            "indoeuropop.analysis.override_sensitivity_candidates"
+        ),
+        "override_sensitivity_report": "indoeuropop.reporting.override_sensitivity",
+        "override_sensitivity_workflow": (
+            "indoeuropop.orchestration.override_sensitivity"
+        ),
         "report_cli": "indoeuropop.orchestration.report_cli",
         "reproducibility": "indoeuropop.reporting.reproducibility",
         "sample_metadata": "indoeuropop.data.sample_metadata",
@@ -101,6 +110,13 @@ def test_public_api_exports_target_decision_helpers() -> None:
     assert "apply_child_region_overrides" in public_api.__all__
     assert "load_override_delta_report" in public_api.__all__
     assert "run_override_delta_workflow" in public_api.__all__
+    assert "run_child_override_sensitivity_workflow" in public_api.__all__
+    assert "child_override_count_reproduction_interaction_candidates" in (
+        public_api.__all__
+    )
+    assert "override_sensitivity_markdown" in public_api.__all__
+    assert "validate_curation_decision_files" in public_api.__all__
+    assert "CurationDecisionValidationReport" in public_api.__all__
 
 
 def test_project_files_stay_under_line_limits() -> None:

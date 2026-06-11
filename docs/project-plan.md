@@ -170,7 +170,17 @@ Phase 4: Inference and validation.
   checksummed manifests for review artifacts. The first tracked review
   candidate is `curation/aadr-v66-central-europe-child-overrides.toml`, which
   records Britain as the protected holdout and a `0.03` RMSE protected-fold
-  tolerance.
+  tolerance. One-factor child-override sensitivity sweeps now vary nearby
+  counts, pulse rates, pulse windows, and Steppe reproductive multipliers, then
+  rank candidates by priority improvement under the protected-fold constraint.
+  A second-stage interaction command now varies Steppe counts and Steppe
+  reproductive multipliers together for each selected child region to test
+  whether reproductive-multiplier improvements are stable across count priors.
+  The top interaction candidate is now promoted as
+  `curation/aadr-v66-central-europe-child-overrides-interaction-best.toml` after
+  a zero-tolerance protected-fold head-to-head check against the superseded
+  first candidate. The decision record is
+  `docs/central-europe-override-decision.md`.
 - Add emulator code only after full simulator outputs are reproducible.
   The first reproducibility scaffold fingerprints simulation results and sweep
   outputs with canonical JSON and SHA-256 digests for future audit trails.

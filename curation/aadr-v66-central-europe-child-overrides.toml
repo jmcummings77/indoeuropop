@@ -1,13 +1,15 @@
-# Review-candidate child-region priors for the current AADR v66 qpAdm rerun
+# Superseded child-region priors for the current AADR v66 qpAdm rerun
 # target-validation workflow.
 #
-# These values are curated as a reproducible modeling candidate, not as final
-# archaeological estimates. The acceptance gate is the override-delta report
-# using root_mean_squared_error with Britain protected at a maximum tolerated
-# degradation of 0.03 RMSE.
+# These values remain as the reproducible first review candidate and benchmark,
+# not as final archaeological estimates. They were superseded by the
+# interaction-best candidate after the head-to-head override-delta report
+# improved priority validation fit without degrading Britain.
 
 [review]
-status = "review_candidate"
+status = "superseded_review_candidate"
+superseded_by = "curation/aadr-v66-central-europe-child-overrides-interaction-best.toml"
+decision_record = "docs/central-europe-override-decision.md"
 fit_metric = "root_mean_squared_error"
 protected_degradation_tolerance = 0.03
 protected_holdouts = ["britain"]
@@ -18,6 +20,8 @@ priority_holdouts = [
 baseline_validation_fit_csv = "results/qpadm-rerun/central-europe-structured-validation-fit.csv"
 override_validation_fit_csv = "results/qpadm-rerun/central-europe-curated-validation-fit.csv"
 acceptance_gate = "indoeuropop review-override-deltas --refinement-tolerance 0.03"
+sensitivity_gate = "indoeuropop sweep-child-overrides --refinement-tolerance 0.03"
+interaction_gate = "indoeuropop sweep-child-override-interactions --refinement-tolerance 0.03"
 
 [options]
 replace_migration_pulses = true

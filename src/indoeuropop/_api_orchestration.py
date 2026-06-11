@@ -27,6 +27,13 @@ from indoeuropop.orchestration.override_delta import (
     override_delta_experiment_manifest,
     run_override_delta_workflow,
 )
+from indoeuropop.orchestration.override_sensitivity import (
+    OverrideSensitivityOutputPaths,
+    OverrideSensitivityWorkflowResult,
+    override_sensitivity_artifacts,
+    override_sensitivity_experiment_manifest,
+    run_child_override_sensitivity_workflow,
+)
 from indoeuropop.orchestration.sweep_config_export import (
     sweep_spec_to_toml,
     write_sweep_spec_toml,
@@ -100,6 +107,8 @@ __all__ = [
     "ExperimentManifest",
     "OverrideDeltaOutputPaths",
     "OverrideDeltaWorkflowResult",
+    "OverrideSensitivityOutputPaths",
+    "OverrideSensitivityWorkflowResult",
     "ParameterRange",
     "SimulationOutputBundle",
     "SimulationOutputPaths",
@@ -127,7 +136,10 @@ __all__ = [
     "load_child_region_overrides",
     "override_delta_artifacts",
     "override_delta_experiment_manifest",
+    "override_sensitivity_artifacts",
+    "override_sensitivity_experiment_manifest",
     "parameters_with_overrides",
+    "run_child_override_sensitivity_workflow",
     "run_child_region_override_workflow",
     "run_configured_simulation",
     "run_override_delta_workflow",

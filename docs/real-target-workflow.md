@@ -187,6 +187,74 @@ uv run indoeuropop review-override-deltas \
   --fit-metric root_mean_squared_error
 ```
 
+After the curated override passes that gate, run the one-factor sensitivity
+sweep to inspect nearby alternatives:
+
+```bash
+uv run indoeuropop sweep-child-overrides \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides.toml \
+  --priority-validation-value central_europe__germany_tiefbrunn_cordedware_1 \
+  --priority-validation-value central_europe__germany_manchingoberstimm_bellbeaker \
+  --protected-validation-value britain \
+  --refinement-tolerance 0.03 \
+  --override-sensitivity-csv results/qpadm-rerun/central-europe-child-override-sensitivity.csv \
+  --override-sensitivity-report-md results/qpadm-rerun/central-europe-child-override-sensitivity.md \
+  --manifest-json results/qpadm-rerun/central-europe-child-override-sensitivity-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
+When the one-factor sweep points to Steppe reproductive multiplier changes,
+run the focused interaction grid:
+
+```bash
+uv run indoeuropop sweep-child-override-interactions \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides.toml \
+  --priority-validation-value central_europe__germany_tiefbrunn_cordedware_1 \
+  --priority-validation-value central_europe__germany_manchingoberstimm_bellbeaker \
+  --protected-validation-value britain \
+  --refinement-tolerance 0.03 \
+  --override-sensitivity-csv results/qpadm-rerun/central-europe-child-override-interactions.csv \
+  --override-sensitivity-report-md results/qpadm-rerun/central-europe-child-override-interactions.md \
+  --manifest-json results/qpadm-rerun/central-europe-child-override-interactions-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
+The interaction-best file is the active review candidate after direct
+comparison with the superseded first curated candidate. Validate it and rerun
+the same comparison whenever upstream targets or estimates change:
+
+```bash
+uv run indoeuropop apply-child-region-overrides \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --overridden-config-out results/qpadm-rerun/central-europe-interaction-best-comparison.toml
+
+uv run indoeuropop validate-targets \
+  --config results/qpadm-rerun/central-europe-interaction-best-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --validation-field region \
+  --validation-fit-csv results/qpadm-rerun/central-europe-interaction-best-validation-fit.csv \
+  --validation-report-md results/qpadm-rerun/central-europe-interaction-best-validation-report.md \
+  --manifest-json results/qpadm-rerun/central-europe-interaction-best-validation-manifest.json \
+  --fit-metric root_mean_squared_error
+
+uv run indoeuropop review-override-deltas \
+  --baseline-validation-fit-csv results/qpadm-rerun/central-europe-curated-validation-fit.csv \
+  --override-validation-fit-csv results/qpadm-rerun/central-europe-interaction-best-validation-fit.csv \
+  --priority-validation-value central_europe__germany_tiefbrunn_cordedware_1 \
+  --priority-validation-value central_europe__germany_manchingoberstimm_bellbeaker \
+  --protected-validation-value britain \
+  --refinement-tolerance 0 \
+  --override-delta-csv results/qpadm-rerun/central-europe-curated-vs-interaction-best-delta.csv \
+  --override-delta-report-md results/qpadm-rerun/central-europe-curated-vs-interaction-best-delta.md \
+  --manifest-json results/qpadm-rerun/central-europe-curated-vs-interaction-best-delta-manifest.json \
+  --fit-metric root_mean_squared_error
+```
+
 Apply reviewed decisions to already prepared target inputs when you want to
 inspect the filtered curation CSVs directly:
 

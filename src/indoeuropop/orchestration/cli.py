@@ -13,6 +13,11 @@ from indoeuropop.orchestration.data_cli import (
     add_data_arguments,
     run_data_command,
 )
+from indoeuropop.orchestration.override_sensitivity_cli import (
+    OVERRIDE_SENSITIVITY_COMMANDS,
+    add_override_sensitivity_arguments,
+    run_override_sensitivity_command,
+)
 from indoeuropop.orchestration.qpadm_cli import QPADM_COMMANDS, run_qpadm_command
 from indoeuropop.orchestration.report_cli import (
     REPORT_COMMANDS,
@@ -56,6 +61,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     decision_exit_code = run_target_decision_command(args, parser)
     if decision_exit_code is not None:
         return decision_exit_code
+    override_sensitivity_exit_code = run_override_sensitivity_command(args, parser)
+    if override_sensitivity_exit_code is not None:
+        return override_sensitivity_exit_code
     qpadm_exit_code = run_qpadm_command(args, parser)
     if qpadm_exit_code is not None:
         return qpadm_exit_code
@@ -192,6 +200,7 @@ def _build_parser() -> argparse.ArgumentParser:
             *QPADM_COMMANDS,
             *TARGET_COMMANDS,
             *TARGET_DECISION_COMMANDS,
+            *OVERRIDE_SENSITIVITY_COMMANDS,
             *REPORT_COMMANDS,
         ),
         help="run a CLI workflow",
@@ -269,6 +278,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     add_data_arguments(parser)
     add_target_arguments(parser)
+    add_override_sensitivity_arguments(parser)
     add_report_arguments(parser)
     return parser
 

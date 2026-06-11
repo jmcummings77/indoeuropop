@@ -19,6 +19,14 @@ from indoeuropop.reporting.override_delta import (
     write_override_delta_csv,
     write_override_delta_markdown,
 )
+from indoeuropop.reporting.override_sensitivity import (
+    OVERRIDE_SENSITIVITY_FIELDS,
+    override_sensitivity_markdown,
+    override_sensitivity_summary_rows,
+    override_sensitivity_summary_to_csv,
+    write_override_sensitivity_markdown,
+    write_override_sensitivity_summary_csv,
+)
 from indoeuropop.reporting.provenance import (
     ProvenanceRecord,
     summary_provenance_records,
@@ -122,6 +130,7 @@ __all__ = [
     "HIGH_STANDARD_ERROR_THRESHOLD",
     "IDENTICAL_ESTIMATE_TOLERANCE",
     "OVERRIDE_DELTA_FIELDS",
+    "OVERRIDE_SENSITIVITY_FIELDS",
     "REFINEMENT_RANGE_FIELDS",
     "REFINEMENT_SUMMARY_FIELDS",
     "TARGET_COMPARISON_FIELDS",
@@ -150,6 +159,9 @@ __all__ = [
     "override_delta_markdown",
     "override_delta_rows",
     "override_delta_to_csv",
+    "override_sensitivity_markdown",
+    "override_sensitivity_summary_rows",
+    "override_sensitivity_summary_to_csv",
     "plot_ancestry",
     "plot_ancestry_comparison",
     "plot_population_total",
@@ -193,6 +205,8 @@ __all__ = [
     "trajectory_summary_payload",
     "write_override_delta_csv",
     "write_override_delta_markdown",
+    "write_override_sensitivity_markdown",
+    "write_override_sensitivity_summary_csv",
     "write_provenance_csv",
     "write_qpadm_rerun_comparison_csv",
     "write_qpadm_rerun_ingestion_diagnostics_json",

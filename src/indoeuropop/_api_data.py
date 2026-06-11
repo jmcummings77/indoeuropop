@@ -5,6 +5,12 @@ from indoeuropop.data.ancestry_estimates import (
     SampleAncestryEstimateDataset,
     load_sample_ancestry_estimates,
 )
+from indoeuropop.data.curation_decisions import (
+    CurationDecisionRecord,
+    CurationDecisionValidationReport,
+    load_curation_decision_record,
+    validate_curation_decision_files,
+)
 from indoeuropop.data.data_sources import (
     DataSourceCatalog,
     DataSourceRecord,
@@ -102,6 +108,8 @@ __all__ = [
     "TARGET_DECISION_COLUMNS",
     "TARGET_DEFER_DECISIONS",
     "TARGET_INCLUDE_DECISIONS",
+    "CurationDecisionRecord",
+    "CurationDecisionValidationReport",
     "DataSourceCatalog",
     "DataSourceRecord",
     "DownloadOptions",
@@ -136,6 +144,7 @@ __all__ = [
     "download_catalog_sources",
     "download_data_source",
     "load_and_build_target_dataset",
+    "load_curation_decision_record",
     "load_data_source_catalog",
     "load_qpadm_rerun_manifest_inputs",
     "load_sample_ancestry_estimates",
@@ -155,6 +164,7 @@ __all__ = [
     "target_note_metadata",
     "target_note_value",
     "target_observation_rows",
+    "validate_curation_decision_files",
     "verify_record_checksum",
     "write_decision_filtered_target_inputs",
     "write_download_manifest_csv",

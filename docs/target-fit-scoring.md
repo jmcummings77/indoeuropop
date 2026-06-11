@@ -87,8 +87,32 @@ writes fold-level override-minus-baseline deltas. Use priority values for folds
 that should improve and protected values for folds that should not degrade
 before promoting an override into committed curation.
 
-The current tracked central-Europe candidate is
+The superseded first central-Europe candidate is
 `curation/aadr-v66-central-europe-child-overrides.toml`. It documents Britain
 as the protected holdout and sets the explicit protected-fold tolerance to
-`0.03` RMSE; pass the same value with `--refinement-tolerance 0.03` when running
-the override-delta acceptance report.
+`0.03` RMSE; pass the same value with `--refinement-tolerance 0.03` when
+reproducing its original override-delta acceptance report.
+
+`indoeuropop sweep-child-overrides` ranks nearby one-factor variants of that
+override file. The default surface varies local/Steppe counts, migration-pulse
+annual rates, pulse windows, and Steppe reproductive multipliers, then reports
+which candidates improve priority holdouts while keeping protected holdouts
+within the same tolerance.
+
+`indoeuropop sweep-child-override-interactions` runs the second-stage local grid
+for Steppe count and Steppe reproductive multiplier factors together. It varies
+one child region at a time, so the ranked report tests whether a reproductive
+multiplier signal survives nearby Steppe count assumptions.
+
+The current active central-Europe review candidate is
+`curation/aadr-v66-central-europe-child-overrides-interaction-best.toml`. Its
+head-to-head gate compares the superseded curated validation fit CSV against the
+interaction-best validation fit CSV with `--refinement-tolerance 0`, so any
+protected Britain degradation is flagged. The promotion rationale is recorded in
+`docs/central-europe-override-decision.md`.
+
+`validate_curation_decision_files` provides the lightweight guardrail for this
+promotion metadata. In strict local-artifact mode it verifies that active and
+superseded curation files point at each other, linked decision records exist,
+validation CSVs exist, and the delta manifest still matches the referenced
+artifact paths and SHA-256 checksums.

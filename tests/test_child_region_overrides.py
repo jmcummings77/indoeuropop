@@ -23,14 +23,18 @@ from indoeuropop.simulation.config import load_sweep_spec
 from indoeuropop.simulation.events import MigrationPulse, SimulationSchedule
 
 
-def test_checked_in_central_europe_child_override_loads_with_review_metadata() -> None:
-    """The tracked central-Europe override should load and document its gate."""
+def test_checked_in_superseded_child_override_loads_with_review_metadata() -> None:
+    """The superseded central-Europe override should load and document lineage."""
     path = Path("curation/aadr-v66-central-europe-child-overrides.toml")
     overrides = load_child_region_overrides(path)
     with path.open("rb") as override_file:
         metadata = tomllib.load(override_file)["review"]
 
-    assert metadata["status"] == "review_candidate"
+    assert metadata["status"] == "superseded_review_candidate"
+    assert metadata["superseded_by"].endswith(
+        "central-europe-child-overrides-interaction-best.toml"
+    )
+    assert metadata["decision_record"] == "docs/central-europe-override-decision.md"
     assert metadata["protected_degradation_tolerance"] == pytest.approx(0.03)
     assert metadata["protected_holdouts"] == ["britain"]
     assert len(overrides.counts) == 2
@@ -40,6 +44,28 @@ def test_checked_in_central_europe_child_override_loads_with_review_metadata() -
         == 42.0
     )
     assert len(overrides.migration_pulses) == 2
+
+
+def test_checked_in_interaction_best_candidate_loads_with_metadata() -> None:
+    """The tracked interaction-best candidate should load and document lineage."""
+    path = Path(
+        "curation/aadr-v66-central-europe-child-overrides-interaction-best.toml"
+    )
+    overrides = load_child_region_overrides(path)
+    with path.open("rb") as override_file:
+        metadata = tomllib.load(override_file)["review"]
+
+    assert metadata["status"] == "review_candidate"
+    assert metadata["parent_override"].endswith("central-europe-child-overrides.toml")
+    assert metadata["supersedes"].endswith("central-europe-child-overrides.toml")
+    assert metadata["decision_record"] == "docs/central-europe-override-decision.md"
+    assert metadata["protected_degradation_tolerance"] == pytest.approx(0.0)
+    assert overrides.counts["central_europe__germany_tiefbrunn_cordedware_1"][
+        "steppe"
+    ] == pytest.approx(37.8)
+    assert overrides.source_parameters[
+        "central_europe__germany_tiefbrunn_cordedware_1"
+    ]["steppe"].reproductive_multiplier == pytest.approx(1.062)
 
 
 def test_child_region_override_workflow_writes_loadable_config(

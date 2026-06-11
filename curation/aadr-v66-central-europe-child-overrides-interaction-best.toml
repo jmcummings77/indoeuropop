@@ -1,0 +1,66 @@
+# Active interaction-best review candidate for the current AADR v66
+# central-Europe child-region override review.
+#
+# This file is derived from the tracked review candidate after the second-stage
+# count-by-reproduction interaction sweep. It supersedes the first review
+# candidate after the head-to-head validation report improved priority fit
+# without degrading the protected Britain fold.
+
+[review]
+status = "review_candidate"
+parent_override = "curation/aadr-v66-central-europe-child-overrides.toml"
+supersedes = "curation/aadr-v66-central-europe-child-overrides.toml"
+decision_record = "docs/central-europe-override-decision.md"
+source_report = "results/qpadm-rerun/central-europe-child-override-interactions.md"
+source_delta_report = "results/qpadm-rerun/central-europe-curated-vs-interaction-best-delta.md"
+fit_metric = "root_mean_squared_error"
+protected_degradation_tolerance = 0.0
+protected_holdouts = ["britain"]
+priority_holdouts = [
+  "central_europe__germany_tiefbrunn_cordedware_1",
+  "central_europe__germany_manchingoberstimm_bellbeaker",
+]
+baseline_validation_fit_csv = "results/qpadm-rerun/central-europe-curated-validation-fit.csv"
+override_validation_fit_csv = "results/qpadm-rerun/central-europe-interaction-best-validation-fit.csv"
+acceptance_gate = "indoeuropop review-override-deltas --refinement-tolerance 0"
+
+[options]
+replace_migration_pulses = true
+
+# Same local count, pulse, and region-level migration-rate assumption as the
+# review candidate, but with the interaction-best Steppe count factor 0.9.
+[counts.central_europe__germany_tiefbrunn_cordedware_1]
+local = 760
+steppe = 37.8
+
+[[migration_pulses]]
+region = "central_europe__germany_tiefbrunn_cordedware_1"
+start_bce = 2980
+end_bce = 2450
+annual_rate = 0.00014
+
+[region_parameters.central_europe__germany_tiefbrunn_cordedware_1]
+migration_rate = 0.0002
+
+# Interaction-best Steppe reproductive multiplier factor 0.9:
+# 1.18 * 0.9 = 1.062.
+[source_parameters.central_europe__germany_tiefbrunn_cordedware_1.steppe]
+reproductive_multiplier = 1.062
+
+# Manching/Oberstimm remains unchanged from the review candidate so the
+# head-to-head comparison isolates the Tiefbrunn interaction adjustment.
+[counts.central_europe__germany_manchingoberstimm_bellbeaker]
+local = 900
+steppe = 35
+
+[[migration_pulses]]
+region = "central_europe__germany_manchingoberstimm_bellbeaker"
+start_bce = 2600
+end_bce = 2000
+annual_rate = 0.0001
+
+[region_parameters.central_europe__germany_manchingoberstimm_bellbeaker]
+migration_rate = 0.00015
+
+[source_parameters.central_europe__germany_manchingoberstimm_bellbeaker.steppe]
+reproductive_multiplier = 1.12

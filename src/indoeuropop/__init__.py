@@ -15,6 +15,7 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "child_region_overrides": "indoeuropop.orchestration.child_region_overrides",
     "cli": "indoeuropop.orchestration.cli",
     "config": "indoeuropop.simulation.config",
+    "curation_decisions": "indoeuropop.data.curation_decisions",
     "data_cli": "indoeuropop.orchestration.data_cli",
     "data_sources": "indoeuropop.data.data_sources",
     "debugging": "indoeuropop.analysis.debugging",
@@ -37,6 +38,12 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "qpadm_workflow": "indoeuropop.data.qpadm_workflow",
     "override_delta": "indoeuropop.reporting.override_delta",
     "override_delta_workflow": "indoeuropop.orchestration.override_delta",
+    "override_sensitivity": "indoeuropop.analysis.override_sensitivity",
+    "override_sensitivity_candidates": (
+        "indoeuropop.analysis.override_sensitivity_candidates"
+    ),
+    "override_sensitivity_report": "indoeuropop.reporting.override_sensitivity",
+    "override_sensitivity_workflow": ("indoeuropop.orchestration.override_sensitivity"),
     "report_cli": "indoeuropop.orchestration.report_cli",
     "reproducibility": "indoeuropop.reporting.reproducibility",
     "sample_metadata": "indoeuropop.data.sample_metadata",
