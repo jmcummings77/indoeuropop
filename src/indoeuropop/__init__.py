@@ -54,6 +54,14 @@ from indoeuropop.events import (
     SimulationSchedule,
     TimeWindow,
 )
+from indoeuropop.experiments import (
+    ARTIFACT_ROLES,
+    ArtifactRole,
+    ExperimentArtifact,
+    ExperimentManifest,
+    artifact_from_path,
+    experiment_manifest_records,
+)
 from indoeuropop.fitting import (
     ScoredSweepRun,
     TargetFit,
@@ -155,6 +163,7 @@ from indoeuropop.visualization import (
 
 __all__ = [
     "ADULT",
+    "ARTIFACT_ROLES",
     "DECEASED",
     "ELDER",
     "EPIDEMIC_COMPARTMENTS",
@@ -170,6 +179,7 @@ __all__ = [
     "AgeStructureParameters",
     "AgeStructuredState",
     "AncestryComparison",
+    "ArtifactRole",
     "DataSourceCatalog",
     "DataSourceRecord",
     "DiagnosticIssue",
@@ -180,6 +190,8 @@ __all__ = [
     "EmulatorValidationReport",
     "EpidemicParameters",
     "EpidemicState",
+    "ExperimentArtifact",
+    "ExperimentManifest",
     "ForcingWindow",
     "MigrationPulse",
     "ParameterRange",
@@ -219,6 +231,7 @@ __all__ = [
     "advance_age_structure",
     "advance_epidemic",
     "analyze_sensitivity",
+    "artifact_from_path",
     "canonical_json_payload",
     "compare_ancestry_trajectories",
     "compare_deterministic_and_tau_leap",
@@ -226,6 +239,7 @@ __all__ = [
     "diagnostic_issue_records",
     "emulator_training_dataset_from_sweep_runs",
     "expected_births_by_source",
+    "experiment_manifest_records",
     "fingerprint_payload",
     "fingerprint_simulation_result",
     "fingerprint_sweep_collection",

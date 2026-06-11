@@ -103,6 +103,11 @@ Phase 4: Inference and validation.
   outputs with canonical JSON and SHA-256 digests for future audit trails.
   The first emulator-training scaffold turns fingerprinted sweep runs into
   parameter and summary-statistic matrices without training a surrogate model.
+- Bundle reproducible workflow outputs into experiment manifests before adding
+  heavier orchestration.
+  The first experiment-manifest scaffold records output artifacts, optional
+  SHA-256 checksums, and reproducibility fingerprints as derived provenance
+  records.
 - Revalidate emulator and posterior results against the explicit simulator.
   The first emulator-validation scaffold compares future emulator summary
   predictions against explicit simulator summaries by run fingerprint.

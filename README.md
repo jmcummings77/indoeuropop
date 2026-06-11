@@ -61,6 +61,7 @@ src/indoeuropop/
   emulator_training.py matrix-ready sweep outputs for future emulators
   emulator_validation.py compare future emulator predictions to simulator runs
   epidemics.py       compartmental epidemic scaffold
+  experiments.py     experiment manifests for reproducible output bundles
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
   reporting.py       CSV export helpers for provenance and diagnostics
@@ -112,6 +113,8 @@ tests/
 - Export provenance and diagnostic records to rectangular CSV tables.
 - Fingerprint simulation results and sweep outputs with canonical SHA-256
   digests.
+- Bundle run artifacts and fingerprints into experiment manifests that can be
+  converted to provenance records.
 - Prepare sweep runs as parameter and summary matrices for future emulator
   experiments.
 - Compare future emulator predictions against explicit simulator summaries.
