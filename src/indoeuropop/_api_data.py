@@ -1,0 +1,111 @@
+"""Public data-layer exports for top-level package imports."""
+
+from indoeuropop.data.ancestry_estimates import (
+    SampleAncestryEstimate,
+    SampleAncestryEstimateDataset,
+    load_sample_ancestry_estimates,
+)
+from indoeuropop.data.data_sources import (
+    DataSourceCatalog,
+    DataSourceRecord,
+    load_data_source_catalog,
+    sha256_file,
+    verify_record_checksum,
+)
+from indoeuropop.data.sample_metadata import (
+    RegionSampleCount,
+    SampleMetadataDataset,
+    SampleMetadataRecord,
+    load_sample_metadata,
+)
+from indoeuropop.data.source_downloader import (
+    DownloadedSource,
+    DownloadOptions,
+    download_catalog_sources,
+    download_data_source,
+    write_download_manifest_csv,
+)
+from indoeuropop.data.target_curation import (
+    TargetCurationDataset,
+    TargetCurationRecord,
+    load_target_curation,
+)
+from indoeuropop.data.target_decisions import (
+    TARGET_DECISION_COLUMNS,
+    TARGET_DECISIONS,
+    TARGET_DEFER_DECISIONS,
+    TARGET_INCLUDE_DECISIONS,
+    TargetDecision,
+    TargetDecisionApplicationResult,
+    TargetDecisionDataset,
+    TargetDecisionRecord,
+    apply_target_decisions,
+    load_target_decisions,
+    target_decision_rows,
+    target_decisions_to_csv,
+    write_decision_filtered_target_inputs,
+    write_target_decisions_csv,
+)
+from indoeuropop.data.target_pipeline import (
+    TargetBuildOptions,
+    build_target_dataset,
+    load_and_build_target_dataset,
+)
+from indoeuropop.data.targets import (
+    TARGET_COLUMNS,
+    TargetComparison,
+    TargetDataset,
+    TargetObservation,
+    load_target_dataset,
+    target_dataset_to_csv,
+    target_observation_rows,
+    write_target_dataset_csv,
+)
+
+__all__ = [
+    "TARGET_COLUMNS",
+    "TARGET_DECISIONS",
+    "TARGET_DECISION_COLUMNS",
+    "TARGET_DEFER_DECISIONS",
+    "TARGET_INCLUDE_DECISIONS",
+    "DataSourceCatalog",
+    "DataSourceRecord",
+    "DownloadOptions",
+    "DownloadedSource",
+    "RegionSampleCount",
+    "SampleAncestryEstimate",
+    "SampleAncestryEstimateDataset",
+    "SampleMetadataDataset",
+    "SampleMetadataRecord",
+    "TargetBuildOptions",
+    "TargetComparison",
+    "TargetCurationDataset",
+    "TargetCurationRecord",
+    "TargetDataset",
+    "TargetDecision",
+    "TargetDecisionApplicationResult",
+    "TargetDecisionDataset",
+    "TargetDecisionRecord",
+    "TargetObservation",
+    "apply_target_decisions",
+    "build_target_dataset",
+    "download_catalog_sources",
+    "download_data_source",
+    "load_and_build_target_dataset",
+    "load_data_source_catalog",
+    "load_sample_ancestry_estimates",
+    "load_sample_metadata",
+    "load_target_curation",
+    "load_target_dataset",
+    "load_target_decisions",
+    "sha256_file",
+    "target_dataset_to_csv",
+    "target_decision_rows",
+    "target_decisions_to_csv",
+    "target_observation_rows",
+    "verify_record_checksum",
+    "write_decision_filtered_target_inputs",
+    "write_download_manifest_csv",
+    "write_target_dataset_csv",
+    "write_target_decisions_csv",
+]

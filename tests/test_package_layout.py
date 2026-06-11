@@ -1,6 +1,11 @@
 """Package organization and compatibility import tests."""
 
 from importlib import import_module
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SOURCE_FILE_LINE_LIMIT = 400
+TEST_AND_DOC_FILE_LINE_LIMIT = 1000
 
 
 def test_legacy_module_names_resolve_to_new_subpackages() -> None:
@@ -57,3 +62,37 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         imported_module = import_module(f"indoeuropop.{module_name}")
 
         assert imported_module.__name__ == expected_name
+
+
+def test_public_api_exports_target_decision_helpers() -> None:
+    """Expose target-decision helpers through the top-level package."""
+
+    public_api = import_module("indoeuropop")
+
+    assert "TargetDecisionDataset" in public_api.__all__
+    assert "apply_target_decisions" in public_api.__all__
+
+
+def test_project_files_stay_under_line_limits() -> None:
+    """Keep source, test, and documentation files within project limits."""
+
+    checked_roots = (
+        (PROJECT_ROOT / "src", "*.py", SOURCE_FILE_LINE_LIMIT),
+        (PROJECT_ROOT / "tests", "*.py", TEST_AND_DOC_FILE_LINE_LIMIT),
+        (PROJECT_ROOT / "docs", "*.md", TEST_AND_DOC_FILE_LINE_LIMIT),
+    )
+    oversized_files: list[str] = []
+    for root, pattern, line_limit in checked_roots:
+        for path in root.rglob(pattern):
+            line_count = _line_count(path)
+            if line_count > line_limit:
+                relative_path = path.relative_to(PROJECT_ROOT)
+                oversized_files.append(f"{relative_path}: {line_count}>{line_limit}")
+
+    assert oversized_files == []
+
+
+def _line_count(path: Path) -> int:
+    """Return the number of text lines in a project file."""
+
+    return len(path.read_text(encoding="utf-8").splitlines())
