@@ -204,9 +204,10 @@ def _aadr_note(row: dict[str, str], group_id: str) -> str:
 
 def _sample_sex(value: str) -> SampleSex:
     """Map AADR molecular sex labels to project sample sex labels."""
-    if value not in AADR_SEX_MAP:
+    base_value = value.split(maxsplit=1)[0] if value else value
+    if base_value not in AADR_SEX_MAP:
         raise ValueError(f"unsupported AADR molecular sex label: {value}")
-    return AADR_SEX_MAP[value]
+    return AADR_SEX_MAP[base_value]
 
 
 def _single_file(root: Path, pattern: str) -> Path:

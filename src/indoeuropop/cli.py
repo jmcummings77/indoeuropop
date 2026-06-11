@@ -7,6 +7,12 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from indoeuropop.aadr import write_aadr_sample_metadata_csv
+from indoeuropop.aadr_curation import (
+    AADRTargetInputOptions,
+    load_aadr_group_selections,
+    prepare_aadr_target_inputs,
+    write_aadr_target_inputs,
+)
 from indoeuropop.config import default_config, load_config, load_sweep_spec
 from indoeuropop.data_sources import load_data_source_catalog
 from indoeuropop.source_downloader import (
@@ -35,6 +41,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_download_sources_command(args, parser)
     if args.command == "load-aadr":
         return _run_load_aadr_command(args, parser)
+    if args.command == "prepare-aadr-target-inputs":
+        return _run_prepare_aadr_target_inputs_command(args, parser)
     if args.command == "sweep":
         return _run_sweep_command(args, parser)
     return _run_demo_command(args)
@@ -153,6 +161,47 @@ def _run_load_aadr_command(
     return 0
 
 
+def _run_prepare_aadr_target_inputs_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI AADR target-input preparation command."""
+    if args.aadr_dir is None:
+        parser.error("prepare-aadr-target-inputs requires --aadr-dir")
+    if args.aadr_groups is None:
+        parser.error("prepare-aadr-target-inputs requires --aadr-groups")
+    if args.sample_metadata_out is None:
+        parser.error("prepare-aadr-target-inputs requires --sample-metadata-out")
+    if args.target_curation_out is None:
+        parser.error("prepare-aadr-target-inputs requires --target-curation-out")
+
+    selections = load_aadr_group_selections(args.aadr_groups)
+    inputs = prepare_aadr_target_inputs(
+        args.aadr_dir,
+        selections,
+        options=AADRTargetInputOptions(
+            dataset_id=args.aadr_dataset_id,
+            source=args.source,
+            ancestry_method=args.ancestry_method,
+            aggregation_method=args.aggregation_method,
+            group_match_mode=args.aadr_group_match,
+            citation_key=args.aadr_dataset_id,
+            allow_missing_groups=args.allow_missing_aadr_groups,
+        ),
+    )
+    paths = write_aadr_target_inputs(
+        inputs,
+        sample_metadata_path=args.sample_metadata_out,
+        target_curation_path=args.target_curation_out,
+    )
+    print(f"aadr_selected_sample_count={inputs.sample_metadata.sample_count}")
+    print(f"target_curation_count={len(inputs.curation.records)}")
+    print(f"aadr_sample_metadata={paths.sample_metadata_path}")
+    print(f"target_curation={paths.target_curation_path}")
+    for selection in inputs.unmatched_selections:
+        print(f"unmatched_aadr_group={selection.region},{selection.group_id}")
+    return 0
+
+
 def _run_sweep_command(
     args: argparse.Namespace, parser: argparse.ArgumentParser
 ) -> int:
@@ -206,11 +255,15 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="indoeuropop")
     parser.add_argument(
         "command",
-        choices=("build-targets", "demo", "download-sources", "load-aadr", "sweep"),
-        help=(
-            "run a smoke simulation, deterministic sweep, source download, "
-            "AADR load, or target builder"
+        choices=(
+            "build-targets",
+            "demo",
+            "download-sources",
+            "load-aadr",
+            "prepare-aadr-target-inputs",
+            "sweep",
         ),
+        help="run a CLI workflow",
     )
     parser.add_argument("--config", type=Path, help="path to a TOML config file")
     parser.add_argument("--aadr-dir", type=Path, help="directory containing AADR files")
@@ -219,16 +272,16 @@ def _build_parser() -> argparse.ArgumentParser:
         default="aadr-v66-p1-1240k",
         help="dataset ID to assign to exported AADR sample metadata",
     )
+    parser.add_argument("--aadr-limit", type=int, help="optional AADR row limit")
+    parser.add_argument("--aadr-groups", type=Path, help="AADR region/group file")
     parser.add_argument(
-        "--aadr-limit",
-        type=int,
-        help="optional row limit for AADR metadata loading",
+        "--aadr-group-match",
+        choices=("exact", "prefix"),
+        default="exact",
+        help="how AADR group selections match observed group IDs",
     )
-    parser.add_argument(
-        "--sample-metadata-out",
-        type=Path,
-        help="output sample metadata CSV for AADR loading",
-    )
+    parser.add_argument("--allow-missing-aadr-groups", action="store_true")
+    parser.add_argument("--sample-metadata-out", type=Path, help="AADR metadata CSV")
     parser.add_argument(
         "--data-sources",
         type=Path,
@@ -271,10 +324,21 @@ def _build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="target curation CSV for target building",
     )
+    parser.add_argument("--target-curation-out", type=Path, help="AADR curation CSV")
     parser.add_argument(
         "--ancestry-estimates",
         type=Path,
         help="sample ancestry estimate CSV for target building",
+    )
+    parser.add_argument(
+        "--ancestry-method",
+        default="external_autosomal_steppe_required",
+        help="ancestry method label to write into prepared AADR curation rows",
+    )
+    parser.add_argument(
+        "--aggregation-method",
+        default="unweighted_mean",
+        help="aggregation method label to write into prepared AADR curation rows",
     )
     parser.add_argument(
         "--target-output",

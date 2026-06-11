@@ -6,25 +6,13 @@ import pytest
 
 from indoeuropop.sample_metadata import SampleMetadataDataset, SampleMetadataRecord
 from indoeuropop.target_curation import (
+    TARGET_CURATION_COLUMNS,
     TargetCurationDataset,
     TargetCurationRecord,
     load_target_curation,
-)
-
-CURATION_COLUMNS = (
-    "status",
-    "target_id",
-    "region",
-    "source",
-    "start_bce",
-    "end_bce",
-    "sample_ids",
-    "sample_count",
-    "ancestry_method",
-    "aggregation_method",
-    "citation_key",
-    "citation",
-    "note",
+    target_curation_rows,
+    target_curation_to_csv,
+    write_target_curation_csv,
 )
 
 
@@ -34,6 +22,7 @@ def _record(
     region: str = "britain",
     source: str = "steppe",
     sample_ids: tuple[str, ...] = ("SYN001", "SYN002"),
+    note: str = "",
 ) -> TargetCurationRecord:
     """Build one target curation record for tests."""
     return TargetCurationRecord(
@@ -49,6 +38,7 @@ def _record(
         aggregation_method="synthetic_mean",
         citation_key="synthetic-curation",
         citation="Synthetic curation example",
+        note=note,
     )
 
 
@@ -108,7 +98,7 @@ def _csv_row(
 
 def _csv_text(*rows: tuple[str, ...]) -> str:
     """Return target curation CSV text from rows of cell values."""
-    header = ",".join(CURATION_COLUMNS)
+    header = ",".join(TARGET_CURATION_COLUMNS)
     return "\n".join((header, *((",".join(row)) for row in rows)))
 
 
@@ -200,6 +190,22 @@ def test_load_target_curation_reads_csv(tmp_path: Path) -> None:
     assert dataset.records[0].sample_ids == ("SYN001", "SYN002")
     assert dataset.records[0].note == "First row"
     assert dataset.records[1].note == ""
+
+
+def test_target_curation_csv_exports_round_trip(tmp_path: Path) -> None:
+    """Target curation rows should export and load through the public schema."""
+    output_path = tmp_path / "outputs" / "target-curation.csv"
+    dataset = TargetCurationDataset.from_rows((_record(note="Exported row"),))
+
+    returned_path = write_target_curation_csv(dataset, output_path)
+    output_text = target_curation_to_csv(dataset)
+    rows = target_curation_rows(dataset)
+    loaded = load_target_curation(output_path)
+
+    assert returned_path == output_path
+    assert output_text.startswith("status,target_id,region")
+    assert rows[0]["sample_ids"] == "SYN001;SYN002"
+    assert loaded.records[0].note == "Exported row"
 
 
 def test_load_target_curation_rejects_missing_header(tmp_path: Path) -> None:

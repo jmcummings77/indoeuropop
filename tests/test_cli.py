@@ -107,6 +107,55 @@ def test_cli_load_aadr_writes_sample_metadata(
     assert "published,aadr-v66-p1-1240k,I001.SG" in output_text
 
 
+def test_cli_prepare_aadr_target_inputs_writes_real_input_csvs(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The CLI should prepare target-pipeline inputs from AADR groups."""
+    aadr_dir = _tiny_aadr_dir(tmp_path)
+    groups_path = tmp_path / "groups.tsv"
+    sample_output = tmp_path / "outputs" / "aadr-samples.csv"
+    curation_output = tmp_path / "outputs" / "aadr-curation.csv"
+    groups_path.write_text(
+        "region\taadr_group_id\ngreece\tGreece\nmissing\tMissing_Group\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "prepare-aadr-target-inputs",
+            "--aadr-dir",
+            str(aadr_dir),
+            "--aadr-groups",
+            str(groups_path),
+            "--aadr-group-match",
+            "prefix",
+            "--allow-missing-aadr-groups",
+            "--sample-metadata-out",
+            str(sample_output),
+            "--target-curation-out",
+            str(curation_output),
+            "--ancestry-method",
+            "qpAdm_pending",
+            "--aggregation-method",
+            "unweighted_mean",
+        ]
+    )
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "aadr_selected_sample_count=1" in captured.out
+    assert "target_curation_count=1" in captured.out
+    assert "unmatched_aadr_group=missing,Missing_Group" in captured.out
+    assert "published,aadr-v66-p1-1240k,I001.SG" in sample_output.read_text(
+        encoding="utf-8"
+    )
+    assert "published,aadr-greece-steppe-greece" in curation_output.read_text(
+        encoding="utf-8"
+    )
+    assert "qpAdm_pending" in curation_output.read_text(encoding="utf-8")
+
+
 @pytest.mark.parametrize(
     "argv",
     [
@@ -120,6 +169,36 @@ def test_cli_load_aadr_writes_sample_metadata(
 )
 def test_cli_load_aadr_requires_paths(argv: list[str]) -> None:
     """The AADR command should reject incomplete input paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["prepare-aadr-target-inputs"],
+        ["prepare-aadr-target-inputs", "--aadr-dir", "aadr"],
+        [
+            "prepare-aadr-target-inputs",
+            "--aadr-dir",
+            "aadr",
+            "--aadr-groups",
+            "groups.tsv",
+        ],
+        [
+            "prepare-aadr-target-inputs",
+            "--aadr-dir",
+            "aadr",
+            "--aadr-groups",
+            "groups.tsv",
+            "--sample-metadata-out",
+            "samples.csv",
+        ],
+    ],
+)
+def test_cli_prepare_aadr_target_inputs_requires_paths(argv: list[str]) -> None:
+    """The AADR target-input command should reject incomplete paths."""
     with raises(SystemExit) as exc_info:
         main(argv)
     assert exc_info.value.code == 2

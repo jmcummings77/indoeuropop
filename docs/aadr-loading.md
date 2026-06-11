@@ -43,3 +43,9 @@ AADR sample metadata is not yet a target observation file. It still needs
 sample-level ancestry estimates, curation windows, modeled-region review, and
 aggregation through the target data pipeline before it can be used for fit
 scoring.
+
+For the next real-data preparation step, see
+`docs/aadr-target-inputs.md`. That command filters AADR samples by reviewed group
+IDs and writes modeled-region sample metadata plus target-curation rows, while
+still requiring external ancestry estimates before target observations are
+built.

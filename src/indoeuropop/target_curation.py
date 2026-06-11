@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from collections.abc import Iterable
 from dataclasses import dataclass
+from io import StringIO
 from math import isfinite
 from pathlib import Path
 from typing import Literal, cast
@@ -15,23 +16,23 @@ CurationStatus = Literal["synthetic", "published"]
 
 CURATION_STATUSES = frozenset({"synthetic", "published"})
 
-REQUIRED_CURATION_COLUMNS = frozenset(
-    {
-        "status",
-        "target_id",
-        "region",
-        "source",
-        "start_bce",
-        "end_bce",
-        "sample_ids",
-        "sample_count",
-        "ancestry_method",
-        "aggregation_method",
-        "citation_key",
-        "citation",
-        "note",
-    }
+TARGET_CURATION_COLUMNS = (
+    "status",
+    "target_id",
+    "region",
+    "source",
+    "start_bce",
+    "end_bce",
+    "sample_ids",
+    "sample_count",
+    "ancestry_method",
+    "aggregation_method",
+    "citation_key",
+    "citation",
+    "note",
 )
+
+REQUIRED_CURATION_COLUMNS = frozenset(TARGET_CURATION_COLUMNS)
 
 
 @dataclass(frozen=True)
@@ -166,6 +167,38 @@ def load_target_curation(path: str | Path) -> TargetCurationDataset:
     return TargetCurationDataset.from_rows(records).require_records()
 
 
+def target_curation_rows(
+    dataset: TargetCurationDataset,
+) -> tuple[dict[str, str], ...]:
+    """Return target curation records as CSV-ready rows."""
+    return tuple(_curation_row(record) for record in dataset.records)
+
+
+def target_curation_to_csv(dataset: TargetCurationDataset) -> str:
+    """Return target curation records serialized as CSV text."""
+    dataset.require_records()
+    output = StringIO()
+    writer = csv.DictWriter(
+        output,
+        fieldnames=TARGET_CURATION_COLUMNS,
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(target_curation_rows(dataset))
+    return output.getvalue()
+
+
+def write_target_curation_csv(
+    dataset: TargetCurationDataset,
+    path: str | Path,
+) -> Path:
+    """Write target curation records to a CSV file and return the path."""
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(target_curation_to_csv(dataset), encoding="utf-8")
+    return output_path
+
+
 def _record_from_row(
     row: dict[str, str | None], line_number: int
 ) -> TargetCurationRecord:
@@ -190,6 +223,25 @@ def _record_from_row(
         raise ValueError(
             f"invalid target curation CSV row {line_number}: {error}"
         ) from error
+
+
+def _curation_row(record: TargetCurationRecord) -> dict[str, str]:
+    """Return one target curation record as a string-only CSV row."""
+    return {
+        "status": record.status,
+        "target_id": record.target_id,
+        "region": record.region,
+        "source": record.source,
+        "start_bce": _value_text(record.start_bce),
+        "end_bce": _value_text(record.end_bce),
+        "sample_ids": ";".join(record.sample_ids),
+        "sample_count": str(record.sample_count),
+        "ancestry_method": record.ancestry_method,
+        "aggregation_method": record.aggregation_method,
+        "citation_key": record.citation_key,
+        "citation": record.citation,
+        "note": record.note,
+    }
 
 
 def _cell(row: dict[str, str | None], column: str) -> str:
@@ -229,3 +281,8 @@ def _unique(values: Iterable[str]) -> tuple[str, ...]:
         if value not in unique_values:
             unique_values.append(value)
     return tuple(unique_values)
+
+
+def _value_text(value: float) -> str:
+    """Return a stable string representation for numeric curation values."""
+    return f"{value:.12g}"

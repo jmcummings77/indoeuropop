@@ -14,6 +14,10 @@ The builder requires three CSV files:
 Every curation row names the sample IDs, source label, ancestry-estimation
 method, aggregation method, citation, and BCE window for one target row.
 
+For local AADR releases, `prepare-aadr-target-inputs` can create the first two
+files from reviewed AADR group selections. The third file, sample ancestry
+estimates, must still come from a documented external method.
+
 ## Aggregation
 
 `build_target_dataset` supports:

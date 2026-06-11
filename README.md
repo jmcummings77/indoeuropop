@@ -6,10 +6,10 @@ initial focus is on building reproducible code that can later compare migration,
 epidemic, climate, violence, fertility, subsistence, and elite-reproduction
 hypotheses against ancient-DNA observations.
 
-This repository does **not** yet contain a fitted scientific model, ancient-DNA
-data ingestion, or inferred historical results. The first milestone is a small,
-tested Python package that makes the modeling assumptions explicit and easy to
-replace.
+This repository does **not** yet contain a fitted scientific model,
+ancient-DNA genotype processing, or inferred historical results. The first
+milestone is a small, tested Python package that makes the modeling assumptions
+explicit and easy to replace.
 
 ## Modeling Philosophy
 
@@ -66,6 +66,19 @@ uv run indoeuropop load-aadr \
   --sample-metadata-out data/aadr-sample-metadata.csv
 ```
 
+Prepare real AADR sample metadata and curation inputs for later target
+building:
+
+```bash
+uv run indoeuropop prepare-aadr-target-inputs \
+  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-groups /Users/jmcummings/Claude/Projects/indoeuropop_claude/scripts/qpadm_targets.tsv \
+  --aadr-group-match prefix \
+  --allow-missing-aadr-groups \
+  --sample-metadata-out results/aadr-target-sample-metadata.csv \
+  --target-curation-out results/aadr-target-curation.csv
+```
+
 Build target observations from curated sample-level inputs:
 
 ```bash
@@ -101,6 +114,7 @@ uv run indoeuropop sweep \
 ```text
 src/indoeuropop/
   aadr.py            local AADR annotation loading and metadata export
+  aadr_curation.py   AADR group selections to target-pipeline inputs
   age_structure.py   deterministic age-class scaffold for model expansion
   ancestry_estimates.py sample ancestry estimates before target aggregation
   cli.py             argparse entry point for smoke/demo runs
@@ -131,6 +145,7 @@ src/indoeuropop/
   workflows.py       reusable configured-run and reporting assembly helpers
 docs/
   aadr-loading.md
+  aadr-target-inputs.md
   experiment-manifests.md
   project-plan.md    implementation roadmap and scientific guardrails
   source-downloads.md
@@ -199,6 +214,8 @@ tests/
 - Download or copy cataloged source files into a raw-data cache with optional
   checksum verification and a manifest CSV.
 - Load local AADR annotation files into the project sample metadata schema.
+- Prepare AADR group selections as modeled-region sample metadata and
+  target-curation inputs for later ancestry-estimate aggregation.
 - Load synthetic or published sample metadata rows without aggregating them into
   ancestry targets.
 - Load sample-level ancestry estimates before target aggregation.
@@ -209,8 +226,8 @@ tests/
 
 ## Not Yet Included
 
-- Automated ancient-DNA genotype or external metadata ingestion.
-- AADR, Poseidon, SLiM, msprime, ABC-SMC, or predictive emulator integration.
+- Automated ancient-DNA genotype processing.
+- Poseidon, SLiM, msprime, ABC-SMC, or predictive emulator integration.
 - Regionally calibrated parameter priors.
 - Scholarly claims about fitted causal mechanisms.
 

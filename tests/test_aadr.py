@@ -147,6 +147,27 @@ def test_load_aadr_sample_metadata_uses_fallback_text(tmp_path: Path) -> None:
     assert "assessment=unreported" in record.note
 
 
+@pytest.mark.parametrize(
+    ("aadr_label", "expected_sex"),
+    [
+        ("F (XXX)", "female"),
+        ("M (XYY)", "male"),
+        ("U (XXY)", "unknown"),
+    ],
+)
+def test_load_aadr_sample_metadata_accepts_annotated_sex_labels(
+    tmp_path: Path,
+    aadr_label: str,
+    expected_sex: str,
+) -> None:
+    """AADR karyotype annotations should preserve the leading sex code."""
+    root = _aadr_dir(tmp_path, _row(sex=aadr_label))
+
+    record = load_aadr_sample_metadata(root).records[0]
+
+    assert record.sex == expected_sex
+
+
 def test_load_aadr_sample_metadata_uses_unreported_when_all_text_is_blank(
     tmp_path: Path,
 ) -> None:
