@@ -131,7 +131,10 @@ Phase 4: Inference and validation.
   external qpAdm workflow. Target-comparison residual CSVs can now be converted
   into Markdown review reports that rank outliers, summarize regions, include
   target-build diagnostics, and recommend whether qpAdm/curation review should
-  precede simulator parameter changes.
+  precede simulator parameter changes. A target-curation audit workflow can now
+  join one residual outlier back to curation rows, sample metadata, and qpAdm
+  estimate evidence so reviewers can distinguish simulator misses from
+  target-construction problems.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
@@ -174,7 +177,8 @@ Every simulator should support quick plots for:
 - comparison of best-ranked deterministic sweep trajectories against target
   observations. The target-comparison workflow now generates overlay plots and
   per-target residual CSV rows for review, and the residual-review workflow now
-  turns those rows into a Markdown outlier report.
+  turns those rows into a Markdown outlier report. The target-curation audit
+  workflow expands selected residuals into joined sample-level evidence.
 
 Plots should be generated through package functions so tests can verify that
 figures build in headless environments.

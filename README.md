@@ -205,6 +205,17 @@ uv run indoeuropop review-target-residuals \
   --target-review-md results/real-aadr-comparison/target-residual-review.md
 ```
 
+Audit the top residual's curation and qpAdm estimate evidence:
+
+```bash
+uv run indoeuropop audit-target-curation \
+  --target-residuals results/real-aadr-comparison/target-residuals.csv \
+  --target-curation results/real-aadr-comparison/aadr-target-curation.csv \
+  --sample-metadata results/real-aadr-comparison/aadr-target-sample-metadata.csv \
+  --ancestry-estimates results/real-aadr-comparison/sample-ancestry-estimates.csv \
+  --target-audit-md results/real-aadr-comparison/stkr-straubing-curation-audit.md
+```
+
 ## Package Layout
 
 ```text
@@ -323,6 +334,8 @@ tracked normally.
   committed target seed, and an auditable JSON manifest.
 - Run an exploratory multi-region comparison sweep against retained AADR v66
   western-Europe qpAdm target observations.
+- Audit residual outliers against curation rows, sample metadata, and qpAdm
+  estimate evidence before changing simulator parameters.
 - Document target curation windows, sample selections, and methods before
   creating target observations.
 - Compare simulated ancestry trajectories to target observations.

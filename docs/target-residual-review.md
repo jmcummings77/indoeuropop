@@ -43,3 +43,15 @@ Review the qpAdm source/outgroup model and target grouping for
 `Germany_StkrStraubing_BellBeaker`, then review whether the central Europe
 targets should be split into finer regions or culture/site-level trajectories
 before adding heavier inference.
+
+Use the target-curation audit command to expand this residual into the exact
+curation row, sample metadata rows, and qpAdm estimate rows that produced it:
+
+```bash
+uv run indoeuropop audit-target-curation \
+  --target-residuals results/real-aadr-comparison/target-residuals.csv \
+  --target-curation results/real-aadr-comparison/aadr-target-curation.csv \
+  --sample-metadata results/real-aadr-comparison/aadr-target-sample-metadata.csv \
+  --ancestry-estimates results/real-aadr-comparison/sample-ancestry-estimates.csv \
+  --target-audit-md results/real-aadr-comparison/stkr-straubing-curation-audit.md
+```

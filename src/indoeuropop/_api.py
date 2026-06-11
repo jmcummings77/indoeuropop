@@ -200,6 +200,17 @@ from indoeuropop.reporting.sweep_reporting import (
     write_sensitivity_csv,
     write_sweep_runs_csv,
 )
+from indoeuropop.reporting.target_audit import (
+    HIGH_STANDARD_ERROR_THRESHOLD,
+    IDENTICAL_ESTIMATE_TOLERANCE,
+    TargetCurationAudit,
+    TargetCurationAuditSample,
+    load_target_curation_audit,
+)
+from indoeuropop.reporting.target_audit_report import (
+    target_curation_audit_markdown,
+    write_target_curation_audit_markdown,
+)
 from indoeuropop.reporting.target_comparison import (
     TARGET_COMPARISON_FIELDS,
     target_comparison_rows,
@@ -256,6 +267,8 @@ __all__ = [
     "EXPERIMENT_MANIFEST_SCHEMA_VERSION",
     "FEMALE",
     "FINGERPRINT_SCHEMA_VERSION",
+    "HIGH_STANDARD_ERROR_THRESHOLD",
+    "IDENTICAL_ESTIMATE_TOLERANCE",
     "INFECTED",
     "JUVENILE",
     "LIVING_COMPARTMENTS",
@@ -322,6 +335,8 @@ __all__ = [
     "TargetComparison",
     "TargetComparisonOutputPaths",
     "TargetComparisonWorkflowResult",
+    "TargetCurationAudit",
+    "TargetCurationAuditSample",
     "TargetCurationDataset",
     "TargetCurationRecord",
     "TargetDataset",
@@ -365,6 +380,7 @@ __all__ = [
     "load_sample_metadata",
     "load_sweep_spec",
     "load_target_curation",
+    "load_target_curation_audit",
     "load_target_dataset",
     "load_target_residual_review",
     "load_target_residual_review_rows",
@@ -414,6 +430,7 @@ __all__ = [
     "target_comparison_experiment_manifest",
     "target_comparison_rows",
     "target_comparisons_to_csv",
+    "target_curation_audit_markdown",
     "target_dataset_to_csv",
     "target_fit_provenance_records",
     "target_observation_provenance_records",
@@ -433,6 +450,7 @@ __all__ = [
     "write_sweep_outputs",
     "write_sweep_runs_csv",
     "write_target_comparisons_csv",
+    "write_target_curation_audit_markdown",
     "write_target_dataset_csv",
     "write_target_residual_review_markdown",
 ]

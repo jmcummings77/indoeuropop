@@ -76,3 +76,15 @@ uv run indoeuropop review-target-residuals \
   --target-diagnostics-json results/real-aadr-comparison/aadr-target-diagnostics.json \
   --target-review-md results/real-aadr-comparison/target-residual-review.md
 ```
+
+Audit the top residual's target curation and qpAdm estimate evidence before
+changing simulator parameters:
+
+```bash
+uv run indoeuropop audit-target-curation \
+  --target-residuals results/real-aadr-comparison/target-residuals.csv \
+  --target-curation results/real-aadr-comparison/aadr-target-curation.csv \
+  --sample-metadata results/real-aadr-comparison/aadr-target-sample-metadata.csv \
+  --ancestry-estimates results/real-aadr-comparison/sample-ancestry-estimates.csv \
+  --target-audit-md results/real-aadr-comparison/stkr-straubing-curation-audit.md
+```
