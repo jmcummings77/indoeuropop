@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -36,6 +37,7 @@ ARTIFACT_ROLES = frozenset(
 )
 
 HEX_DIGITS = frozenset("0123456789abcdef")
+EXPERIMENT_MANIFEST_SCHEMA_VERSION = "indoeuropop-experiment-manifest-v1"
 
 
 @dataclass(frozen=True)
@@ -186,6 +188,55 @@ def experiment_manifest_records(
             for fingerprint in manifest.fingerprints
         ),
     )
+
+
+def experiment_artifact_payload(artifact: ExperimentArtifact) -> dict[str, object]:
+    """Return a JSON-ready payload for one experiment artifact."""
+    return {
+        "name": artifact.name,
+        "role": artifact.role,
+        "path": artifact.path,
+        "checksum_sha256": artifact.checksum_sha256,
+        "metadata": dict(artifact.metadata),
+    }
+
+
+def experiment_manifest_payload(
+    manifest: ExperimentManifest,
+) -> dict[str, object]:
+    """Return a JSON-ready payload for an experiment manifest."""
+    return {
+        "schema_version": EXPERIMENT_MANIFEST_SCHEMA_VERSION,
+        "name": manifest.name,
+        "description": manifest.description,
+        "metadata": dict(manifest.metadata),
+        "artifacts": [
+            experiment_artifact_payload(artifact) for artifact in manifest.artifacts
+        ],
+        "fingerprints": [
+            {
+                "kind": fingerprint.kind,
+                "digest_sha256": fingerprint.digest_sha256,
+                "payload": dict(fingerprint.payload),
+            }
+            for fingerprint in manifest.fingerprints
+        ],
+    }
+
+
+def write_experiment_manifest_json(
+    manifest: ExperimentManifest,
+    path: str | Path,
+) -> Path:
+    """Write an experiment manifest as stable, human-readable JSON."""
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = experiment_manifest_payload(manifest)
+    output_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return output_path
 
 
 def _manifest_record(manifest: ExperimentManifest) -> ProvenanceRecord:

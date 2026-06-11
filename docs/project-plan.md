@@ -107,7 +107,8 @@ Phase 4: Inference and validation.
   heavier orchestration.
   The first experiment-manifest scaffold records output artifacts, optional
   SHA-256 checksums, and reproducibility fingerprints as derived provenance
-  records.
+  records. The CLI demo can now write a manifest JSON file after generating
+  plots and provenance CSV outputs.
 - Revalidate emulator and posterior results against the explicit simulator.
   The first emulator-validation scaffold compares future emulator summary
   predictions against explicit simulator summaries by run fingerprint.

@@ -1,5 +1,6 @@
 """Tests for the command-line interface."""
 
+import json
 from pathlib import Path
 
 from pytest import CaptureFixture
@@ -20,6 +21,7 @@ def test_cli_demo_can_write_plot_and_use_config(tmp_path: Path) -> None:
     """The CLI should load config files and write optional plots."""
     config_path = tmp_path / "scenario.toml"
     plot_path = tmp_path / "plots" / "ancestry.png"
+    manifest_path = tmp_path / "manifests" / "demo.json"
     config_path.write_text(
         """
         [simulation]
@@ -44,6 +46,8 @@ def test_cli_demo_can_write_plot_and_use_config(tmp_path: Path) -> None:
             str(config_path),
             "--plot",
             str(plot_path),
+            "--manifest-json",
+            str(manifest_path),
             "--region",
             "britain",
             "--stochastic",
@@ -54,6 +58,14 @@ def test_cli_demo_can_write_plot_and_use_config(tmp_path: Path) -> None:
 
     assert exit_code == 0
     assert plot_path.exists()
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest_payload["metadata"]["simulator"] == "tau_leap"
+    assert manifest_payload["metadata"]["seed"] == "11"
+    assert {artifact["role"] for artifact in manifest_payload["artifacts"]} == {
+        "config",
+        "plot",
+    }
+    assert manifest_payload["fingerprints"][0]["kind"] == "simulation_result"
 
 
 def test_cli_demo_can_compare_targets(
@@ -82,6 +94,7 @@ def test_cli_demo_can_write_provenance_csv(tmp_path: Path) -> None:
     """The CLI should write a provenance report for smoke runs."""
     target_path = tmp_path / "targets.csv"
     report_path = tmp_path / "reports" / "provenance.csv"
+    manifest_path = tmp_path / "manifests" / "demo.json"
     target_path.write_text(
         "\n".join(
             [
@@ -99,11 +112,32 @@ def test_cli_demo_can_write_provenance_csv(tmp_path: Path) -> None:
             str(target_path),
             "--provenance-csv",
             str(report_path),
+            "--manifest-json",
+            str(manifest_path),
         ]
     )
     report_text = report_path.read_text(encoding="utf-8")
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
 
     assert exit_code == 0
     assert "final_ancestry" in report_text
     assert "target_mean" in report_text
     assert "chi_square" in report_text
+    assert {artifact["role"] for artifact in manifest_payload["artifacts"]} == {
+        "provenance",
+        "targets",
+    }
+
+
+def test_cli_demo_can_write_fingerprint_only_manifest(tmp_path: Path) -> None:
+    """The CLI should write a manifest even when no file artifacts exist."""
+    manifest_path = tmp_path / "manifests" / "demo.json"
+
+    exit_code = main(["demo", "--manifest-json", str(manifest_path)])
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert exit_code == 0
+    assert manifest_payload["name"] == "cli-demo"
+    assert manifest_payload["artifacts"] == []
+    assert manifest_payload["metadata"]["simulator"] == "deterministic"
+    assert manifest_payload["fingerprints"][0]["kind"] == "simulation_result"

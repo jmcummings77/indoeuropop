@@ -1,5 +1,6 @@
 """Tests for experiment manifest metadata."""
 
+import json
 from pathlib import Path
 from typing import cast
 
@@ -7,11 +8,15 @@ import pytest
 
 from indoeuropop.experiments import (
     ARTIFACT_ROLES,
+    EXPERIMENT_MANIFEST_SCHEMA_VERSION,
     ArtifactRole,
     ExperimentArtifact,
     ExperimentManifest,
     artifact_from_path,
+    experiment_artifact_payload,
+    experiment_manifest_payload,
     experiment_manifest_records,
+    write_experiment_manifest_json,
 )
 from indoeuropop.reproducibility import fingerprint_payload
 
@@ -119,6 +124,58 @@ def test_experiment_manifest_collects_records_in_order(tmp_path: Path) -> None:
         "manifest_scenario": "synthetic",
     }
     assert records[2].metadata["manifest_name"] == "demo run"
+
+
+def test_experiment_manifest_payload_is_json_ready(tmp_path: Path) -> None:
+    """Manifest payloads should preserve artifacts and fingerprint identities."""
+    artifact_path = tmp_path / "summary.csv"
+    artifact_path.write_text("metric,value\nfinal_ancestry,0.25\n", encoding="utf-8")
+    artifact = artifact_from_path("summary", "provenance", artifact_path)
+    fingerprint = fingerprint_payload("simulation_result", {"run": "demo"})
+    manifest = ExperimentManifest(
+        name="demo run",
+        description="Smoke-test manifest",
+        artifacts=(artifact,),
+        fingerprints=(fingerprint,),
+        metadata={"scenario": "synthetic"},
+    )
+
+    artifact_payload = experiment_artifact_payload(artifact)
+    manifest_payload = experiment_manifest_payload(manifest)
+
+    assert artifact_payload["checksum_sha256"] == artifact.checksum_sha256
+    assert artifact_payload["metadata"] == {}
+    assert manifest_payload["schema_version"] == EXPERIMENT_MANIFEST_SCHEMA_VERSION
+    assert manifest_payload["metadata"] == {"scenario": "synthetic"}
+    assert manifest_payload["artifacts"] == [artifact_payload]
+    assert manifest_payload["fingerprints"] == [
+        {
+            "kind": "simulation_result",
+            "digest_sha256": fingerprint.digest_sha256,
+            "payload": dict(fingerprint.payload),
+        }
+    ]
+    json.dumps(manifest_payload)
+
+
+def test_write_experiment_manifest_json_creates_parent_directory(
+    tmp_path: Path,
+) -> None:
+    """Manifest JSON exports should be stable and create parent directories."""
+    fingerprint = fingerprint_payload("simulation_result", {"run": "demo"})
+    manifest = ExperimentManifest(
+        name="fingerprint-only",
+        fingerprints=(fingerprint,),
+    )
+    output_path = tmp_path / "manifests" / "demo.json"
+
+    returned_path = write_experiment_manifest_json(manifest, output_path)
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert returned_path == output_path
+    assert output_path.read_text(encoding="utf-8").endswith("\n")
+    assert payload["name"] == "fingerprint-only"
+    assert payload["fingerprints"][0]["digest_sha256"] == fingerprint.digest_sha256
 
 
 def test_experiment_manifest_allows_fingerprint_only_outputs() -> None:

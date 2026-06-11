@@ -31,6 +31,7 @@ uv sync --all-extras --dev
 uv run indoeuropop demo
 uv run indoeuropop demo --plot results/demo-ancestry.png
 uv run indoeuropop demo --provenance-csv results/provenance.csv
+uv run indoeuropop demo --manifest-json results/demo-manifest.json
 ```
 
 Run the full verification suite:
@@ -75,6 +76,7 @@ src/indoeuropop/
   validation.py      calibration and validation target-split helpers
   visualization.py   Matplotlib helpers for outputs and debugging
 docs/
+  experiment-manifests.md
   project-plan.md    implementation roadmap and scientific guardrails
   target-data-schema.md
 examples/
@@ -119,6 +121,8 @@ tests/
   experiments.
 - Compare future emulator predictions against explicit simulator summaries.
 - Write CLI provenance reports for demo simulations.
+- Write CLI experiment manifests with artifact checksums and simulation
+  fingerprints.
 - Load synthetic or published target-observation CSV files.
 - Register local and planned external data sources with citations and optional
   SHA-256 checksums.

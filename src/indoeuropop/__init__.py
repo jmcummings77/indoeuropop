@@ -56,11 +56,15 @@ from indoeuropop.events import (
 )
 from indoeuropop.experiments import (
     ARTIFACT_ROLES,
+    EXPERIMENT_MANIFEST_SCHEMA_VERSION,
     ArtifactRole,
     ExperimentArtifact,
     ExperimentManifest,
     artifact_from_path,
+    experiment_artifact_payload,
+    experiment_manifest_payload,
     experiment_manifest_records,
+    write_experiment_manifest_json,
 )
 from indoeuropop.fitting import (
     ScoredSweepRun,
@@ -167,6 +171,7 @@ __all__ = [
     "DECEASED",
     "ELDER",
     "EPIDEMIC_COMPARTMENTS",
+    "EXPERIMENT_MANIFEST_SCHEMA_VERSION",
     "FEMALE",
     "FINGERPRINT_SCHEMA_VERSION",
     "INFECTED",
@@ -239,6 +244,8 @@ __all__ = [
     "diagnostic_issue_records",
     "emulator_training_dataset_from_sweep_runs",
     "expected_births_by_source",
+    "experiment_artifact_payload",
+    "experiment_manifest_payload",
     "experiment_manifest_records",
     "fingerprint_payload",
     "fingerprint_simulation_result",
@@ -284,5 +291,6 @@ __all__ = [
     "validate_emulator_predictions",
     "validate_simulation_result",
     "verify_record_checksum",
+    "write_experiment_manifest_json",
     "write_provenance_csv",
 ]
