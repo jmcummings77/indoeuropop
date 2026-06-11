@@ -344,6 +344,8 @@ tracked normally.
   ancestry estimate schema.
 - Plan external ADMIXTOOLS qpAdm runs with resolved genotype prefixes, a
   committed target seed, and an auditable JSON manifest.
+- Plan qpAdm reruns from reviewed target decisions, grouped by failure reason
+  with JSON and annotated AADR group-selection TSV outputs.
 - Run an exploratory multi-region comparison sweep against retained AADR v66
   western-Europe qpAdm target observations.
 - Audit residual outliers against curation rows, sample metadata, and qpAdm

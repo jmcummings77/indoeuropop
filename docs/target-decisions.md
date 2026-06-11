@@ -34,11 +34,14 @@ uv run indoeuropop apply-target-decisions \
   --target-curation-out results/real-aadr-comparison/decision-filtered-target-curation.csv
 ```
 
-The current committed decision file defers every target row that is not retained
-by the local AADR v66 comparison build. Most are marked `rerun_qpadm` because
-all selected samples have steppe fractions outside the valid `0-1` range in the
-current external table. `Germany_OsterhofenAltenmarkt_BellBeaker` is deferred
-because its standard errors are outside the accepted range.
+The current committed decision file covers all 38 reviewed AADR v66 western
+Europe target rows. Eleven targets are marked `retain_with_caveat` because the
+current external qpAdm table provides in-range point estimates and usable
+standard errors, but the estimates remain exploratory handoff evidence. The
+other 27 targets are marked `rerun_qpadm`: most because all selected samples
+have steppe fractions outside the valid `0-1` range in the current external
+table. `Germany_OsterhofenAltenmarkt_BellBeaker` is deferred because its
+standard errors are outside the accepted range.
 `Germany_StkrStraubing_BellBeaker` remains deferred because the curation audit
 found identical replicated qpAdm estimate, standard error, and p-value rows
 across all 12 selected samples.

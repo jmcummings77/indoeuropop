@@ -69,12 +69,14 @@ uv run indoeuropop compare-targets \
 
 In the current local decision-aware run, the full path produced 11 retained
 target observations from 301 selected AADR samples and 301 qpAdm individual
-rows. The reviewed decision file deferred 27 targets as `rerun_qpadm`: 25 for
-out-of-range qpAdm point estimates, one for out-of-range qpAdm standard errors,
-and `Germany_StkrStraubing_BellBeaker` for replicated group-level qpAdm
-evidence that needs review. The first comparison sweep evaluated 24
-deterministic samples; the best row had RMSE `0.254807` against the retained
-target observations.
+rows. The reviewed decision file now marks all 38 requested targets: 11 as
+`retain_with_caveat` and 27 as `rerun_qpadm`, leaving zero undecided targets.
+The deferred set includes 25 targets with out-of-range qpAdm point estimates,
+one target with out-of-range qpAdm standard errors, and
+`Germany_StkrStraubing_BellBeaker` for replicated group-level qpAdm evidence
+that needs review. The first comparison sweep evaluated 24 deterministic
+samples; the best row had RMSE `0.254807` against the retained target
+observations.
 
 Apply reviewed decisions to already prepared target inputs when you want to
 inspect the filtered curation CSVs directly:

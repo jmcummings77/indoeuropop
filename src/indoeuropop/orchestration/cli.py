@@ -13,6 +13,7 @@ from indoeuropop.orchestration.data_cli import (
     add_data_arguments,
     run_data_command,
 )
+from indoeuropop.orchestration.qpadm_cli import QPADM_COMMANDS, run_qpadm_command
 from indoeuropop.orchestration.report_cli import REPORT_COMMANDS, run_report_command
 from indoeuropop.orchestration.sweep_workflows import (
     SweepOutputPaths,
@@ -49,6 +50,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     decision_exit_code = run_target_decision_command(args, parser)
     if decision_exit_code is not None:
         return decision_exit_code
+    qpadm_exit_code = run_qpadm_command(args, parser)
+    if qpadm_exit_code is not None:
+        return qpadm_exit_code
     report_exit_code = run_report_command(args, parser)
     if report_exit_code is not None:
         return report_exit_code
@@ -228,6 +232,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "demo",
             "sweep",
             *DATA_COMMANDS,
+            *QPADM_COMMANDS,
             *TARGET_DECISION_COMMANDS,
             *REPORT_COMMANDS,
         ),

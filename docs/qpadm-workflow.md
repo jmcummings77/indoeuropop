@@ -34,6 +34,25 @@ uv run indoeuropop plan-qpadm-run \
 The command resolves the AADR `.geno/.snp/.ind` prefix and validates that the
 target file and `scripts/run_qpadm.R` exist. It does not run ADMIXTOOLS.
 
+## Plan Reviewed Reruns
+
+After a target build has been reviewed, generate a rerun manifest from the
+target curation and reviewed decision CSV:
+
+```bash
+uv run indoeuropop plan-qpadm-reruns \
+  --target-curation results/real-aadr-comparison/aadr-target-curation.csv \
+  --target-decisions curation/aadr-v66-western-europe-target-decisions.csv \
+  --qpadm-rerun-manifest-json curation/aadr-v66-western-europe-qpadm-rerun-manifest.json \
+  --qpadm-rerun-groups-out curation/aadr-v66-western-europe-qpadm-rerun-targets.tsv
+```
+
+The current rerun manifest contains 27 targets grouped as 25 invalid steppe
+fractions, one invalid standard-error target, and one replicated group-level
+estimate target. The TSV is annotated but still starts with `region` and
+`aadr_group_id`, so it can be passed back to `--aadr-groups` for a focused
+external rerun.
+
 ## Run qpAdm
 
 Install system R, ADMIXTOOLS 2, and its compiled dependencies, then run the
@@ -108,6 +127,7 @@ uv run indoeuropop build-aadr-qpadm-targets \
   --target-curation-out results/aadr-target-curation.csv \
   --ancestry-estimates-out results/sample-ancestry-estimates.csv \
   --target-output results/aadr-target-observations.csv \
+  --target-decisions curation/aadr-v66-western-europe-target-decisions.csv \
   --target-diagnostics-json results/aadr-target-diagnostics.json
 ```
 
@@ -118,6 +138,7 @@ by Git.
 In the current local smoke run against
 `data`, qpAdm
 wrote 301 individual rows across 38 target groups. Strict conversion kept 63
-sample estimates with in-range steppe weights and usable standard errors. Target
-filtering retained 12 aggregate target observations and dropped 26 target rows.
+sample estimates with in-range steppe weights and usable standard errors. The
+reviewed decision file retains 11 aggregate target observations with caveats,
+defers 27 targets for qpAdm rerun, and leaves zero target decisions undecided.
 Those counts are run evidence, not final scientific validation.

@@ -53,7 +53,11 @@ Rerun or revise the qpAdm source/outgroup setup for the 27 decision-deferred
 targets before treating the 11 retained observations as representative. For
 Stkr-Straubing, also review target grouping and decide whether the central
 Europe targets should be split into finer regions or culture/site-level
-trajectories before adding heavier inference.
+trajectories before adding heavier inference. The committed rerun manifest at
+`curation/aadr-v66-western-europe-qpadm-rerun-manifest.json` groups those
+targets by failure reason, and
+`curation/aadr-v66-western-europe-qpadm-rerun-targets.tsv` can be used as an
+annotated AADR group-selection seed.
 
 Use the target-curation audit command to expand this residual into the exact
 curation row, sample metadata rows, and qpAdm estimate rows that produced it.

@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "kind": "qpadm_rerun_manifest",
+  "target_count": 27,
+  "failure_groups": [
+    {
+      "failure_reason": "invalid_steppe_fraction",
+      "target_count": 25,
+      "targets": [
+        {
+          "target_id": "aadr-britain-steppe-england-bellbeaker-ohigheef",
+          "requested_group_id": "England_BellBeaker-ohighEEF",
+          "region": "britain",
+          "sample_count": 3,
+          "decision_reason": "All 3 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-britain-steppe-england-bellbeaker-ohighwhg",
+          "requested_group_id": "England_BellBeaker-ohighWHG",
+          "region": "britain",
+          "sample_count": 3,
+          "decision_reason": "All 3 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-britain-steppe-england-bellbeaker-oloweef",
+          "requested_group_id": "England_BellBeaker-olowEEF",
+          "region": "britain",
+          "sample_count": 7,
+          "decision_reason": "All 7 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-britain-steppe-england-bellbeaker-mediumeef-omediumeef",
+          "requested_group_id": "England_BellBeaker_mediumEEF-omediumEEF",
+          "region": "britain",
+          "sample_count": 2,
+          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-britain-steppe-scotland-bellbeaker",
+          "requested_group_id": "Scotland_BellBeaker",
+          "region": "britain",
+          "sample_count": 2,
+          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-czechia-ba-bellbeaker",
+          "requested_group_id": "Czechia_BA_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 11,
+          "decision_reason": "All 11 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-czechia-bellbeaker",
+          "requested_group_id": "Czechia_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 61,
+          "decision_reason": "All 61 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-czechia-bellbeaker-oanatolia2",
+          "requested_group_id": "Czechia_BellBeaker-oAnatolia2",
+          "region": "central_europe",
+          "sample_count": 3,
+          "decision_reason": "All 3 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-czechia-eba-cordedware",
+          "requested_group_id": "Czechia_EBA_CordedWare",
+          "region": "central_europe",
+          "sample_count": 48,
+          "decision_reason": "All 48 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-france-grandest-bellbeaker",
+          "requested_group_id": "France_GrandEst_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 2,
+          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-france-grandest-hautrhin-bellbeaker",
+          "requested_group_id": "France_GrandEst_HautRhin_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 3,
+          "decision_reason": "All 3 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-althausen-cordedware",
+          "requested_group_id": "Germany_Althausen_CordedWare",
+          "region": "central_europe",
+          "sample_count": 4,
+          "decision_reason": "All 4 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-augsburghugoeckenerstrasse-bellbeaker",
+          "requested_group_id": "Germany_AugsburgHugoEckenerStrasse_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 13,
+          "decision_reason": "All 13 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-benzingerodeheimburg-bellbeaker",
+          "requested_group_id": "Germany_BenzingerodeHeimburg_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 2,
+          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-dgflan-bellbeaker",
+          "requested_group_id": "Germany_DGFLan_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 4,
+          "decision_reason": "All 4 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-esperstedt-cordedware",
+          "requested_group_id": "Germany_Esperstedt_CordedWare",
+          "region": "central_europe",
+          "sample_count": 13,
+          "decision_reason": "All 13 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-haunstettenunterertalweg5862-bellbeaker",
+          "requested_group_id": "Germany_HaunstettenUntererTalweg5862_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 3,
+          "decision_reason": "All 3 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-irlbachlkr-bellbeaker",
+          "requested_group_id": "Germany_IrlbachLKR_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 17,
+          "decision_reason": "All 17 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-konigsbrunnampack-bellbeaker",
+          "requested_group_id": "Germany_KonigsbrunnAmpack_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 2,
+          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-kunzingbruck-bellbeaker",
+          "requested_group_id": "Germany_KunzingBruck_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 3,
+          "decision_reason": "All 3 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-manchingoberstimm-bellbeaker",
+          "requested_group_id": "Germany_ManchingOberstimm_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 2,
+          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-quedlinburg12-bellbeaker",
+          "requested_group_id": "Germany_Quedlinburg12_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 3,
+          "decision_reason": "All 3 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-quedlinburg7-bellbeaker",
+          "requested_group_id": "Germany_Quedlinburg7_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 2,
+          "decision_reason": "All 2 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-germany-rothenschirmbach-bellbeaker",
+          "requested_group_id": "Germany_Rothenschirmbach_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 5,
+          "decision_reason": "All 5 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        },
+        {
+          "target_id": "aadr-central-europe-steppe-poland-bellbeaker",
+          "requested_group_id": "Poland_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 14,
+          "decision_reason": "All 14 selected samples have qpAdm steppe fractions outside 0-1 in the current external table; rerun qpAdm before fitting this target",
+          "note": "Invalid qpAdm point estimates prevent a complete target observation"
+        }
+      ]
+    },
+    {
+      "failure_reason": "invalid_standard_error",
+      "target_count": 1,
+      "targets": [
+        {
+          "target_id": "aadr-central-europe-steppe-germany-osterhofenaltenmarkt-bellbeaker",
+          "requested_group_id": "Germany_OsterhofenAltenmarkt_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 6,
+          "decision_reason": "All 6 selected samples have qpAdm standard errors outside 0-1 in the current external table; rerun qpAdm uncertainty output before fitting this target",
+          "note": "Invalid qpAdm uncertainty estimates prevent a complete target observation"
+        }
+      ]
+    },
+    {
+      "failure_reason": "replicated_group_level_estimates",
+      "target_count": 1,
+      "targets": [
+        {
+          "target_id": "aadr-central-europe-steppe-germany-stkrstraubing-bellbeaker",
+          "requested_group_id": "Germany_StkrStraubing_BellBeaker",
+          "region": "central_europe",
+          "sample_count": 12,
+          "decision_reason": "Audit found identical replicated qpAdm estimate standard error and p-value across all 12 samples; rerun or inspect source outgroups and table granularity before fitting",
+          "note": "Exclude from comparison targets until qpAdm evidence is resolved"
+        }
+      ]
+    }
+  ]
+}

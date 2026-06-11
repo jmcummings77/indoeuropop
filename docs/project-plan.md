@@ -138,7 +138,9 @@ Phase 4: Inference and validation.
   excluded, split, or qpAdm-rerun-pending targets before observation builds
   while preserving the original curation evidence. The first AADR v66
   western-Europe decision pass now classifies all currently non-retained target
-  rows as qpAdm-rerun-pending before estimate filtering.
+  rows as qpAdm-rerun-pending before estimate filtering. A full decision pass
+  now marks all reviewed targets as retained-with-caveat or rerun-pending, and
+  a qpAdm rerun manifest groups deferred targets by failure reason.
 - Use ABC-SMC or Bayesian optimization only once the summary statistics are
   documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
