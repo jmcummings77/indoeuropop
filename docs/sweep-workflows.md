@@ -6,6 +6,8 @@ sensitivity diagnostics, and optionally write reviewable artifacts.
 
 The first sweep workflow scaffold supports:
 
+- loading a deterministic sweep from TOML with `load_sweep_spec`;
+- running `indoeuropop sweep --config ...` from the CLI;
 - running a `SweepSpec` through `run_sweep_workflow`;
 - writing sweep-run CSV summaries;
 - writing sensitivity-result CSV diagnostics;
@@ -32,3 +34,13 @@ result = run_sweep_workflow(
 
 This layer is still exploratory. It does not perform ABC-SMC, Bayesian
 optimization, posterior ranking, or emulator training.
+
+CLI example:
+
+```bash
+uv run indoeuropop sweep \
+  --config examples/sweep.example.toml \
+  --sweep-runs-csv results/sweep-runs.csv \
+  --sensitivity-csv results/sensitivity.csv \
+  --manifest-json results/sweep-manifest.json
+```

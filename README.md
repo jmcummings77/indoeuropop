@@ -49,6 +49,16 @@ Compare a demo run against the synthetic target example:
 uv run indoeuropop demo --targets examples/target-observations.example.csv
 ```
 
+Run a deterministic sweep from TOML:
+
+```bash
+uv run indoeuropop sweep \
+  --config examples/sweep.example.toml \
+  --sweep-runs-csv results/sweep-runs.csv \
+  --sensitivity-csv results/sensitivity.csv \
+  --manifest-json results/sweep-manifest.json
+```
+
 ## Package Layout
 
 ```text
@@ -85,6 +95,7 @@ docs/
   target-data-schema.md
   workflow-api.md
 examples/
+  sweep.example.toml
   target-observations.example.csv
 tests/
   test_*.py          100% coverage tests for logic-bearing modules
@@ -113,6 +124,7 @@ tests/
   tables.
 - Run seeded Latin-hypercube parameter sweeps and summarize trajectories.
 - Export sweep summaries and sensitivity diagnostics to stable CSV tables.
+- Load deterministic sweep specifications from TOML and run them from the CLI.
 - Run deterministic sweep workflows that can write sweep CSVs, sensitivity CSVs,
   and manifest JSON files.
 - Convert trajectory summaries into named, scaled summary-statistic vectors.

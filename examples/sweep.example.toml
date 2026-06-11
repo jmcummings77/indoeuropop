@@ -1,0 +1,28 @@
+[simulation]
+start_bce = 3000
+end_bce = 2850
+step_years = 50
+
+[parameters]
+migration_rate = 0.001
+fertility_rate = 0.035
+
+[counts.britain]
+local = 1000
+steppe = 25
+
+[sweep]
+sample_count = 3
+seed = 23
+source = "steppe"
+region = "britain"
+
+[[parameter_ranges]]
+name = "migration_rate"
+low = 0.001
+high = 0.004
+
+[[parameter_ranges]]
+name = "epidemic_mortality_rate"
+low = 0.0
+high = 0.01

@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from pytest import CaptureFixture
+from pytest import CaptureFixture, raises
 
 from indoeuropop.cli import main
 
@@ -141,3 +141,49 @@ def test_cli_demo_can_write_fingerprint_only_manifest(tmp_path: Path) -> None:
     assert manifest_payload["artifacts"] == []
     assert manifest_payload["metadata"]["simulator"] == "deterministic"
     assert manifest_payload["fingerprints"][0]["kind"] == "simulation_result"
+
+
+def test_cli_sweep_can_write_outputs(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The sweep command should run a TOML-backed deterministic sweep."""
+    sweep_csv = tmp_path / "outputs" / "sweep-runs.csv"
+    sensitivity_csv = tmp_path / "outputs" / "sensitivity.csv"
+    manifest_path = tmp_path / "outputs" / "sweep-manifest.json"
+
+    exit_code = main(
+        [
+            "sweep",
+            "--config",
+            "examples/sweep.example.toml",
+            "--sweep-runs-csv",
+            str(sweep_csv),
+            "--sensitivity-csv",
+            str(sensitivity_csv),
+            "--manifest-json",
+            str(manifest_path),
+        ]
+    )
+    captured = capsys.readouterr()
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert exit_code == 0
+    assert "sweep_run_count=3" in captured.out
+    assert "sensitivity=migration_rate" in captured.out
+    assert "summary_final_ancestry" in sweep_csv.read_text(encoding="utf-8")
+    assert sensitivity_csv.read_text(encoding="utf-8").startswith("parameter,outcome")
+    assert manifest_payload["name"] == "cli-sweep"
+    assert manifest_payload["fingerprints"][0]["kind"] == "sweep_collection"
+    assert {artifact["role"] for artifact in manifest_payload["artifacts"]} == {
+        "config",
+        "sensitivity",
+        "sweep_runs",
+    }
+
+
+def test_cli_sweep_requires_config() -> None:
+    """The sweep command should reject missing TOML configuration."""
+    with raises(SystemExit) as exc_info:
+        main(["sweep"])
+    assert exc_info.value.code == 2

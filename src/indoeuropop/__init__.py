@@ -8,7 +8,12 @@ from indoeuropop.age_structure import (
     AgeStructureParameters,
     advance_age_structure,
 )
-from indoeuropop.config import SimulationConfig, default_config, load_config
+from indoeuropop.config import (
+    SimulationConfig,
+    default_config,
+    load_config,
+    load_sweep_spec,
+)
 from indoeuropop.data_sources import (
     DataSourceCatalog,
     DataSourceRecord,
@@ -290,6 +295,7 @@ __all__ = [
     "load_config",
     "load_data_source_catalog",
     "load_sample_metadata",
+    "load_sweep_spec",
     "load_target_curation",
     "load_target_dataset",
     "parameters_with_overrides",

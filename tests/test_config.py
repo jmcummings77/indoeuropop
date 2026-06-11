@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from indoeuropop.config import default_config, load_config
+from indoeuropop.config import default_config, load_config, load_sweep_spec
 
 
 def test_default_config_is_runnable() -> None:
@@ -95,6 +95,102 @@ def test_example_parameter_override_config_loads() -> None:
     )
 
 
+def test_load_sweep_spec_from_toml(tmp_path: Path) -> None:
+    """A TOML file should load into a deterministic SweepSpec."""
+    config_path = tmp_path / "sweep.toml"
+    config_path.write_text(
+        """
+        [simulation]
+        start_bce = 3100
+        end_bce = 3000
+        step_years = 25
+
+        [parameters]
+        migration_rate = 0.003
+
+        [counts.britain]
+        local = 100
+        steppe = 5
+
+        [sweep]
+        sample_count = 4
+        seed = 13
+        source = "steppe"
+        region = "britain"
+
+        [[parameter_ranges]]
+        name = "migration_rate"
+        low = 0.001
+        high = 0.004
+
+        [[forcing_windows]]
+        start_bce = 3050
+        end_bce = 3025
+        climate_stress_delta = 0.1
+        """,
+        encoding="utf-8",
+    )
+
+    spec = load_sweep_spec(config_path)
+
+    assert spec.start_bce == 3100
+    assert spec.end_bce == 3000
+    assert spec.step_years == 25
+    assert spec.sample_count == 4
+    assert spec.seed == 13
+    assert spec.source == "steppe"
+    assert spec.region == "britain"
+    assert spec.initial_state.source_total("steppe", "britain") == 5
+    assert spec.parameter_ranges[0].name == "migration_rate"
+    assert spec.parameter_ranges[0].high == 0.004
+    assert spec.schedule.forcing_windows[0].climate_stress_delta == 0.1
+
+
+def test_load_sweep_spec_uses_optional_sweep_defaults(tmp_path: Path) -> None:
+    """Sweep TOML should provide defaults for optional sweep metadata."""
+    config_path = tmp_path / "sweep.toml"
+    config_path.write_text(
+        """
+        [simulation]
+        start_bce = 3100
+        end_bce = 3000
+
+        [parameters]
+        migration_rate = 0.003
+
+        [counts.britain]
+        local = 100
+        steppe = 5
+
+        [sweep]
+
+        [[parameter_ranges]]
+        name = "migration_rate"
+        low = 0.001
+        high = 0.004
+        """,
+        encoding="utf-8",
+    )
+
+    spec = load_sweep_spec(config_path)
+
+    assert spec.sample_count == 8
+    assert spec.seed == 7
+    assert spec.source == "steppe"
+    assert spec.region is None
+
+
+def test_example_sweep_spec_loads() -> None:
+    """The checked-in sweep example should remain loadable."""
+    spec = load_sweep_spec("examples/sweep.example.toml")
+
+    assert spec.sample_count == 3
+    assert tuple(parameter_range.name for parameter_range in spec.parameter_ranges) == (
+        "migration_rate",
+        "epidemic_mortality_rate",
+    )
+
+
 @pytest.mark.parametrize("contents", ["", "[parameters]\nmigration_rate = 0.1\n"])
 def test_load_config_requires_tables(tmp_path: Path, contents: str) -> None:
     """Required config tables should be validated explicitly."""
@@ -103,6 +199,97 @@ def test_load_config_requires_tables(tmp_path: Path, contents: str) -> None:
 
     with pytest.raises(ValueError):
         load_config(config_path)
+
+
+@pytest.mark.parametrize(
+    "extra_config,match",
+    [
+        ("", "sweep"),
+        ("[sweep]\n", "parameter_ranges"),
+        (
+            """
+            [sweep]
+
+            [[parameter_ranges]]
+            name = ""
+            low = 0.0
+            high = 1.0
+            """,
+            "name",
+        ),
+        (
+            """
+            [sweep]
+
+            [[parameter_ranges]]
+            name = 7
+            low = 0.0
+            high = 1.0
+            """,
+            "name",
+        ),
+        (
+            """
+            [sweep]
+
+            [[parameter_ranges]]
+            name = "migration_rate"
+            low = "bad"
+            high = 1.0
+            """,
+            "low",
+        ),
+        (
+            """
+            [sweep]
+            source = 7
+
+            [[parameter_ranges]]
+            name = "migration_rate"
+            low = 0.0
+            high = 1.0
+            """,
+            "source",
+        ),
+        (
+            """
+            [sweep]
+            region = 7
+
+            [[parameter_ranges]]
+            name = "migration_rate"
+            low = 0.0
+            high = 1.0
+            """,
+            "region",
+        ),
+    ],
+)
+def test_load_sweep_spec_rejects_malformed_sweep_tables(
+    tmp_path: Path, extra_config: str, match: str
+) -> None:
+    """Sweep config parsing should reject malformed sweep metadata."""
+    config_path = tmp_path / "bad-sweep.toml"
+    config_path.write_text(
+        f"""
+        [simulation]
+        start_bce = 3100
+        end_bce = 3000
+
+        [parameters]
+        migration_rate = 0.003
+
+        [counts.britain]
+        local = 100
+        steppe = 5
+
+        {extra_config}
+        """,
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match=match):
+        load_sweep_spec(config_path)
 
 
 def test_load_config_rejects_bad_schedule_tables(tmp_path: Path) -> None:

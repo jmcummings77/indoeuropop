@@ -14,6 +14,7 @@ from indoeuropop.parameterization import (
     RegionParameters,
     SourceParameters,
 )
+from indoeuropop.sweeps import ParameterRange, SweepSpec
 
 
 @dataclass(frozen=True)
@@ -105,12 +106,105 @@ def load_config(path: str | Path) -> SimulationConfig:
     )
 
 
+def load_sweep_spec(path: str | Path) -> SweepSpec:
+    """Load a deterministic parameter-sweep specification from a TOML file.
+
+    Expected TOML shape extends the simulation config with sweep metadata:
+
+    ```toml
+    [sweep]
+    sample_count = 8
+    seed = 7
+    source = "steppe"
+    region = "britain"
+
+    [[parameter_ranges]]
+    name = "migration_rate"
+    low = 0.001
+    high = 0.004
+    ```
+    """
+    config_path = Path(path)
+    with config_path.open("rb") as config_file:
+        raw_config = tomllib.load(config_file)
+
+    simulation = _table(raw_config, "simulation")
+    sweep = _table(raw_config, "sweep")
+    return SweepSpec(
+        initial_state=PopulationState(_table(raw_config, "counts")),
+        base_parameters=SimulationParameters(**_table(raw_config, "parameters")),
+        parameter_ranges=tuple(
+            _parameter_range(item)
+            for item in _optional_table_list(raw_config, "parameter_ranges")
+        ),
+        start_bce=float(simulation.get("start_bce", 3500.0)),
+        end_bce=float(simulation.get("end_bce", 1500.0)),
+        step_years=float(simulation.get("step_years", 25.0)),
+        sample_count=int(sweep.get("sample_count", 8)),
+        seed=int(sweep.get("seed", 7)),
+        source=_optional_text(sweep, "source", default="steppe"),
+        region=_optional_region(sweep),
+        schedule=SimulationSchedule(
+            migration_pulses=tuple(
+                MigrationPulse(**pulse)
+                for pulse in _optional_table_list(raw_config, "migration_pulses")
+            ),
+            forcing_windows=tuple(
+                ForcingWindow(**window)
+                for window in _optional_table_list(raw_config, "forcing_windows")
+            ),
+        ),
+        parameter_set=_load_parameter_set(raw_config),
+    )
+
+
 def _table(raw_config: dict[str, Any], key: str) -> dict[str, Any]:
     """Return a TOML table or raise a clear error for malformed config."""
     value = raw_config.get(key)
     if not isinstance(value, dict):
         raise ValueError(f"{key} table is required")
     return value
+
+
+def _parameter_range(raw_range: dict[str, Any]) -> ParameterRange:
+    """Return a validated parameter range from a TOML table."""
+    return ParameterRange(
+        name=_required_text(raw_range, "name"),
+        low=_required_float(raw_range, "low"),
+        high=_required_float(raw_range, "high"),
+    )
+
+
+def _required_text(raw_table: dict[str, Any], key: str) -> str:
+    """Return a required non-empty string from a TOML table."""
+    value = _optional_text(raw_table, key, default="")
+    if value == "":
+        raise ValueError(f"{key} must be non-empty")
+    return value
+
+
+def _optional_text(raw_table: dict[str, Any], key: str, *, default: str) -> str:
+    """Return an optional string from a TOML table."""
+    value = raw_table.get(key, default)
+    if not isinstance(value, str):
+        raise ValueError(f"{key} must be a string")
+    return value.strip()
+
+
+def _optional_region(raw_table: dict[str, Any]) -> str | None:
+    """Return an optional region label from a TOML table."""
+    if "region" not in raw_table:
+        return None
+    value = _optional_text(raw_table, "region", default="")
+    return value or None
+
+
+def _required_float(raw_table: dict[str, Any], key: str) -> float:
+    """Return a required numeric value from a TOML table."""
+    value = raw_table.get(key)
+    if not isinstance(value, int | float):
+        raise ValueError(f"{key} must be numeric")
+    return float(value)
 
 
 def _optional_table_list(

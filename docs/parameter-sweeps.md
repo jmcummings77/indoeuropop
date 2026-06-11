@@ -44,6 +44,7 @@ and trajectory summaries to stable rectangular tables. The export is meant for
 inspection, debugging, and audit trails; it is not an inference result.
 `run_sweep_workflow` can run a sweep, write sweep and sensitivity CSVs, and
 emit a manifest with a sweep-collection fingerprint.
+`load_sweep_spec` loads the same sweep shape from TOML for CLI and script use.
 
 ## Guardrail
 
