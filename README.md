@@ -58,6 +58,7 @@ src/indoeuropop/
   data_sources.py    metadata catalog for target and future sample inputs
   debugging.py       trajectory comparison helpers for simulation debugging
   diagnostics.py     sanity checks for simulation output quality
+  emulator_training.py matrix-ready sweep outputs for future emulators
   epidemics.py       compartmental epidemic scaffold
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
@@ -110,6 +111,8 @@ tests/
 - Export provenance and diagnostic records to rectangular CSV tables.
 - Fingerprint simulation results and sweep outputs with canonical SHA-256
   digests.
+- Prepare sweep runs as parameter and summary matrices for future emulator
+  experiments.
 - Write CLI provenance reports for demo simulations.
 - Load synthetic or published target-observation CSV files.
 - Register local and planned external data sources with citations and optional
@@ -124,7 +127,7 @@ tests/
 ## Not Yet Included
 
 - Ancient-DNA genotype or metadata ingestion.
-- AADR, Poseidon, SLiM, msprime, ABC-SMC, or emulator integration.
+- AADR, Poseidon, SLiM, msprime, ABC-SMC, or predictive emulator integration.
 - Regionally calibrated parameter priors.
 - Scholarly claims about fitted causal mechanisms.
 

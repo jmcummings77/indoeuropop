@@ -26,6 +26,11 @@ from indoeuropop.diagnostics import (
     has_errors,
     validate_simulation_result,
 )
+from indoeuropop.emulator_training import (
+    EmulatorTrainingDataset,
+    EmulatorTrainingRow,
+    emulator_training_dataset_from_sweep_runs,
+)
 from indoeuropop.epidemics import (
     DECEASED,
     EPIDEMIC_COMPARTMENTS,
@@ -162,6 +167,8 @@ __all__ = [
     "DataSourceCatalog",
     "DataSourceRecord",
     "DiagnosticIssue",
+    "EmulatorTrainingDataset",
+    "EmulatorTrainingRow",
     "EpidemicParameters",
     "EpidemicState",
     "ForcingWindow",
@@ -208,6 +215,7 @@ __all__ = [
     "compare_deterministic_and_tau_leap",
     "default_config",
     "diagnostic_issue_records",
+    "emulator_training_dataset_from_sweep_runs",
     "expected_births_by_source",
     "fingerprint_payload",
     "fingerprint_simulation_result",

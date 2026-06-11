@@ -101,6 +101,8 @@ Phase 4: Inference and validation.
 - Add emulator code only after full simulator outputs are reproducible.
   The first reproducibility scaffold fingerprints simulation results and sweep
   outputs with canonical JSON and SHA-256 digests for future audit trails.
+  The first emulator-training scaffold turns fingerprinted sweep runs into
+  parameter and summary-statistic matrices without training a surrogate model.
 - Revalidate emulator and posterior results against the explicit simulator.
 
 ## Visualization And Debugging
