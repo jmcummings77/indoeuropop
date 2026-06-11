@@ -140,6 +140,13 @@ from indoeuropop.sweep_reporting import (
     write_sensitivity_csv,
     write_sweep_runs_csv,
 )
+from indoeuropop.sweep_workflows import (
+    SweepOutputPaths,
+    SweepWorkflowResult,
+    run_sweep_workflow,
+    sweep_experiment_manifest,
+    write_sweep_outputs,
+)
 from indoeuropop.sweeps import (
     ParameterRange,
     SweepRun,
@@ -245,8 +252,10 @@ __all__ = [
     "SourceParameters",
     "SummaryStatistic",
     "SummaryVector",
+    "SweepOutputPaths",
     "SweepRun",
     "SweepSpec",
+    "SweepWorkflowResult",
     "TargetComparison",
     "TargetCurationDataset",
     "TargetCurationRecord",
@@ -297,6 +306,7 @@ __all__ = [
     "run_deterministic",
     "run_parameter_sweep",
     "run_scored_parameter_sweep",
+    "run_sweep_workflow",
     "run_tau_leap",
     "run_validated_parameter_sweep",
     "score_result_against_targets",
@@ -313,6 +323,7 @@ __all__ = [
     "summarize_trajectory",
     "summary_provenance_records",
     "sweep_collection_payload",
+    "sweep_experiment_manifest",
     "sweep_run_fieldnames",
     "sweep_run_payload",
     "sweep_run_rows",
@@ -328,5 +339,6 @@ __all__ = [
     "write_provenance_csv",
     "write_sensitivity_csv",
     "write_simulation_outputs",
+    "write_sweep_outputs",
     "write_sweep_runs_csv",
 ]

@@ -20,6 +20,8 @@ ArtifactRole = Literal[
     "fingerprint",
     "emulator_training",
     "emulator_validation",
+    "sweep_runs",
+    "sensitivity",
     "other",
 ]
 
@@ -32,6 +34,8 @@ ARTIFACT_ROLES = frozenset(
         "fingerprint",
         "emulator_training",
         "emulator_validation",
+        "sweep_runs",
+        "sensitivity",
         "other",
     }
 )

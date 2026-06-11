@@ -7,6 +7,7 @@ The first manifest scaffold records:
 
 - input or output artifacts, such as config files, target files, plots, and
   provenance CSV exports;
+- deterministic sweep artifacts, such as sweep-run CSVs and sensitivity CSVs;
 - optional SHA-256 checksums for those artifacts;
 - simulation-result fingerprints generated from canonical model output;
 - small metadata fields describing the CLI command and simulator path.

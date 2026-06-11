@@ -42,6 +42,8 @@ explicit distance comparisons.
 `sweep_runs_to_csv` and `write_sweep_runs_csv` export sampled parameter values
 and trajectory summaries to stable rectangular tables. The export is meant for
 inspection, debugging, and audit trails; it is not an inference result.
+`run_sweep_workflow` can run a sweep, write sweep and sensitivity CSVs, and
+emit a manifest with a sweep-collection fingerprint.
 
 ## Guardrail
 
