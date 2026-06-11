@@ -23,7 +23,7 @@ Suggestions are filtered by:
 
 ```bash
 uv run indoeuropop suggest-aadr-groups \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --aadr-groups-out results/aadr-group-suggestions.tsv
 ```
 
@@ -31,7 +31,7 @@ Loosen the count threshold for exploratory review:
 
 ```bash
 uv run indoeuropop suggest-aadr-groups \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --aadr-groups-out results/aadr-group-suggestions.tsv \
   --min-group-samples 1
 ```

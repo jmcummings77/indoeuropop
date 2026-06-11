@@ -28,7 +28,7 @@ dates, and group labels:
 
 ```bash
 uv run indoeuropop suggest-aadr-groups \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --aadr-groups-out results/aadr-group-suggestions.tsv
 ```
 
@@ -48,7 +48,7 @@ qpAdm workflow documented in `docs/qpadm-workflow.md`.
 
 ```bash
 uv run indoeuropop prepare-aadr-target-inputs \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
   --ancestry-method qpadm_steppe \
   --sample-metadata-out results/aadr-target-sample-metadata.csv \

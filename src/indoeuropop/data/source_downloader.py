@@ -37,12 +37,15 @@ class DownloadOptions:
     """Controls for materializing cataloged data sources.
 
     Local catalog records are copied from `base_path`; external records are
-    fetched from their URI. Existing output files are protected unless
-    `overwrite` is true.
+    fetched from their URI only after the shared `cache_dir` is checked for an
+    already downloaded file with the expected output filename. Existing output
+    files are reused unless `overwrite` is true, so raw source artifacts are not
+    replaced without explicit caller permission.
     """
 
     output_dir: Path
     base_path: Path = Path(".")
+    cache_dir: Path = Path("data")
     overwrite: bool = False
     timeout_seconds: float = 60.0
 
@@ -126,11 +129,23 @@ def download_data_source(
     options.output_dir.mkdir(parents=True, exist_ok=True)
     output_path = options.output_dir / _output_filename(record)
     if output_path.exists() and not options.overwrite:
-        raise FileExistsError(f"output file already exists: {output_path}")
-    if record.status == "local":
+        return _downloaded_source_from_existing(record, output_path)
+    cached_path = _cached_source_path(record, options.cache_dir)
+    if cached_path is not None and cached_path != output_path:
+        _downloaded_source_from_existing(record, cached_path)
+        shutil.copyfile(cached_path, output_path)
+    elif record.status == "local":
         _copy_local_source(record, options.base_path, output_path)
     else:
         _download_external_source(record, output_path, options.timeout_seconds)
+    return _downloaded_source_from_existing(record, output_path)
+
+
+def _downloaded_source_from_existing(
+    record: DataSourceRecord,
+    output_path: Path,
+) -> DownloadedSource:
+    """Return manifest metadata for an existing materialized source file."""
     checksum = sha256_file(output_path)
     verified = not record.has_checksum or checksum == record.checksum_sha256
     if not verified:
@@ -178,6 +193,17 @@ def write_download_manifest_csv(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(downloaded_sources_to_csv(sources), encoding="utf-8")
     return output_path
+
+
+def _cached_source_path(
+    record: DataSourceRecord,
+    cache_dir: Path,
+) -> Path | None:
+    """Return an existing cache artifact path for a data-source record."""
+    cache_path = cache_dir / _output_filename(record)
+    if cache_path.is_file():
+        return cache_path
+    return None
 
 
 def _copy_local_source(

@@ -24,7 +24,7 @@ Generate a manifest and the exact shell command:
 
 ```bash
 uv run indoeuropop plan-qpadm-run \
-  --genotype-prefix /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --genotype-prefix data \
   --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
   --qpadm-estimates data/qpadm/steppe-estimates.csv \
   --qpadm-f2-dir data/qpadm/f2 \
@@ -68,7 +68,7 @@ Prepare the matching AADR sample metadata and target curation:
 
 ```bash
 uv run indoeuropop prepare-aadr-target-inputs \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
   --ancestry-method qpadm_steppe \
   --sample-metadata-out results/aadr-target-sample-metadata.csv \
@@ -101,7 +101,7 @@ output, and built target CSVs can be regenerated and are intentionally ignored
 by Git.
 
 In the current local smoke run against
-`/Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig`, qpAdm
+`data`, qpAdm
 wrote 301 individual rows across 38 target groups. Strict conversion kept 63
 sample estimates with in-range steppe weights and usable standard errors. Target
 filtering retained 12 aggregate target observations and dropped 26 target rows.

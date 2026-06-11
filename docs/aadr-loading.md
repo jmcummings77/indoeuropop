@@ -9,7 +9,7 @@ metadata export. Genotype parsing remains a later phase.
 
 ```bash
 uv run indoeuropop load-aadr \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --sample-metadata-out data/aadr-sample-metadata.csv
 ```
 
@@ -17,7 +17,7 @@ For a small smoke run:
 
 ```bash
 uv run indoeuropop load-aadr \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --sample-metadata-out results/aadr-sample-metadata-head.csv \
   --aadr-limit 10
 ```

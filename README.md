@@ -58,11 +58,15 @@ uv run indoeuropop download-sources \
   --download-manifest-csv results/downloads.csv
 ```
 
+The downloader checks root `/data/` first for an artifact with the expected
+filename. Existing files are reused by default and are not replaced unless
+`--overwrite` is supplied explicitly.
+
 Export local AADR annotations as sample metadata:
 
 ```bash
 uv run indoeuropop load-aadr \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --sample-metadata-out data/aadr-sample-metadata.csv
 ```
 
@@ -71,7 +75,7 @@ chronology, and group labels:
 
 ```bash
 uv run indoeuropop suggest-aadr-groups \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --aadr-groups-out results/aadr-group-suggestions.tsv
 ```
 
@@ -80,7 +84,7 @@ building:
 
 ```bash
 uv run indoeuropop prepare-aadr-target-inputs \
-  --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-dir data \
   --aadr-groups results/aadr-group-suggestions.tsv \
   --sample-metadata-out results/aadr-target-sample-metadata.csv \
   --target-curation-out results/aadr-target-curation.csv
@@ -91,7 +95,7 @@ seed:
 
 ```bash
 uv run indoeuropop plan-qpadm-run \
-  --genotype-prefix /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --genotype-prefix data \
   --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
   --qpadm-estimates data/qpadm/steppe-estimates.csv \
   --qpadm-f2-dir data/qpadm/f2 \

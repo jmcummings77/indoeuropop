@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from pytest import CaptureFixture, raises
 
+from indoeuropop.data.data_sources import sha256_file
 from indoeuropop.orchestration.cli import main
 
 
@@ -134,6 +135,55 @@ def test_cli_download_sources_materializes_catalog_entries(
     assert "downloaded_source=synthetic-target-example" in captured.out
     assert manifest_path.read_text(encoding="utf-8").startswith(
         "dataset_id,kind,status,source_uri"
+    )
+
+
+def test_cli_download_sources_reuses_data_cache(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The download command should check the data cache before source access."""
+    data_cache = tmp_path / "data"
+    data_cache.mkdir()
+    cached_source = data_cache / "source.csv"
+    cached_source.write_text("sample_id,region\nI001,britain\n", encoding="utf-8")
+    catalog_path = tmp_path / "data-sources.toml"
+    output_dir = tmp_path / "outputs"
+    catalog_path.write_text(
+        "\n".join(
+            (
+                "[[data_sources]]",
+                'dataset_id = "cached-source"',
+                'kind = "sample_metadata_csv"',
+                'status = "local"',
+                'citation_key = "cached"',
+                'citation = "Cached source"',
+                'uri = "missing/source.csv"',
+                'download_filename = "source.csv"',
+                f'checksum_sha256 = "{sha256_file(cached_source)}"',
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "download-sources",
+            "--data-sources",
+            str(catalog_path),
+            "--output-dir",
+            str(output_dir),
+            "--data-cache-dir",
+            str(data_cache),
+        ]
+    )
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "download_count=1" in captured.out
+    assert (output_dir / "source.csv").read_text(encoding="utf-8") == (
+        cached_source.read_text(encoding="utf-8")
     )
 
 

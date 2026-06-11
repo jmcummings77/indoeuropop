@@ -124,18 +124,19 @@ def test_download_data_source_copies_local_record(tmp_path: Path) -> None:
 
 
 def test_download_data_source_protects_existing_outputs(tmp_path: Path) -> None:
-    """Existing output files should require explicit overwrite."""
+    """Existing output files should be reused unless overwrite is explicit."""
     source_path = _write_source(tmp_path)
     record = _record(uri=source_path.name)
     output_dir = tmp_path / "downloads"
     output_dir.mkdir()
     (output_dir / source_path.name).write_text("existing\n", encoding="utf-8")
 
-    with pytest.raises(FileExistsError, match="already exists"):
-        download_data_source(
-            record,
-            DownloadOptions(output_dir=output_dir, base_path=tmp_path),
-        )
+    existing = download_data_source(
+        record,
+        DownloadOptions(output_dir=output_dir, base_path=tmp_path),
+    )
+
+    assert existing.path.read_text(encoding="utf-8") == "existing\n"
 
     downloaded = download_data_source(
         record,
@@ -143,6 +144,74 @@ def test_download_data_source_protects_existing_outputs(tmp_path: Path) -> None:
     )
 
     assert downloaded.path.read_text(encoding="utf-8").startswith("sample_id")
+
+
+def test_download_data_source_uses_cache_before_source(tmp_path: Path) -> None:
+    """An existing data cache artifact should be reused before source access."""
+    cache_dir = tmp_path / "data"
+    cache_dir.mkdir()
+    cached_path = _write_source(cache_dir, "missing.csv")
+    record = _record(
+        uri="missing.csv",
+        checksum_sha256=sha256_file(cached_path),
+    )
+    output_dir = tmp_path / "downloads"
+
+    downloaded = download_data_source(
+        record,
+        DownloadOptions(
+            output_dir=output_dir,
+            base_path=tmp_path / "absent-source-base",
+            cache_dir=cache_dir,
+        ),
+    )
+
+    assert downloaded.path == output_dir / "missing.csv"
+    assert downloaded.path.read_text(encoding="utf-8") == cached_path.read_text(
+        encoding="utf-8"
+    )
+    assert downloaded.checksum_sha256 == sha256_file(cached_path)
+
+
+def test_download_data_source_reuses_cache_path_as_output(tmp_path: Path) -> None:
+    """A root data cache path can be the final output without being rewritten."""
+    cache_dir = tmp_path / "data"
+    cache_dir.mkdir()
+    cached_path = cache_dir / "source.csv"
+    cached_path.write_text("already here\n", encoding="utf-8")
+    record = _record(uri="source.csv")
+
+    downloaded = download_data_source(
+        record,
+        DownloadOptions(
+            output_dir=cache_dir,
+            base_path=tmp_path / "absent-source-base",
+            cache_dir=cache_dir,
+        ),
+    )
+
+    assert downloaded.path == cached_path
+    assert cached_path.read_text(encoding="utf-8") == "already here\n"
+
+
+def test_download_data_source_rejects_bad_cached_checksum(tmp_path: Path) -> None:
+    """Cached source artifacts should still satisfy catalog checksums."""
+    cache_dir = tmp_path / "data"
+    cache_dir.mkdir()
+    _write_source(cache_dir, "source.csv")
+    record = _record(uri="source.csv", checksum_sha256="0" * 64)
+
+    with pytest.raises(ValueError, match="checksum mismatch"):
+        download_data_source(
+            record,
+            DownloadOptions(
+                output_dir=tmp_path / "downloads",
+                base_path=tmp_path / "absent-source-base",
+                cache_dir=cache_dir,
+            ),
+        )
+
+    assert not (tmp_path / "downloads" / "source.csv").exists()
 
 
 def test_download_data_source_rejects_missing_local_file(tmp_path: Path) -> None:

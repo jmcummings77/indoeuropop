@@ -149,6 +149,12 @@ def add_data_arguments(parser: argparse.ArgumentParser) -> None:
         help="base directory for local catalog source paths",
     )
     parser.add_argument(
+        "--data-cache-dir",
+        type=Path,
+        default=Path("data"),
+        help="local raw-data cache checked before downloads",
+    )
+    parser.add_argument(
         "--dataset-id",
         action="append",
         default=(),
@@ -191,6 +197,7 @@ def _run_download_sources_command(
         DownloadOptions(
             output_dir=args.output_dir,
             base_path=args.source_base,
+            cache_dir=args.data_cache_dir,
             overwrite=args.overwrite,
         ),
         dataset_ids=args.dataset_id,

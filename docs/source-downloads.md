@@ -14,15 +14,23 @@ uv run indoeuropop download-sources \
   --download-manifest-csv results/downloads.csv
 ```
 
+Before using a local source path or external URI, the downloader checks
+root-level `data/` for a file with the record's expected output filename. Use
+`--data-cache-dir` to point at another raw-data cache. Existing output files are
+reused by default; the command does not replace raw data unless `--overwrite` is
+passed explicitly.
+
 Use `--dataset-id` repeatedly to download only selected records:
 
 ```bash
 uv run indoeuropop download-sources \
   --data-sources data/data-sources.toml \
   --dataset-id aadr-v66 \
-  --output-dir data/raw \
-  --overwrite
+  --output-dir data/raw
 ```
+
+Only use `--overwrite` after confirming that the existing local artifact should
+be replaced.
 
 ## Catalog Fields
 
