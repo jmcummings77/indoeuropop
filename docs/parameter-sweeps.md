@@ -34,6 +34,8 @@ The summary currently includes initial/final ancestry, ancestry change, slope
 per century, minimum total population, final total population, and extinction
 status. These are intentionally simple summary statistics that can later feed
 ABC-SMC or Bayesian optimization once target statistics are documented.
+`trajectory_summary_vector` converts these fields into named, scaled values for
+explicit distance comparisons.
 
 ## Guardrail
 

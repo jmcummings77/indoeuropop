@@ -88,6 +88,11 @@ from indoeuropop.sex_bias import (
 )
 from indoeuropop.simulation import run_deterministic, run_tau_leap
 from indoeuropop.summary import TrajectorySummary, summarize_trajectory
+from indoeuropop.summary_statistics import (
+    SummaryStatistic,
+    SummaryVector,
+    trajectory_summary_vector,
+)
 from indoeuropop.sweeps import (
     ParameterRange,
     SweepRun,
@@ -163,6 +168,8 @@ __all__ = [
     "SimulationResult",
     "SimulationSchedule",
     "SourceParameters",
+    "SummaryStatistic",
+    "SummaryVector",
     "SweepRun",
     "SweepSpec",
     "TargetComparison",
@@ -214,6 +221,7 @@ __all__ = [
     "summary_provenance_records",
     "target_fit_provenance_records",
     "target_observation_provenance_records",
+    "trajectory_summary_vector",
     "validate_simulation_result",
     "verify_record_checksum",
     "write_provenance_csv",

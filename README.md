@@ -65,6 +65,7 @@ src/indoeuropop/
   sample_metadata.py typed sample metadata staging for later ingestion
   simulation.py      deterministic and tau-leap simulation skeletons
   sex_bias.py        sex-structured reproduction scaffold
+  summary_statistics.py named summary vectors for future inference inputs
   target_curation.py target derivation metadata before ancestry outputs
   targets.py         target observation CSV loading and comparison helpers
   validation.py      calibration and validation target-split helpers
@@ -96,6 +97,7 @@ tests/
 - Override shared region rates and source-specific rates through parameter
   tables.
 - Run seeded Latin-hypercube parameter sweeps and summarize trajectories.
+- Convert trajectory summaries into named, scaled summary-statistic vectors.
 - Analyze sweep sensitivity with lightweight correlation diagnostics.
 - Score simulations and deterministic sweeps against target observations.
 - Split targets into calibration and validation sets for held-out fit checks.
