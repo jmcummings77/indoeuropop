@@ -54,6 +54,15 @@ class TargetBuildOptions:
             raise ValueError("minimum_uncertainty must be a finite proportion")
 
 
+@dataclass(frozen=True)
+class TargetInputFilterResult:
+    """Target-pipeline inputs retained after estimate availability filtering."""
+
+    sample_metadata: SampleMetadataDataset
+    curation: TargetCurationDataset
+    dropped_target_ids: tuple[str, ...]
+
+
 def build_target_dataset(
     sample_metadata: SampleMetadataDataset,
     curation: TargetCurationDataset,
@@ -91,6 +100,44 @@ def load_and_build_target_dataset(
         load_target_curation(curation_path),
         load_sample_ancestry_estimates(estimates_path),
         options=options,
+    )
+
+
+def filter_target_inputs_for_estimates(
+    sample_metadata: SampleMetadataDataset,
+    curation: TargetCurationDataset,
+    estimates: SampleAncestryEstimateDataset,
+) -> TargetInputFilterResult:
+    """Keep only curation rows whose samples all have matching estimates.
+
+    This is useful after an external ancestry-estimation run has rejected or
+    skipped unstable models. It drops complete target rows rather than silently
+    aggregating partial sample sets.
+    """
+    metadata_by_id = _sample_metadata_by_id(sample_metadata.require_records().records)
+    estimate_keys = {
+        (estimate.sample_id, estimate.source, estimate.method)
+        for estimate in estimates.require_estimates().estimates
+    }
+    kept_records: list[TargetCurationRecord] = []
+    kept_sample_ids: set[str] = set()
+    dropped_target_ids: list[str] = []
+    for record in curation.require_records().records:
+        if _target_has_complete_estimates(record, metadata_by_id, estimate_keys):
+            kept_records.append(record)
+            kept_sample_ids.update(record.sample_ids)
+        else:
+            dropped_target_ids.append(record.target_id)
+    filtered_curation = TargetCurationDataset.from_rows(kept_records).require_records()
+    filtered_metadata = SampleMetadataDataset.from_rows(
+        record
+        for record in sample_metadata.records
+        if record.sample_id in kept_sample_ids
+    ).require_records()
+    return TargetInputFilterResult(
+        filtered_metadata,
+        filtered_curation,
+        tuple(dropped_target_ids),
     )
 
 
@@ -143,6 +190,19 @@ def _sample_metadata_by_id(
             raise ValueError(f"ambiguous sample_id in metadata: {record.sample_id}")
         metadata_by_id[record.sample_id] = record
     return metadata_by_id
+
+
+def _target_has_complete_estimates(
+    curation: TargetCurationRecord,
+    metadata_by_id: Mapping[str, SampleMetadataRecord],
+    estimate_keys: set[tuple[str, str, str]],
+) -> bool:
+    """Return whether every curated sample has metadata and an estimate."""
+    return all(
+        sample_id in metadata_by_id
+        and (sample_id, curation.source, curation.ancestry_method) in estimate_keys
+        for sample_id in curation.sample_ids
+    )
 
 
 def _metadata_for_sample(

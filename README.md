@@ -86,13 +86,37 @@ uv run indoeuropop prepare-aadr-target-inputs \
   --target-curation-out results/aadr-target-curation.csv
 ```
 
+Plan an external ADMIXTOOLS qpAdm run from the committed western-Europe target
+seed:
+
+```bash
+uv run indoeuropop plan-qpadm-run \
+  --genotype-prefix /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
+  --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
+  --qpadm-estimates data/qpadm/steppe-estimates.csv \
+  --qpadm-f2-dir data/qpadm/f2 \
+  --qpadm-manifest-json results/qpadm-run.json
+```
+
 Convert externally computed qpAdm-style steppe estimates into sample-level
 ancestry estimates:
 
 ```bash
 uv run indoeuropop load-qpadm-estimates \
   --qpadm-estimates data/qpadm/steppe-estimates.csv \
-  --ancestry-estimates-out results/sample-ancestry-estimates.csv
+  --ancestry-estimates-out results/sample-ancestry-estimates.csv \
+  --skip-missing-standard-error
+```
+
+Filter curation rows to those with complete valid estimates:
+
+```bash
+uv run indoeuropop filter-target-inputs \
+  --sample-metadata results/aadr-target-sample-metadata.csv \
+  --target-curation results/aadr-target-curation.csv \
+  --ancestry-estimates results/sample-ancestry-estimates.csv \
+  --sample-metadata-out results/filtered-aadr-target-sample-metadata.csv \
+  --target-curation-out results/filtered-aadr-target-curation.csv
 ```
 
 Build target observations from curated sample-level inputs:
@@ -147,6 +171,7 @@ src/indoeuropop/
   models.py          typed state, parameter, and result dataclasses
   provenance.py      explicit simulated/observed/derived output records
   qpadm_estimates.py convert external qpAdm-style tables to sample estimates
+  qpadm_workflow.py preflight and manifest external qpAdm runs
   reporting.py       CSV export helpers for provenance and diagnostics
   reproducibility.py canonical output fingerprints for audit trails
   sample_metadata.py typed sample metadata staging for later ingestion
@@ -170,6 +195,7 @@ docs/
   experiment-manifests.md
   project-plan.md    implementation roadmap and scientific guardrails
   qpadm-estimates.md
+  qpadm-workflow.md
   source-downloads.md
   sweep-workflows.md
   target-data-schema.md
@@ -178,6 +204,10 @@ examples/
   sample-ancestry-estimates.example.csv
   sweep.example.toml
   target-observations.example.csv
+curation/
+  aadr-v66-western-europe-qpadm-targets.tsv
+scripts/
+  run_qpadm.R        external ADMIXTOOLS 2 runner
 tests/
   test_*.py          100% coverage tests for logic-bearing modules
 ```
@@ -231,6 +261,8 @@ tests/
 - Load synthetic or published target-observation CSV files.
 - Build target-observation CSVs from sample metadata, curation records, and
   sample ancestry estimates.
+- Filter target-pipeline inputs to rows with complete valid ancestry estimates
+  before aggregation.
 - Register local and planned external data sources with citations and optional
   SHA-256 checksums.
 - Download or copy cataloged source files into a raw-data cache with optional
@@ -245,6 +277,8 @@ tests/
 - Load sample-level ancestry estimates before target aggregation.
 - Convert externally computed qpAdm-style estimate tables into the sample
   ancestry estimate schema.
+- Plan external ADMIXTOOLS qpAdm runs with resolved genotype prefixes, a
+  committed target seed, and an auditable JSON manifest.
 - Document target curation windows, sample selections, and methods before
   creating target observations.
 - Compare simulated ancestry trajectories to target observations.

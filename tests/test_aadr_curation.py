@@ -134,6 +134,22 @@ def test_load_aadr_group_selections_reads_csv_without_header(tmp_path: Path) -> 
     assert selections == (AADRGroupSelection("iberia", "Iberia_EBA"),)
 
 
+def test_committed_western_europe_qpadm_targets_load() -> None:
+    """The committed qpAdm target seed should stay parseable and unique."""
+    selections = load_aadr_group_selections(
+        "curation/aadr-v66-western-europe-qpadm-targets.tsv"
+    )
+    group_ids = tuple(selection.group_id for selection in selections)
+
+    assert len(selections) == 38
+    assert {selection.region for selection in selections} == {
+        "britain",
+        "central_europe",
+    }
+    assert len(set(group_ids)) == len(group_ids)
+    assert selections[0] == AADRGroupSelection("britain", "England_BellBeaker")
+
+
 @pytest.mark.parametrize("contents", ["", "region,aadr_group_id\n"])
 def test_load_aadr_group_selections_rejects_empty_inputs(
     tmp_path: Path,

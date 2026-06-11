@@ -18,18 +18,30 @@ from indoeuropop.aadr_groups import (
     load_aadr_group_suggestions,
     write_aadr_group_selections_tsv,
 )
+from indoeuropop.ancestry_estimates import load_sample_ancestry_estimates
 from indoeuropop.data_sources import load_data_source_catalog
 from indoeuropop.qpadm_estimates import write_qpadm_sample_ancestry_estimates_csv
+from indoeuropop.qpadm_workflow import (
+    QpAdmRunConfig,
+    qpadm_run_command,
+    resolve_qpadm_genotype_prefix,
+    write_qpadm_run_manifest,
+)
+from indoeuropop.sample_metadata import load_sample_metadata, write_sample_metadata_csv
 from indoeuropop.source_downloader import (
     DownloadOptions,
     download_catalog_sources,
     write_download_manifest_csv,
 )
+from indoeuropop.target_curation import load_target_curation, write_target_curation_csv
+from indoeuropop.target_pipeline import filter_target_inputs_for_estimates
 
 DATA_COMMANDS = (
     "download-sources",
+    "filter-target-inputs",
     "load-aadr",
     "load-qpadm-estimates",
+    "plan-qpadm-run",
     "prepare-aadr-target-inputs",
     "suggest-aadr-groups",
 )
@@ -42,10 +54,14 @@ def run_data_command(
     """Run a data command, returning `None` when the command is unrelated."""
     if args.command == "download-sources":
         return _run_download_sources_command(args, parser)
+    if args.command == "filter-target-inputs":
+        return _run_filter_target_inputs_command(args, parser)
     if args.command == "load-aadr":
         return _run_load_aadr_command(args, parser)
     if args.command == "load-qpadm-estimates":
         return _run_load_qpadm_estimates_command(args, parser)
+    if args.command == "plan-qpadm-run":
+        return _run_plan_qpadm_run_command(args, parser)
     if args.command == "prepare-aadr-target-inputs":
         return _run_prepare_aadr_target_inputs_command(args, parser)
     if args.command == "suggest-aadr-groups":
@@ -82,12 +98,34 @@ def add_data_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--sample-metadata-out", type=Path, help="AADR metadata CSV")
     parser.add_argument("--qpadm-estimates", type=Path, help="qpAdm estimate table")
     parser.add_argument(
+        "--genotype-prefix",
+        type=Path,
+        help="AADR EIGENSTRAT genotype prefix or containing directory",
+    )
+    parser.add_argument(
+        "--qpadm-f2-dir",
+        type=Path,
+        help="ADMIXTOOLS f2-statistics output/cache directory",
+    )
+    parser.add_argument(
+        "--qpadm-runner",
+        type=Path,
+        default=Path("scripts/run_qpadm.R"),
+        help="R script used to run external qpAdm models",
+    )
+    parser.add_argument(
+        "--qpadm-manifest-json",
+        type=Path,
+        help="optional JSON manifest for a planned qpAdm run",
+    )
+    parser.add_argument(
         "--ancestry-estimates-out",
         type=Path,
         help="output sample ancestry estimate CSV",
     )
     parser.add_argument("--qpadm-method", default="qpadm_steppe")
     parser.add_argument("--default-standard-error", type=float)
+    parser.add_argument("--skip-missing-standard-error", action="store_true")
     parser.add_argument(
         "--data-sources",
         type=Path,
@@ -165,6 +203,38 @@ def _run_download_sources_command(
     return 0
 
 
+def _run_filter_target_inputs_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI target-input filtering command."""
+    for argument_name in ("sample_metadata", "target_curation", "ancestry_estimates"):
+        if getattr(args, argument_name) is None:
+            parser.error(
+                f"filter-target-inputs requires --{argument_name.replace('_', '-')}"
+            )
+    if args.sample_metadata_out is None:
+        parser.error("filter-target-inputs requires --sample-metadata-out")
+    if args.target_curation_out is None:
+        parser.error("filter-target-inputs requires --target-curation-out")
+    result = filter_target_inputs_for_estimates(
+        load_sample_metadata(args.sample_metadata),
+        load_target_curation(args.target_curation),
+        load_sample_ancestry_estimates(args.ancestry_estimates),
+    )
+    sample_path = write_sample_metadata_csv(
+        result.sample_metadata, args.sample_metadata_out
+    )
+    curation_path = write_target_curation_csv(result.curation, args.target_curation_out)
+    print(f"filtered_sample_count={result.sample_metadata.sample_count}")
+    print(f"filtered_target_count={len(result.curation.records)}")
+    print(f"dropped_target_count={len(result.dropped_target_ids)}")
+    print(f"sample_metadata={sample_path}")
+    print(f"target_curation={curation_path}")
+    for target_id in result.dropped_target_ids:
+        print(f"dropped_target={target_id}")
+    return 0
+
+
 def _run_load_aadr_command(
     args: argparse.Namespace, parser: argparse.ArgumentParser
 ) -> int:
@@ -197,8 +267,35 @@ def _run_load_qpadm_estimates_command(
         source=args.source,
         method=args.qpadm_method,
         default_standard_error=args.default_standard_error,
+        skip_missing_standard_error=args.skip_missing_standard_error,
     )
     print(f"sample_ancestry_estimates={output_path}")
+    return 0
+
+
+def _run_plan_qpadm_run_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI external qpAdm planning command."""
+    if args.genotype_prefix is None:
+        parser.error("plan-qpadm-run requires --genotype-prefix")
+    if args.aadr_groups is None:
+        parser.error("plan-qpadm-run requires --aadr-groups")
+    if args.qpadm_estimates is None:
+        parser.error("plan-qpadm-run requires --qpadm-estimates")
+    if args.qpadm_f2_dir is None:
+        parser.error("plan-qpadm-run requires --qpadm-f2-dir")
+    config = QpAdmRunConfig(
+        genotype_prefix=resolve_qpadm_genotype_prefix(args.genotype_prefix),
+        target_groups_path=args.aadr_groups,
+        output_csv_path=args.qpadm_estimates,
+        f2_dir=args.qpadm_f2_dir,
+        runner_script_path=args.qpadm_runner,
+    )
+    if args.qpadm_manifest_json is not None:
+        manifest_path = write_qpadm_run_manifest(config, args.qpadm_manifest_json)
+        print(f"qpadm_manifest={manifest_path}")
+    print("qpadm_command=" + " ".join(qpadm_run_command(config)))
     return 0
 
 

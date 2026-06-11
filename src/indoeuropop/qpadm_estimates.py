@@ -94,6 +94,7 @@ def load_qpadm_sample_ancestry_estimates(
     source: str = DEFAULT_QPADM_SOURCE,
     method: str = DEFAULT_QPADM_METHOD,
     default_standard_error: float | None = None,
+    skip_missing_standard_error: bool = False,
     status: EstimateStatus = "published",
 ) -> SampleAncestryEstimateDataset:
     """Load a qpAdm-style table as project sample ancestry estimates."""
@@ -102,6 +103,7 @@ def load_qpadm_sample_ancestry_estimates(
         source=source,
         method=method,
         default_standard_error=default_standard_error,
+        skip_missing_standard_error=skip_missing_standard_error,
         status=status,
     )
 
@@ -112,18 +114,24 @@ def qpadm_estimates_to_sample_ancestry_dataset(
     source: str = DEFAULT_QPADM_SOURCE,
     method: str = DEFAULT_QPADM_METHOD,
     default_standard_error: float | None = None,
+    skip_missing_standard_error: bool = False,
     status: EstimateStatus = "published",
 ) -> SampleAncestryEstimateDataset:
     """Convert qpAdm estimates into the target-pipeline estimate schema."""
     estimate_rows = tuple(
-        _sample_ancestry_estimate(
-            estimate,
-            source=source,
-            method=method,
-            default_standard_error=default_standard_error,
-            status=status,
-        )
+        row
         for estimate in estimates
+        if (
+            row := _sample_ancestry_estimate(
+                estimate,
+                source=source,
+                method=method,
+                default_standard_error=default_standard_error,
+                skip_missing_standard_error=skip_missing_standard_error,
+                status=status,
+            )
+        )
+        is not None
     )
     return SampleAncestryEstimateDataset.from_rows(estimate_rows).require_estimates()
 
@@ -135,6 +143,7 @@ def write_qpadm_sample_ancestry_estimates_csv(
     source: str = DEFAULT_QPADM_SOURCE,
     method: str = DEFAULT_QPADM_METHOD,
     default_standard_error: float | None = None,
+    skip_missing_standard_error: bool = False,
     status: EstimateStatus = "published",
 ) -> Path:
     """Convert a qpAdm-style table and write project sample estimates."""
@@ -144,6 +153,7 @@ def write_qpadm_sample_ancestry_estimates_csv(
             source=source,
             method=method,
             default_standard_error=default_standard_error,
+            skip_missing_standard_error=skip_missing_standard_error,
             status=status,
         ),
         output_path,
@@ -192,8 +202,8 @@ def _estimate_from_qpadm_row(
     return QpAdmEstimate(
         sample_id=sample_id,
         steppe_fraction=steppe_fraction,
-        standard_error=_optional_float(row, columns["standard_error"]),
-        p_value=_optional_float(row, columns["p_value"]),
+        standard_error=_optional_standard_error(row, columns["standard_error"]),
+        p_value=_optional_proportion(row, columns["p_value"]),
     )
 
 
@@ -203,8 +213,9 @@ def _sample_ancestry_estimate(
     source: str,
     method: str,
     default_standard_error: float | None,
+    skip_missing_standard_error: bool,
     status: EstimateStatus,
-) -> SampleAncestryEstimate:
+) -> SampleAncestryEstimate | None:
     """Convert one qpAdm estimate into the project estimate dataclass."""
     standard_error = (
         estimate.standard_error
@@ -212,6 +223,8 @@ def _sample_ancestry_estimate(
         else default_standard_error
     )
     if standard_error is None:
+        if skip_missing_standard_error:
+            return None
         raise ValueError(
             f"qpAdm estimate for {estimate.sample_id} is missing standard error"
         )
@@ -252,6 +265,26 @@ def _optional_float(row: dict[str, str | None], column: str | None) -> float | N
         return float(value)
     except ValueError:
         return None
+
+
+def _optional_standard_error(
+    row: dict[str, str | None], column: str | None
+) -> float | None:
+    """Parse an optional qpAdm standard error, dropping invalid values."""
+    value = _optional_float(row, column)
+    if value is None or not isfinite(value) or value <= 0 or value > 1:
+        return None
+    return value
+
+
+def _optional_proportion(
+    row: dict[str, str | None], column: str | None
+) -> float | None:
+    """Parse an optional finite proportion, dropping invalid values."""
+    value = _optional_float(row, column)
+    if value is None or not isfinite(value) or not 0 <= value <= 1:
+        return None
+    return value
 
 
 def _normalized_name(value: str) -> str:

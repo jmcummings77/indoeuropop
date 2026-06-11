@@ -27,6 +27,7 @@ def _qpadm_csv() -> str:
             "EMPTY,,0.1,0.2",
             "NOSE,0.5,,0.3",
             "BADSE,0.4,bad,0.3",
+            "HIGHSE,0.6,2.0,2.0",
         )
     )
 
@@ -54,11 +55,14 @@ def test_parse_qpadm_estimate_table_reads_csv_and_skips_bad_rows() -> None:
         "I002",
         "NOSE",
         "BADSE",
+        "HIGHSE",
     )
     assert estimates[0].steppe_fraction == pytest.approx(0.9)
     assert estimates[0].standard_error == pytest.approx(0.03)
     assert estimates[0].p_value == pytest.approx(0.12)
     assert estimates[2].standard_error is None
+    assert estimates[4].standard_error is None
+    assert estimates[4].p_value is None
 
 
 def test_parse_qpadm_estimate_table_reads_tsv_without_optional_columns() -> None:
@@ -130,6 +134,16 @@ def test_qpadm_conversion_requires_standard_error_without_default() -> None:
         qpadm_estimates_to_sample_ancestry_dataset((QpAdmEstimate("I001", 0.9),))
 
 
+def test_qpadm_conversion_can_skip_missing_standard_errors() -> None:
+    """Uncertainty-free qpAdm rows can be explicitly skipped."""
+    dataset = qpadm_estimates_to_sample_ancestry_dataset(
+        (QpAdmEstimate("I001", 0.9), QpAdmEstimate("I002", 0.7, 0.04)),
+        skip_missing_standard_error=True,
+    )
+
+    assert dataset.sample_ids() == ("I002",)
+
+
 def test_load_qpadm_sample_ancestry_estimates_filters_rows(
     tmp_path: Path,
 ) -> None:
@@ -142,7 +156,7 @@ def test_load_qpadm_sample_ancestry_estimates_filters_rows(
         default_standard_error=0.05,
     )
 
-    assert dataset.sample_ids() == ("I001", "I002", "NOSE", "BADSE")
+    assert dataset.sample_ids() == ("I001", "I002", "NOSE", "BADSE", "HIGHSE")
     assert dataset.estimates[2].standard_error == pytest.approx(0.05)
 
 
@@ -162,5 +176,5 @@ def test_write_qpadm_sample_ancestry_estimates_csv_round_trips(
     loaded = load_sample_ancestry_estimates(output_path)
 
     assert returned_path == output_path
-    assert loaded.estimate_count == 4
+    assert loaded.estimate_count == 5
     assert loaded.estimates[0].method == "qpadm_steppe"

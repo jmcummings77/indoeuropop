@@ -48,6 +48,64 @@ def test_cli_build_targets_writes_target_csv(
     assert "synthetic,britain,steppe,2900,0.08,0.03" in output_text
 
 
+def test_cli_filter_target_inputs_drops_incomplete_targets(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The CLI should drop target rows missing valid sample estimates."""
+    sample_metadata = tmp_path / "sample-metadata.csv"
+    target_curation = tmp_path / "target-curation.csv"
+    ancestry_estimates = tmp_path / "sample-ancestry-estimates.csv"
+    filtered_samples = tmp_path / "outputs" / "filtered-samples.csv"
+    filtered_curation = tmp_path / "outputs" / "filtered-curation.csv"
+    sample_metadata.write_text(
+        "status,dataset_id,sample_id,accession_id,publication_key,publication,"
+        "region,site,time_bce,date_uncertainty,sex,method,note\n"
+        "synthetic,dataset,S1,A1,key,Publication,britain,Site,2900,50,unknown,method,\n"
+        "synthetic,dataset,S2,A2,key,Publication,britain,Site,2900,50,unknown,method,\n",
+        encoding="utf-8",
+    )
+    target_curation.write_text(
+        "status,target_id,region,source,start_bce,end_bce,sample_ids,sample_count,"
+        "ancestry_method,aggregation_method,citation_key,citation,note\n"
+        "synthetic,target-keep,britain,steppe,3000,2800,S1,1,qpadm_steppe,"
+        "unweighted_mean,key,Citation,\n"
+        "synthetic,target-drop,britain,steppe,3000,2800,S2,1,qpadm_steppe,"
+        "unweighted_mean,key,Citation,\n",
+        encoding="utf-8",
+    )
+    ancestry_estimates.write_text(
+        "status,sample_id,source,estimate,standard_error,method,note\n"
+        "synthetic,S1,steppe,0.2,0.05,qpadm_steppe,\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "filter-target-inputs",
+            "--sample-metadata",
+            str(sample_metadata),
+            "--target-curation",
+            str(target_curation),
+            "--ancestry-estimates",
+            str(ancestry_estimates),
+            "--sample-metadata-out",
+            str(filtered_samples),
+            "--target-curation-out",
+            str(filtered_curation),
+        ]
+    )
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "filtered_sample_count=1" in captured.out
+    assert "filtered_target_count=1" in captured.out
+    assert "dropped_target=target-drop" in captured.out
+    assert "S1" in filtered_samples.read_text(encoding="utf-8")
+    assert "S2" not in filtered_samples.read_text(encoding="utf-8")
+    assert "target-keep" in filtered_curation.read_text(encoding="utf-8")
+
+
 def test_cli_download_sources_materializes_catalog_entries(
     tmp_path: Path,
     capsys: CaptureFixture[str],
@@ -135,6 +193,46 @@ def test_cli_load_qpadm_estimates_writes_sample_ancestry_csv(
     assert f"sample_ancestry_estimates={output_path}" in captured.out
     assert output_text.startswith("status,sample_id,source")
     assert "published,I001.SG,steppe,0.8,0.04,qpadm_steppe" in output_text
+
+
+def test_cli_plan_qpadm_run_writes_manifest(
+    tmp_path: Path,
+    capsys: CaptureFixture[str],
+) -> None:
+    """The CLI should preflight and manifest an external qpAdm command."""
+    aadr_dir = _tiny_aadr_dir(tmp_path)
+    groups_path = tmp_path / "groups.tsv"
+    output_path = tmp_path / "data" / "qpadm" / "steppe-estimates.csv"
+    f2_dir = tmp_path / "data" / "qpadm" / "f2"
+    manifest_path = tmp_path / "manifests" / "qpadm.json"
+    groups_path.write_text(
+        "region\taadr_group_id\niberia\tGreece_EBA\n", encoding="utf-8"
+    )
+
+    exit_code = main(
+        [
+            "plan-qpadm-run",
+            "--genotype-prefix",
+            str(aadr_dir),
+            "--aadr-groups",
+            str(groups_path),
+            "--qpadm-estimates",
+            str(output_path),
+            "--qpadm-f2-dir",
+            str(f2_dir),
+            "--qpadm-manifest-json",
+            str(manifest_path),
+        ]
+    )
+    captured = capsys.readouterr()
+    manifest_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert exit_code == 0
+    assert f"qpadm_manifest={manifest_path}" in captured.out
+    assert "qpadm_command=Rscript scripts/run_qpadm.R --prefix" in captured.out
+    assert manifest_payload["target_group_count"] == 1
+    assert manifest_payload["regions"] == ["iberia"]
+    assert manifest_payload["command"][0] == "Rscript"
 
 
 def test_cli_prepare_aadr_target_inputs_writes_real_input_csvs(
@@ -249,6 +347,30 @@ def test_cli_load_qpadm_estimates_requires_paths(argv: list[str]) -> None:
 @pytest.mark.parametrize(
     "argv",
     [
+        ["plan-qpadm-run"],
+        ["plan-qpadm-run", "--genotype-prefix", "aadr"],
+        ["plan-qpadm-run", "--genotype-prefix", "aadr", "--aadr-groups", "groups.tsv"],
+        [
+            "plan-qpadm-run",
+            "--genotype-prefix",
+            "aadr",
+            "--aadr-groups",
+            "groups.tsv",
+            "--qpadm-estimates",
+            "steppe.csv",
+        ],
+    ],
+)
+def test_cli_plan_qpadm_run_requires_paths(argv: list[str]) -> None:
+    """The qpAdm planning command should reject incomplete paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
         ["prepare-aadr-target-inputs"],
         ["prepare-aadr-target-inputs", "--aadr-dir", "aadr"],
         [
@@ -330,6 +452,47 @@ def test_cli_download_sources_requires_paths(argv: list[str]) -> None:
 )
 def test_cli_build_targets_requires_pipeline_paths(argv: list[str]) -> None:
     """The target-building command should reject incomplete input paths."""
+    with raises(SystemExit) as exc_info:
+        main(argv)
+    assert exc_info.value.code == 2
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["filter-target-inputs"],
+        ["filter-target-inputs", "--sample-metadata", "samples.csv"],
+        [
+            "filter-target-inputs",
+            "--sample-metadata",
+            "samples.csv",
+            "--target-curation",
+            "curation.csv",
+        ],
+        [
+            "filter-target-inputs",
+            "--sample-metadata",
+            "samples.csv",
+            "--target-curation",
+            "curation.csv",
+            "--ancestry-estimates",
+            "estimates.csv",
+        ],
+        [
+            "filter-target-inputs",
+            "--sample-metadata",
+            "samples.csv",
+            "--target-curation",
+            "curation.csv",
+            "--ancestry-estimates",
+            "estimates.csv",
+            "--sample-metadata-out",
+            "filtered-samples.csv",
+        ],
+    ],
+)
+def test_cli_filter_target_inputs_requires_paths(argv: list[str]) -> None:
+    """The target-input filtering command should reject incomplete paths."""
     with raises(SystemExit) as exc_info:
         main(argv)
     assert exc_info.value.code == 2

@@ -13,6 +13,7 @@ from indoeuropop.target_pipeline import (
     _mean,
     _target_uncertainty,
     build_target_dataset,
+    filter_target_inputs_for_estimates,
     load_and_build_target_dataset,
 )
 
@@ -61,6 +62,7 @@ def _estimate(
 
 def _curation(
     *,
+    target_id: str = "britain-steppe-3000-2800",
     aggregation_method: str = "mean",
     sample_ids: tuple[str, ...] = ("I001", "I002"),
     status: str = "published",
@@ -70,7 +72,7 @@ def _curation(
     """Build one target curation record for target-pipeline tests."""
     return TargetCurationRecord(
         status=status,  # type: ignore[arg-type]
-        target_id="britain-steppe-3000-2800",
+        target_id=target_id,
         region="britain",
         source="steppe",
         start_bce=start_bce,
@@ -191,6 +193,32 @@ def test_load_and_build_target_dataset_from_files() -> None:
     assert len(dataset.observations) == 1
     assert dataset.observations[0].status == "synthetic"
     assert dataset.observations[0].mean == 0.08
+
+
+def test_filter_target_inputs_for_estimates_drops_incomplete_targets() -> None:
+    """Target-input filtering should keep only complete target rows."""
+    curation = TargetCurationDataset.from_rows(
+        (
+            _curation(sample_ids=("I001",), start_bce=3000, end_bce=2800),
+            _curation(
+                target_id="britain-steppe-missing",
+                sample_ids=("I002",),
+                start_bce=3000,
+                end_bce=2800,
+            ),
+        )
+    )
+    result = filter_target_inputs_for_estimates(
+        _metadata_dataset(_sample("I001"), _sample("I002")),
+        curation,
+        _estimate_dataset(_estimate("I001", 0.1)),
+    )
+
+    assert tuple(record.sample_id for record in result.sample_metadata.records) == (
+        "I001",
+    )
+    assert result.curation.target_ids() == ("britain-steppe-3000-2800",)
+    assert result.dropped_target_ids == ("britain-steppe-missing",)
 
 
 def test_target_build_options_reject_invalid_uncertainty_floor() -> None:

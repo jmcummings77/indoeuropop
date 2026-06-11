@@ -72,6 +72,12 @@ Phase 2: Scientific input layer.
   Externally computed qpAdm-style steppe tables can now be converted into the
   project sample-ancestry estimate schema without treating qpAdm as an internal
   inference engine.
+  A committed AADR v66 western-Europe qpAdm target seed and external run
+  manifest helper now make the ADMIXTOOLS handoff reproducible while keeping
+  heavy f2 caches, genotype data, and qpAdm outputs out of Git.
+  Target inputs can now be filtered after strict qpAdm conversion so unstable
+  external models drop whole target rows rather than producing partial or
+  silently clipped observations.
 - Compare model output to targets through a validated observation interface,
   never by hard-coding target values inside simulator functions.
 

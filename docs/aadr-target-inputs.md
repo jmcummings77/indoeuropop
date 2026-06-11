@@ -35,12 +35,22 @@ uv run indoeuropop suggest-aadr-groups \
 The suggestion file should still be reviewed before it is used for target
 preparation.
 
+The repository also includes a committed western-Europe qpAdm target seed:
+
+```text
+curation/aadr-v66-western-europe-qpadm-targets.tsv
+```
+
+It loads with the same `--aadr-groups` argument and is intended for the external
+qpAdm workflow documented in `docs/qpadm-workflow.md`.
+
 ## CLI
 
 ```bash
 uv run indoeuropop prepare-aadr-target-inputs \
   --aadr-dir /Users/jmcummings/Claude/Projects/indoeuropop_claude/data/aadr/orig \
-  --aadr-groups results/aadr-group-suggestions.tsv \
+  --aadr-groups curation/aadr-v66-western-europe-qpadm-targets.tsv \
+  --ancestry-method qpadm_steppe \
   --sample-metadata-out results/aadr-target-sample-metadata.csv \
   --target-curation-out results/aadr-target-curation.csv
 ```
@@ -59,9 +69,16 @@ least one group must still match.
 The target builder still requires sample-level ancestry estimates:
 
 ```bash
-uv run indoeuropop build-targets \
+uv run indoeuropop filter-target-inputs \
   --sample-metadata results/aadr-target-sample-metadata.csv \
   --target-curation results/aadr-target-curation.csv \
+  --ancestry-estimates path/to/sample-ancestry-estimates.csv \
+  --sample-metadata-out results/filtered-aadr-target-sample-metadata.csv \
+  --target-curation-out results/filtered-aadr-target-curation.csv
+
+uv run indoeuropop build-targets \
+  --sample-metadata results/filtered-aadr-target-sample-metadata.csv \
+  --target-curation results/filtered-aadr-target-curation.csv \
   --ancestry-estimates path/to/sample-ancestry-estimates.csv \
   --target-output results/aadr-target-observations.csv
 ```
