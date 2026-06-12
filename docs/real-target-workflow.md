@@ -255,6 +255,278 @@ uv run indoeuropop review-override-deltas \
   --fit-metric root_mean_squared_error
 ```
 
+Run a read-only readiness review once the real-data artifacts and override
+decision files have been regenerated:
+
+```bash
+uv run indoeuropop review-pipeline-readiness \
+  --readiness-report-md results/qpadm-rerun/real-pipeline-readiness.md
+```
+
+This command checks for the local AADR source files declared by the data-source
+catalog, verifies required result artifacts exist, extracts diagnostics and
+row-count metrics, checks diagnostics counts against generated target CSVs, and
+reuses strict curation-decision artifact validation. The strict curation check
+also verifies the active same-baseline head-to-head report and every artifact in
+its manifest, so stale structural-comparison outputs block readiness. Treat a
+ready report as an engineering gate for inference work, not as scientific
+confirmation of any specific demographic mechanism.
+
+Run the first bounded inference scaffold over the accepted target set:
+
+```bash
+uv run indoeuropop infer-target-parameters \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/qpadm-rerun/accepted-target-observations.csv \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --posterior-samples-csv results/qpadm-rerun/abc-accepted-samples.csv \
+  --posterior-summary-csv results/qpadm-rerun/abc-posterior-summary.csv \
+  --inference-report-md results/qpadm-rerun/abc-inference-report.md \
+  --posterior-predictive-csv results/qpadm-rerun/abc-posterior-predictive.csv \
+  --posterior-predictive-report-md results/qpadm-rerun/abc-posterior-predictive.md \
+  --posterior-predictive-plot results/qpadm-rerun/abc-posterior-predictive.png \
+  --holdout-targets results/qpadm-rerun/baseline-target-observations.csv \
+  --holdout-posterior-predictive-csv results/qpadm-rerun/abc-holdout-posterior-predictive.csv \
+  --holdout-posterior-predictive-report-md results/qpadm-rerun/abc-holdout-posterior-predictive.md \
+  --holdout-posterior-predictive-plot results/qpadm-rerun/abc-holdout-posterior-predictive.png \
+  --manifest-json results/qpadm-rerun/abc-inference-manifest.json
+```
+
+The command implements a deliberately modest ABC-style rejection baseline. It
+uses the existing deterministic sweep and target-fit scoring path, then retains
+samples by `--acceptance-count`, `--acceptance-threshold`, or
+`--acceptance-quantile`. It can also write posterior predictive diagnostics for
+the calibration targets and an optional holdout-style target file. The holdout
+comparison is only as strong as the split design; use it as an engineering
+model check unless the holdout targets were selected before inspecting results.
+The output is useful for regression-checked parameter screening before ABC-SMC
+or emulator-guided proposals, but it is not a standalone demographic posterior.
+
+Run a sequential ABC-SMC-style calibration over the accepted targets when the
+readiness and same-baseline structural gates are clean:
+
+```bash
+uv run indoeuropop infer-target-parameters-smc \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/qpadm-rerun/accepted-target-observations.csv \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --smc-generations 3 \
+  --smc-sample-count 30 \
+  --smc-generations-csv results/qpadm-rerun/abc-smc-generations.csv \
+  --posterior-samples-csv results/qpadm-rerun/abc-smc-final-samples.csv \
+  --posterior-summary-csv results/qpadm-rerun/abc-smc-final-summary.csv \
+  --inference-report-md results/qpadm-rerun/abc-smc-report.md \
+  --posterior-predictive-csv results/qpadm-rerun/abc-smc-posterior-predictive.csv \
+  --posterior-predictive-report-md results/qpadm-rerun/abc-smc-posterior-predictive.md \
+  --posterior-predictive-plot results/qpadm-rerun/abc-smc-posterior-predictive.png \
+  --manifest-json results/qpadm-rerun/abc-smc-manifest.json
+```
+
+The SMC scaffold performs repeated deterministic sweeps, accepts the best target
+fits by count or quantile, and narrows the next generation's parameter ranges
+from accepted-sample quantiles. It is useful for calibrated proposal narrowing
+and posterior predictive regression checks. It still lacks particle weights,
+formal priors beyond the configured ranges, and external qpAdm uncertainty
+propagation, so treat it as an engineering inference layer rather than final
+population-history evidence.
+
+Refresh the standard accepted-target structural outputs, same-baseline
+head-to-head comparison, and readiness report with one command:
+
+```bash
+uv run indoeuropop refresh-real-pipeline
+```
+
+This command is the preferred reproducibility route after target, curation, or
+override metadata changes. It reruns the `structure-target-regions` and
+`compare-structured-candidates` equivalents using the standard Central Europe
+paths, then writes `results/qpadm-rerun/real-pipeline-readiness.md`.
+
+Evaluate the current early-pulse structural candidate against the accepted
+targets:
+
+```bash
+uv run indoeuropop evaluate-migration-pulse-candidate \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --targets results/qpadm-rerun/accepted-target-observations.csv \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --pulse-candidate-name central-europe-early-pulse \
+  --pulse-region central_europe \
+  --pulse-start-bce 3000 \
+  --pulse-end-bce 2600 \
+  --pulse-annual-rate 0.00005 \
+  --candidate-config-out results/qpadm-rerun/central-europe-early-pulse-comparison.toml \
+  --posterior-predictive-report-md results/qpadm-rerun/central-europe-early-pulse-baseline.md \
+  --posterior-predictive-plot results/qpadm-rerun/central-europe-early-pulse-baseline.png \
+  --candidate-posterior-predictive-report-md results/qpadm-rerun/central-europe-early-pulse-candidate.md \
+  --candidate-posterior-predictive-plot results/qpadm-rerun/central-europe-early-pulse-candidate.png \
+  --candidate-comparison-report-md results/qpadm-rerun/central-europe-early-pulse-comparison.md \
+  --manifest-json results/qpadm-rerun/central-europe-early-pulse-manifest.json
+```
+
+The candidate appends a modest extra Central Europe migration pulse during
+3000-2600 BCE. It directly tests whether the high Tiefbrunn Corded Ware target
+looks more like a transition-timing problem than a global parameter-range
+problem. Promote it only if later archaeology/chronology and qpAdm review
+support the structural assumption.
+
+Compare the promoted child-region override candidate against the broad-pulse
+diagnostic:
+
+```bash
+uv run indoeuropop evaluate-child-region-candidate \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --child-region-candidate-name central-europe-child-interaction-best \
+  --candidate-config-out results/qpadm-rerun/central-europe-child-interaction-best-posterior-comparison.toml \
+  --posterior-predictive-report-md results/qpadm-rerun/central-europe-child-interaction-best-baseline.md \
+  --posterior-predictive-plot results/qpadm-rerun/central-europe-child-interaction-best-baseline.png \
+  --candidate-posterior-predictive-report-md results/qpadm-rerun/central-europe-child-interaction-best-candidate.md \
+  --candidate-posterior-predictive-plot results/qpadm-rerun/central-europe-child-interaction-best-candidate.png \
+  --candidate-comparison-report-md results/qpadm-rerun/central-europe-child-interaction-best-vs-broad-pulse.md \
+  --reference-comparison-manifest results/qpadm-rerun/central-europe-early-pulse-manifest.json \
+  --focus-observation-index 9 \
+  --manifest-json results/qpadm-rerun/central-europe-child-interaction-best-manifest.json
+```
+
+This path tests whether the residual is better represented by target-aligned
+Central Europe structure than by one parent-region pulse. The reference manifest
+comparison is diagnostic only because the broad-pulse and child-region runs use
+different baselines.
+
+For a direct promotion gate, compare a structured broad-pulse candidate and the
+child-region override candidate against the same structured baseline:
+
+```bash
+uv run indoeuropop compare-structured-candidates \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --structured-pulse-candidate-name central-europe-structured-broad-pulse \
+  --structured-pulse-region-prefix central_europe__ \
+  --structured-pulse-start-bce 3000 \
+  --structured-pulse-end-bce 2600 \
+  --structured-pulse-annual-rate 0.00005 \
+  --child-region-candidate-name central-europe-child-interaction-best \
+  --structured-pulse-config-out results/qpadm-rerun/central-europe-structured-broad-pulse-comparison.toml \
+  --child-candidate-config-out results/qpadm-rerun/central-europe-child-interaction-best-head-to-head.toml \
+  --posterior-predictive-report-md results/qpadm-rerun/central-europe-head-to-head-baseline.md \
+  --posterior-predictive-plot results/qpadm-rerun/central-europe-head-to-head-baseline.png \
+  --structured-pulse-posterior-predictive-report-md results/qpadm-rerun/central-europe-structured-broad-pulse.md \
+  --structured-pulse-posterior-predictive-plot results/qpadm-rerun/central-europe-structured-broad-pulse.png \
+  --child-posterior-predictive-report-md results/qpadm-rerun/central-europe-child-interaction-best-head-to-head.md \
+  --child-posterior-predictive-plot results/qpadm-rerun/central-europe-child-interaction-best-head-to-head.png \
+  --head-to-head-report-md results/qpadm-rerun/central-europe-structured-pulse-vs-child-head-to-head.md \
+  --focus-observation-index 9 \
+  --manifest-json results/qpadm-rerun/central-europe-structured-pulse-vs-child-head-to-head-manifest.json
+```
+
+This command keeps the baseline fixed, copies the broad pulse across matching
+`central_europe__*` child regions, and compares that candidate directly with the
+curated child-region override. Prefer this report over cross-baseline manifest
+deltas when deciding which structural hypothesis to promote.
+
+Run the SMC-calibrated structural comparison when the direct same-baseline gate
+is clean:
+
+```bash
+uv run indoeuropop compare-structured-candidates-smc \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --validation-field region \
+  --validation-value britain \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --smc-generations 3 \
+  --smc-sample-count 30 \
+  --structured-pulse-candidate-name central-europe-structured-broad-pulse \
+  --structured-pulse-region-prefix central_europe__ \
+  --structured-pulse-start-bce 3000 \
+  --structured-pulse-end-bce 2600 \
+  --structured-pulse-annual-rate 0.00005 \
+  --child-region-candidate-name central-europe-child-interaction-best \
+  --smc-comparison-output-dir results/qpadm-rerun/structured-smc
+```
+
+This comparison holds Britain out from SMC calibration while fitting the
+target-aligned Central Europe rows, then reports calibration and held-out
+posterior predictive diagnostics for the structured baseline, broad pulse, and
+child-override candidates. It is a robustness check for structural promotion,
+not a replacement for qpAdm review or explicit archaeological chronology.
+
+Run the multi-fold structural SMC validation before treating either structural
+candidate as fold-stable:
+
+```bash
+uv run indoeuropop validate-structured-candidates-smc \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --smc-generations 3 \
+  --smc-sample-count 30 \
+  --structured-pulse-candidate-name central-europe-structured-broad-pulse \
+  --structured-pulse-region-prefix central_europe__ \
+  --structured-pulse-start-bce 3000 \
+  --structured-pulse-end-bce 2600 \
+  --structured-pulse-annual-rate 0.00005 \
+  --child-region-candidate-name central-europe-child-interaction-best \
+  --smc-validation-output-dir results/qpadm-rerun/structured-smc-validation
+```
+
+The default fold set combines review metadata and target-derived folds:
+protected/Britain holdouts, priority child-region holdouts, every
+`central_europe__*` child region, and coarse chronology bands. The top-level
+report summarizes how often calibration and holdout folds prefer the same
+candidate; disagreement is evidence that a candidate remains a local-fit
+hypothesis rather than a promoted population-structure explanation.
+
+Drill into those disagreement folds before revising either candidate:
+
+```bash
+uv run indoeuropop review-structured-smc-disagreements \
+  --smc-validation-summary-csv results/qpadm-rerun/structured-smc-validation/structural-smc-validation-summary.csv \
+  --smc-validation-output-dir results/qpadm-rerun/structured-smc-validation \
+  --smc-disagreement-csv results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-diagnostics.csv \
+  --smc-disagreement-report-md results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-diagnostics.md
+```
+
+The diagnostic report joins each disagreement fold to held-out target notes,
+sample counts, publication keys, uncertainty, and model-level posterior
+predictive residuals. Positive
+`child_minus_structured_pulse_abs_residual_delta` values mean the child override
+fit that target worse than the broad structured pulse; negative values mean the
+child override fit it better.
+
+Batch-audit the disagreement targets against sample-level AADR metadata and
+qpAdm estimates before revising curation or model structure:
+
+```bash
+uv run indoeuropop audit-structured-smc-disagreement-targets \
+  --smc-disagreement-csv results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-diagnostics.csv \
+  --target-curation results/qpadm-rerun/aadr-target-curation.csv \
+  --sample-metadata results/qpadm-rerun/aadr-target-sample-metadata.csv \
+  --ancestry-estimates results/qpadm-rerun/merged-sample-ancestry-estimates.csv \
+  --disagreement-target-audit-csv results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-target-audit-samples.csv \
+  --disagreement-target-audit-md results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-target-audit.md
+```
+
+The batch audit renders one Markdown section per disagreement target and a
+long-form sample CSV. It carries target notes, sample metadata notes, qpAdm
+estimate notes, publication keys, sample dates, standard errors, p-values, and
+review flags into one place so target fragility can be separated from model
+fragility.
+
 Apply reviewed decisions to already prepared target inputs when you want to
 inspect the filtered curation CSVs directly:
 

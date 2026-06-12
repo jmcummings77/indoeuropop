@@ -267,6 +267,43 @@ def test_curation_decision_validator_reports_bad_lineage(
             ),
             "manifest baseline_validation_fit_csv checksum is stale",
         ),
+        (
+            lambda root: _rewrite_active(root, same_baseline_head_to_head_report=""),
+            "same_baseline_head_to_head_report must be declared",
+        ),
+        (
+            lambda root: (root / "results" / "head-to-head.md").unlink(),
+            "same_baseline_head_to_head_report does not exist",
+        ),
+        (
+            lambda root: (root / "results" / "head-to-head-manifest.json").unlink(),
+            "same_baseline_head_to_head_report manifest missing",
+        ),
+        (
+            lambda root: _write_head_to_head_manifest(root, include_report=False),
+            "manifest missing head_to_head_report_md",
+        ),
+        (
+            lambda root: _write_head_to_head_manifest(
+                root, report_path="results/stale-head-to-head.md"
+            ),
+            "manifest head_to_head_report_md path is stale",
+        ),
+        (
+            lambda root: (root / "results" / "head-to-head.md").write_text(
+                "changed\n",
+                encoding="utf-8",
+            ),
+            "manifest head_to_head_report_md checksum is stale",
+        ),
+        (
+            lambda root: _write_head_to_head_manifest(root, include_missing=True),
+            "manifest debug_config path does not exist",
+        ),
+        (
+            lambda root: _write_head_to_head_manifest(root, malformed_report=True),
+            "manifest head_to_head_report_md is malformed",
+        ),
     ],
 )
 def test_curation_decision_validator_reports_missing_or_stale_artifacts(
@@ -297,7 +334,11 @@ def _write_valid_curation_pair(root: Path) -> tuple[Path, Path]:
     (root / "results" / "override.csv").write_text("metric\n0\n", encoding="utf-8")
     (root / "results" / "delta.md").write_text("# Delta\n", encoding="utf-8")
     (root / "results" / "source.md").write_text("# Source\n", encoding="utf-8")
+    (root / "results" / "head-to-head.md").write_text(
+        "# Head to head\n", encoding="utf-8"
+    )
     _write_delta_manifest(root)
+    _write_head_to_head_manifest(root)
     _rewrite_superseded(root)
     _rewrite_active(root)
     return root / "curation" / "superseded.toml", root / "curation" / "active.toml"
@@ -311,6 +352,7 @@ def _rewrite_active(
     decision_record: str = "docs/decision.md",
     source_report: str = "results/source.md",
     source_delta_report: str = "results/delta.md",
+    same_baseline_head_to_head_report: str = "results/head-to-head.md",
     baseline_validation_fit_csv: str = "results/baseline.csv",
 ) -> None:
     """Write the active curation file with selected metadata changes."""
@@ -324,6 +366,12 @@ def _rewrite_active(
         else ""
     )
     source_report_line = f'source_report = "{source_report}"\n' if source_report else ""
+    head_to_head_line = (
+        f"same_baseline_head_to_head_report = "
+        f'"{same_baseline_head_to_head_report}"\n'
+        if same_baseline_head_to_head_report
+        else ""
+    )
     (root / "curation" / "active.toml").write_text(
         _review_toml(
             status=status,
@@ -332,6 +380,7 @@ def _rewrite_active(
                 f"{decision_record_line}"
                 f"{source_report_line}"
                 f"{source_delta_line}"
+                f"{head_to_head_line}"
             ),
             baseline_validation_fit_csv=baseline_validation_fit_csv,
         ),
@@ -397,6 +446,35 @@ def _write_delta_manifest(
             _artifact(root, "override_validation_fit_csv", "results/override.csv")
         )
     (root / "results" / "delta-manifest.json").write_text(
+        json.dumps({"artifacts": artifacts}),
+        encoding="utf-8",
+    )
+
+
+def _write_head_to_head_manifest(
+    root: Path,
+    *,
+    include_report: bool = True,
+    report_path: str = "results/head-to-head.md",
+    include_missing: bool = False,
+    malformed_report: bool = False,
+) -> None:
+    """Write a head-to-head manifest for synthetic artifact checks."""
+    artifacts: list[dict[str, str]] = []
+    if include_report:
+        if malformed_report:
+            artifacts.append({"name": "head_to_head_report_md"})
+        else:
+            artifacts.append(_artifact(root, "head_to_head_report_md", report_path))
+    if include_missing:
+        artifacts.append(
+            {
+                "name": "debug_config",
+                "path": "results/missing-config.toml",
+                "checksum_sha256": "",
+            }
+        )
+    (root / "results" / "head-to-head-manifest.json").write_text(
         json.dumps({"artifacts": artifacts}),
         encoding="utf-8",
     )

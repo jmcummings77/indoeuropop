@@ -18,16 +18,46 @@ from indoeuropop.orchestration.data_cli import (
     add_data_arguments,
     run_data_command,
 )
+from indoeuropop.orchestration.inference_cli import (
+    INFERENCE_COMMANDS,
+    add_inference_arguments,
+    run_inference_command,
+)
 from indoeuropop.orchestration.override_sensitivity_cli import (
     OVERRIDE_SENSITIVITY_COMMANDS,
     add_override_sensitivity_arguments,
     run_override_sensitivity_command,
 )
 from indoeuropop.orchestration.qpadm_cli import QPADM_COMMANDS, run_qpadm_command
+from indoeuropop.orchestration.real_pipeline_refresh_cli import (
+    REAL_PIPELINE_REFRESH_COMMANDS,
+    add_real_pipeline_refresh_arguments,
+    run_real_pipeline_refresh_command,
+)
 from indoeuropop.orchestration.report_cli import (
     REPORT_COMMANDS,
     add_report_arguments,
     run_report_command,
+)
+from indoeuropop.orchestration.structural_candidate_cli import (
+    STRUCTURAL_CANDIDATE_COMMANDS,
+    add_structural_candidate_arguments,
+    run_structural_candidate_command,
+)
+from indoeuropop.orchestration.structural_head_to_head_cli import (
+    STRUCTURAL_HEAD_TO_HEAD_COMMANDS,
+    add_structural_head_to_head_arguments,
+    run_structural_head_to_head_command,
+)
+from indoeuropop.orchestration.structural_smc_cli import (
+    STRUCTURAL_SMC_COMMANDS,
+    add_structural_smc_arguments,
+    run_structural_smc_command,
+)
+from indoeuropop.orchestration.structural_smc_validation_cli import (
+    STRUCTURAL_SMC_VALIDATION_COMMANDS,
+    add_structural_smc_validation_arguments,
+    run_structural_smc_validation_command,
 )
 from indoeuropop.orchestration.sweep_workflows import (
     SweepOutputPaths,
@@ -60,6 +90,28 @@ def main(argv: Sequence[str] | None = None) -> int:
     target_exit_code = run_target_command(args, parser)
     if target_exit_code is not None:
         return target_exit_code
+    inference_exit_code = run_inference_command(args, parser)
+    if inference_exit_code is not None:
+        return inference_exit_code
+    structural_candidate_exit_code = run_structural_candidate_command(args, parser)
+    if structural_candidate_exit_code is not None:
+        return structural_candidate_exit_code
+    structural_head_to_head_exit_code = run_structural_head_to_head_command(
+        args, parser
+    )
+    if structural_head_to_head_exit_code is not None:
+        return structural_head_to_head_exit_code
+    structural_smc_exit_code = run_structural_smc_command(args, parser)
+    if structural_smc_exit_code is not None:
+        return structural_smc_exit_code
+    structural_smc_validation_exit_code = run_structural_smc_validation_command(
+        args, parser
+    )
+    if structural_smc_validation_exit_code is not None:
+        return structural_smc_validation_exit_code
+    real_pipeline_refresh_exit_code = run_real_pipeline_refresh_command(args, parser)
+    if real_pipeline_refresh_exit_code is not None:
+        return real_pipeline_refresh_exit_code
     data_exit_code = run_data_command(args, parser)
     if data_exit_code is not None:
         return data_exit_code
@@ -206,7 +258,13 @@ def _build_parser() -> argparse.ArgumentParser:
             "sweep",
             *CURATION_DECISION_COMMANDS,
             *DATA_COMMANDS,
+            *INFERENCE_COMMANDS,
             *QPADM_COMMANDS,
+            *REAL_PIPELINE_REFRESH_COMMANDS,
+            *STRUCTURAL_CANDIDATE_COMMANDS,
+            *STRUCTURAL_HEAD_TO_HEAD_COMMANDS,
+            *STRUCTURAL_SMC_COMMANDS,
+            *STRUCTURAL_SMC_VALIDATION_COMMANDS,
             *TARGET_COMMANDS,
             *TARGET_DECISION_COMMANDS,
             *OVERRIDE_SENSITIVITY_COMMANDS,
@@ -286,6 +344,12 @@ def _build_parser() -> argparse.ArgumentParser:
         help="use the tau-leap simulator instead of the deterministic simulator",
     )
     add_data_arguments(parser)
+    add_inference_arguments(parser)
+    add_structural_candidate_arguments(parser)
+    add_structural_head_to_head_arguments(parser)
+    add_structural_smc_arguments(parser)
+    add_structural_smc_validation_arguments(parser)
+    add_real_pipeline_refresh_arguments(parser)
     add_curation_decision_arguments(parser)
     add_target_arguments(parser)
     add_override_sensitivity_arguments(parser)

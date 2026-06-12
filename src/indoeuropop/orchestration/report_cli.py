@@ -9,7 +9,27 @@ from indoeuropop.orchestration.override_delta import (
     OverrideDeltaOutputPaths,
     run_override_delta_workflow,
 )
+from indoeuropop.reporting.disagreement_target_audit import (
+    load_disagreement_target_curation_audit,
+    write_disagreement_target_audit_samples_csv,
+)
+from indoeuropop.reporting.disagreement_target_audit_report import (
+    disagreement_target_audit_markdown,
+    write_disagreement_target_audit_markdown,
+)
 from indoeuropop.reporting.override_delta import override_delta_markdown
+from indoeuropop.reporting.readiness import (
+    load_real_pipeline_readiness,
+    real_pipeline_readiness_markdown,
+    write_real_pipeline_readiness_markdown,
+)
+from indoeuropop.reporting.readiness_models import DEFAULT_DATA_SOURCE_CATALOG
+from indoeuropop.reporting.structural_smc_disagreements import (
+    load_structural_smc_disagreement_report,
+    structural_smc_disagreement_markdown,
+    write_structural_smc_disagreement_csv,
+    write_structural_smc_disagreement_markdown,
+)
 from indoeuropop.reporting.target_audit import load_target_curation_audit
 from indoeuropop.reporting.target_audit_report import (
     target_curation_audit_markdown,
@@ -23,7 +43,10 @@ from indoeuropop.reporting.target_review import (
 
 REPORT_COMMANDS = (
     "audit-target-curation",
+    "audit-structured-smc-disagreement-targets",
+    "review-pipeline-readiness",
     "review-override-deltas",
+    "review-structured-smc-disagreements",
     "review-target-residuals",
 )
 
@@ -79,6 +102,36 @@ def add_report_arguments(parser: argparse.ArgumentParser) -> None:
         type=Path,
         help="optional output path for override validation delta Markdown",
     )
+    parser.add_argument(
+        "--readiness-report-md",
+        type=Path,
+        help="optional output path for real-pipeline readiness Markdown",
+    )
+    parser.add_argument(
+        "--smc-validation-summary-csv",
+        type=Path,
+        help="structural SMC validation summary CSV for disagreement review",
+    )
+    parser.add_argument(
+        "--smc-disagreement-csv",
+        type=Path,
+        help="optional output path for joined disagreement diagnostic rows",
+    )
+    parser.add_argument(
+        "--smc-disagreement-report-md",
+        type=Path,
+        help="optional output path for disagreement diagnostic Markdown",
+    )
+    parser.add_argument(
+        "--disagreement-target-audit-csv",
+        type=Path,
+        help="optional output path for sample-level disagreement target audit rows",
+    )
+    parser.add_argument(
+        "--disagreement-target-audit-md",
+        type=Path,
+        help="optional output path for disagreement target audit Markdown",
+    )
 
 
 def run_report_command(
@@ -88,11 +141,47 @@ def run_report_command(
     """Run a reporting command, returning `None` for unrelated commands."""
     if args.command == "audit-target-curation":
         return _run_audit_target_curation_command(args, parser)
+    if args.command == "audit-structured-smc-disagreement-targets":
+        return _run_audit_structural_smc_disagreement_targets_command(args, parser)
+    if args.command == "review-pipeline-readiness":
+        return _run_review_pipeline_readiness_command(args)
     if args.command == "review-override-deltas":
         return _run_review_override_deltas_command(args, parser)
+    if args.command == "review-structured-smc-disagreements":
+        return _run_review_structural_smc_disagreements_command(args, parser)
     if args.command == "review-target-residuals":
         return _run_review_target_residuals_command(args, parser)
     return None
+
+
+def _run_review_pipeline_readiness_command(args: argparse.Namespace) -> int:
+    """Run the CLI real-pipeline readiness review command."""
+    report = load_real_pipeline_readiness(
+        project_root=args.project_root,
+        curation_decision_files=args.curation_decision_file,
+        data_source_catalog=(
+            DEFAULT_DATA_SOURCE_CATALOG
+            if args.data_sources is None
+            else args.data_sources
+        ),
+    )
+    if args.readiness_report_md is None:
+        print(real_pipeline_readiness_markdown(report), end="")
+    else:
+        output_path = write_real_pipeline_readiness_markdown(
+            report,
+            args.readiness_report_md,
+        )
+        print(f"readiness_report={output_path}")
+    print(f"pipeline_ready={str(report.ready).lower()}")
+    print(f"readiness_issue_count={len(report.issues)}")
+    print(f"readiness_artifact_count={len(report.artifacts)}")
+    print(f"readiness_metric_count={len(report.metrics)}")
+    for metric in report.metrics:
+        print(f"readiness_metric={metric.name},value={metric.value}")
+    for issue in report.issues:
+        print(f"readiness_issue={issue}")
+    return 0 if report.ready else 1
 
 
 def _run_review_target_residuals_command(
@@ -167,6 +256,90 @@ def _run_review_override_deltas_command(
     print(f"priority_mean_delta={result.report.priority_mean_delta:.6f}")
     print(f"protected_max_delta={result.report.protected_max_delta:.6f}")
     print(f"protected_degraded={str(result.report.protected_degraded).lower()}")
+    return 0
+
+
+def _run_review_structural_smc_disagreements_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI structural SMC disagreement review command."""
+    if args.smc_validation_summary_csv is None:
+        parser.error(
+            "review-structured-smc-disagreements requires "
+            "--smc-validation-summary-csv"
+        )
+    if args.smc_validation_output_dir is None:
+        parser.error(
+            "review-structured-smc-disagreements requires "
+            "--smc-validation-output-dir"
+        )
+    report = load_structural_smc_disagreement_report(
+        args.smc_validation_summary_csv,
+        args.smc_validation_output_dir,
+    )
+    if args.smc_disagreement_csv is not None:
+        output_path = write_structural_smc_disagreement_csv(
+            report,
+            args.smc_disagreement_csv,
+        )
+        print(f"smc_disagreement_csv={output_path}")
+    if args.smc_disagreement_report_md is None:
+        print(structural_smc_disagreement_markdown(report), end="")
+    else:
+        output_path = write_structural_smc_disagreement_markdown(
+            report,
+            args.smc_disagreement_report_md,
+        )
+        print(f"smc_disagreement_report={output_path}")
+    print(f"smc_disagreement_fold_count={report.disagreement_fold_count}")
+    print(f"smc_disagreement_target_count={report.target_count}")
+    print(
+        "smc_disagreement_structured_pulse_target_count="
+        f"{report.structured_pulse_target_count}"
+    )
+    print(
+        "smc_disagreement_child_override_target_count="
+        f"{report.child_override_target_count}"
+    )
+    return 0
+
+
+def _run_audit_structural_smc_disagreement_targets_command(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> int:
+    """Run the CLI disagreement-target batch curation audit command."""
+    for argument_name in (
+        "smc_disagreement_csv",
+        "target_curation",
+        "sample_metadata",
+        "ancestry_estimates",
+    ):
+        if getattr(args, argument_name) is None:
+            parser.error(
+                "audit-structured-smc-disagreement-targets requires "
+                f"--{argument_name.replace('_', '-')}"
+            )
+    report = load_disagreement_target_curation_audit(
+        disagreement_csv=args.smc_disagreement_csv,
+        curation_path=args.target_curation,
+        sample_metadata_path=args.sample_metadata,
+        ancestry_estimates_path=args.ancestry_estimates,
+    )
+    if args.disagreement_target_audit_csv is not None:
+        output_path = write_disagreement_target_audit_samples_csv(
+            report, args.disagreement_target_audit_csv
+        )
+        print(f"disagreement_target_audit_csv={output_path}")
+    if args.disagreement_target_audit_md is None:
+        print(disagreement_target_audit_markdown(report), end="")
+    else:
+        output_path = write_disagreement_target_audit_markdown(
+            report, args.disagreement_target_audit_md
+        )
+        print(f"disagreement_target_audit_report={output_path}")
+    print(f"disagreement_target_count={report.target_count}")
+    print(f"disagreement_target_sample_count={report.sample_count}")
+    print(f"disagreement_target_issue_count={report.issue_target_count}")
     return 0
 
 

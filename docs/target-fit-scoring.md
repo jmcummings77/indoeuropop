@@ -125,3 +125,27 @@ uv run indoeuropop validate-curation-decisions \
   --curation-decision-file curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
   --require-artifacts
 ```
+
+## Structural Candidate Checks
+
+`indoeuropop evaluate-migration-pulse-candidate` appends one time-localized
+migration pulse to a sweep spec, reruns the baseline and candidate through the
+same ABC rejection scaffold, and writes posterior predictive comparison
+artifacts. Use it for narrow structural hypotheses, such as whether a residual
+suggests earlier regional transition timing, before changing global parameter
+ranges or adding a heavier sampler.
+
+`indoeuropop evaluate-child-region-candidate` applies a curated child-region
+override file to an already structured config, reruns baseline and candidate
+posterior predictive diagnostics, and can compare its improvement deltas with a
+reference manifest from a broad structural candidate. Treat those reference
+deltas as an orientation aid when the baselines differ; follow up promising
+cases with direct validation splits and target-level residual review.
+
+`indoeuropop compare-structured-candidates` is the direct promotion gate for
+that follow-up. It evaluates a structured broad-pulse candidate and a
+child-region override candidate against the same structured baseline, writes
+three posterior predictive diagnostic surfaces, and emits a head-to-head report
+with same-baseline RMSE, coverage, and focus-residual deltas. Prefer this gate
+when deciding between a parent-region timing hypothesis and target-aligned
+child-region structure.

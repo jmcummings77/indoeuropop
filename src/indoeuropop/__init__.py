@@ -10,8 +10,16 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "aadr": "indoeuropop.data.aadr",
     "aadr_curation": "indoeuropop.data.aadr_curation",
     "aadr_groups": "indoeuropop.data.aadr_groups",
+    "abc_smc": "indoeuropop.analysis.abc_smc",
+    "abc_smc_report": "indoeuropop.reporting.abc_smc",
+    "abc_smc_workflow": "indoeuropop.orchestration.abc_smc",
     "age_structure": "indoeuropop.models.age_structure",
     "ancestry_estimates": "indoeuropop.data.ancestry_estimates",
+    "child_region_candidates": "indoeuropop.analysis.child_region_candidates",
+    "child_region_candidate_report": ("indoeuropop.reporting.child_region_candidates"),
+    "child_region_candidate_workflow": (
+        "indoeuropop.orchestration.child_region_candidates"
+    ),
     "child_region_overrides": "indoeuropop.orchestration.child_region_overrides",
     "cli": "indoeuropop.orchestration.cli",
     "config": "indoeuropop.simulation.config",
@@ -20,6 +28,13 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "data_cli": "indoeuropop.orchestration.data_cli",
     "data_sources": "indoeuropop.data.data_sources",
     "debugging": "indoeuropop.analysis.debugging",
+    "disagreement_target_audit": ("indoeuropop.reporting.disagreement_target_audit"),
+    "disagreement_target_audit_models": (
+        "indoeuropop.reporting.disagreement_target_audit_models"
+    ),
+    "disagreement_target_audit_report": (
+        "indoeuropop.reporting.disagreement_target_audit_report"
+    ),
     "diagnostics": "indoeuropop.analysis.diagnostics",
     "emulator_training": "indoeuropop.analysis.emulator_training",
     "emulator_validation": "indoeuropop.analysis.emulator_validation",
@@ -27,6 +42,10 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "events": "indoeuropop.simulation.events",
     "experiments": "indoeuropop.orchestration.experiments",
     "fitting": "indoeuropop.analysis.fitting",
+    "inference": "indoeuropop.analysis.inference",
+    "inference_cli": "indoeuropop.orchestration.inference_cli",
+    "inference_report": "indoeuropop.reporting.inference",
+    "inference_workflow": "indoeuropop.orchestration.inference",
     "parameterization": "indoeuropop.models.parameterization",
     "provenance": "indoeuropop.reporting.provenance",
     "refinement": "indoeuropop.analysis.refinement",
@@ -37,8 +56,53 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "qpadm_rerun_report": "indoeuropop.reporting.qpadm_rerun_report",
     "qpadm_reruns": "indoeuropop.data.qpadm_reruns",
     "qpadm_workflow": "indoeuropop.data.qpadm_workflow",
+    "real_pipeline_refresh": "indoeuropop.orchestration.real_pipeline_refresh",
+    "real_pipeline_refresh_cli": (
+        "indoeuropop.orchestration.real_pipeline_refresh_cli"
+    ),
     "override_delta": "indoeuropop.reporting.override_delta",
     "override_delta_workflow": "indoeuropop.orchestration.override_delta",
+    "posterior_predictive": "indoeuropop.analysis.posterior_predictive",
+    "posterior_predictive_report": "indoeuropop.reporting.posterior_predictive",
+    "structural_candidate_cli": "indoeuropop.orchestration.structural_candidate_cli",
+    "structural_candidates": "indoeuropop.analysis.structural_candidates",
+    "structural_candidate_report": "indoeuropop.reporting.structural_candidates",
+    "structural_candidate_workflow": (
+        "indoeuropop.orchestration.structural_candidates"
+    ),
+    "structural_head_to_head": "indoeuropop.analysis.structural_head_to_head",
+    "structural_head_to_head_cli": (
+        "indoeuropop.orchestration.structural_head_to_head_cli"
+    ),
+    "structural_head_to_head_outputs": (
+        "indoeuropop.orchestration.structural_head_to_head_outputs"
+    ),
+    "structural_head_to_head_report": ("indoeuropop.reporting.structural_head_to_head"),
+    "structural_head_to_head_workflow": (
+        "indoeuropop.orchestration.structural_head_to_head"
+    ),
+    "structural_smc_cli": "indoeuropop.orchestration.structural_smc_cli",
+    "structural_smc_disagreement_report": (
+        "indoeuropop.reporting.structural_smc_disagreements"
+    ),
+    "structural_smc_outputs": "indoeuropop.orchestration.structural_smc_outputs",
+    "structural_smc_report": "indoeuropop.reporting.structural_smc",
+    "structural_smc_validation": (
+        "indoeuropop.orchestration.structural_smc_validation_models"
+    ),
+    "structural_smc_validation_cli": (
+        "indoeuropop.orchestration.structural_smc_validation_cli"
+    ),
+    "structural_smc_validation_outputs": (
+        "indoeuropop.orchestration.structural_smc_validation_outputs"
+    ),
+    "structural_smc_validation_report": (
+        "indoeuropop.reporting.structural_smc_validation"
+    ),
+    "structural_smc_validation_workflow": (
+        "indoeuropop.orchestration.structural_smc_validation"
+    ),
+    "structural_smc_workflow": "indoeuropop.orchestration.structural_smc",
     "override_sensitivity": "indoeuropop.analysis.override_sensitivity",
     "override_sensitivity_candidates": (
         "indoeuropop.analysis.override_sensitivity_candidates"

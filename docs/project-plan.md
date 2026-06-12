@@ -144,10 +144,24 @@ Phase 4: Inference and validation.
   rerun estimate tables can now be merged with baseline qpAdm estimates and
   compared in a pre/post target-availability report; the same command can emit
   a decision-filtered accepted target CSV for model comparison.
-- Use ABC-SMC or Bayesian optimization only once the summary statistics are
-  documented.
+- Use sequential calibration, full particle-weighted ABC-SMC, or Bayesian
+  optimization only once the summary statistics are documented.
   Target-fit scoring now ranks deterministic sweep runs against curated targets;
   this ranking is exploratory and not a posterior.
+  A bounded ABC-SMC-style scaffold can now narrow proposal ranges across
+  deterministic generations and write posterior predictive diagnostics, but it
+  is still an engineering calibration layer rather than a fully weighted
+  particle posterior. Structural baseline, broad-pulse, and child-override
+  candidates can now be compared under shared SMC controls with optional
+  validation-value holdouts. A multi-fold structural SMC validator now repeats
+  that comparison across default protected, priority, child-region, and
+  chronology folds and writes a stability summary before structural promotion.
+  Disagreement folds can now be joined back to held-out target notes, sample
+  counts, publication keys, uncertainty, and posterior predictive residuals so
+  curation or target-specific fragility is visible before revising model
+  structure. A follow-on batch curation audit now joins those disagreement
+  targets to sample-level AADR metadata and qpAdm estimate evidence, including
+  dates, publication keys, standard errors, p-values, and review flags.
   The first summary-statistics scaffold converts trajectory summaries into
   named, scaled vectors and deterministic root-mean-square distances for later
   inference inputs.

@@ -15,8 +15,18 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "aadr": "indoeuropop.data.aadr",
         "aadr_curation": "indoeuropop.data.aadr_curation",
         "aadr_groups": "indoeuropop.data.aadr_groups",
+        "abc_smc": "indoeuropop.analysis.abc_smc",
+        "abc_smc_report": "indoeuropop.reporting.abc_smc",
+        "abc_smc_workflow": "indoeuropop.orchestration.abc_smc",
         "age_structure": "indoeuropop.models.age_structure",
         "ancestry_estimates": "indoeuropop.data.ancestry_estimates",
+        "child_region_candidates": "indoeuropop.analysis.child_region_candidates",
+        "child_region_candidate_report": (
+            "indoeuropop.reporting.child_region_candidates"
+        ),
+        "child_region_candidate_workflow": (
+            "indoeuropop.orchestration.child_region_candidates"
+        ),
         "child_region_overrides": "indoeuropop.orchestration.child_region_overrides",
         "cli": "indoeuropop.orchestration.cli",
         "config": "indoeuropop.simulation.config",
@@ -25,6 +35,15 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "data_cli": "indoeuropop.orchestration.data_cli",
         "data_sources": "indoeuropop.data.data_sources",
         "debugging": "indoeuropop.analysis.debugging",
+        "disagreement_target_audit": (
+            "indoeuropop.reporting.disagreement_target_audit"
+        ),
+        "disagreement_target_audit_models": (
+            "indoeuropop.reporting.disagreement_target_audit_models"
+        ),
+        "disagreement_target_audit_report": (
+            "indoeuropop.reporting.disagreement_target_audit_report"
+        ),
         "diagnostics": "indoeuropop.analysis.diagnostics",
         "emulator_training": "indoeuropop.analysis.emulator_training",
         "emulator_validation": "indoeuropop.analysis.emulator_validation",
@@ -32,6 +51,10 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "events": "indoeuropop.simulation.events",
         "experiments": "indoeuropop.orchestration.experiments",
         "fitting": "indoeuropop.analysis.fitting",
+        "inference": "indoeuropop.analysis.inference",
+        "inference_cli": "indoeuropop.orchestration.inference_cli",
+        "inference_report": "indoeuropop.reporting.inference",
+        "inference_workflow": "indoeuropop.orchestration.inference",
         "parameterization": "indoeuropop.models.parameterization",
         "provenance": "indoeuropop.reporting.provenance",
         "refinement": "indoeuropop.analysis.refinement",
@@ -42,8 +65,57 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "qpadm_rerun_report": "indoeuropop.reporting.qpadm_rerun_report",
         "qpadm_reruns": "indoeuropop.data.qpadm_reruns",
         "qpadm_workflow": "indoeuropop.data.qpadm_workflow",
+        "real_pipeline_refresh": "indoeuropop.orchestration.real_pipeline_refresh",
+        "real_pipeline_refresh_cli": (
+            "indoeuropop.orchestration.real_pipeline_refresh_cli"
+        ),
         "override_delta": "indoeuropop.reporting.override_delta",
         "override_delta_workflow": "indoeuropop.orchestration.override_delta",
+        "posterior_predictive": "indoeuropop.analysis.posterior_predictive",
+        "posterior_predictive_report": "indoeuropop.reporting.posterior_predictive",
+        "structural_candidate_cli": (
+            "indoeuropop.orchestration.structural_candidate_cli"
+        ),
+        "structural_candidate_report": "indoeuropop.reporting.structural_candidates",
+        "structural_candidate_workflow": (
+            "indoeuropop.orchestration.structural_candidates"
+        ),
+        "structural_candidates": "indoeuropop.analysis.structural_candidates",
+        "structural_head_to_head": "indoeuropop.analysis.structural_head_to_head",
+        "structural_head_to_head_cli": (
+            "indoeuropop.orchestration.structural_head_to_head_cli"
+        ),
+        "structural_head_to_head_outputs": (
+            "indoeuropop.orchestration.structural_head_to_head_outputs"
+        ),
+        "structural_head_to_head_report": (
+            "indoeuropop.reporting.structural_head_to_head"
+        ),
+        "structural_head_to_head_workflow": (
+            "indoeuropop.orchestration.structural_head_to_head"
+        ),
+        "structural_smc_cli": "indoeuropop.orchestration.structural_smc_cli",
+        "structural_smc_disagreement_report": (
+            "indoeuropop.reporting.structural_smc_disagreements"
+        ),
+        "structural_smc_outputs": ("indoeuropop.orchestration.structural_smc_outputs"),
+        "structural_smc_report": "indoeuropop.reporting.structural_smc",
+        "structural_smc_validation": (
+            "indoeuropop.orchestration.structural_smc_validation_models"
+        ),
+        "structural_smc_validation_cli": (
+            "indoeuropop.orchestration.structural_smc_validation_cli"
+        ),
+        "structural_smc_validation_outputs": (
+            "indoeuropop.orchestration.structural_smc_validation_outputs"
+        ),
+        "structural_smc_validation_report": (
+            "indoeuropop.reporting.structural_smc_validation"
+        ),
+        "structural_smc_validation_workflow": (
+            "indoeuropop.orchestration.structural_smc_validation"
+        ),
+        "structural_smc_workflow": "indoeuropop.orchestration.structural_smc",
         "override_sensitivity": "indoeuropop.analysis.override_sensitivity",
         "override_sensitivity_candidates": (
             "indoeuropop.analysis.override_sensitivity_candidates"
@@ -118,6 +190,41 @@ def test_public_api_exports_target_decision_helpers() -> None:
     assert "override_sensitivity_markdown" in public_api.__all__
     assert "validate_curation_decision_files" in public_api.__all__
     assert "CurationDecisionValidationReport" in public_api.__all__
+    assert "load_real_pipeline_readiness" in public_api.__all__
+    assert "real_pipeline_readiness_markdown" in public_api.__all__
+    assert "RealPipelineReadinessReport" in public_api.__all__
+    assert "ABCRejectionOptions" in public_api.__all__
+    assert "run_abc_rejection_workflow" in public_api.__all__
+    assert "abc_rejection_markdown" in public_api.__all__
+    assert "ABCSMCOptions" in public_api.__all__
+    assert "run_abc_smc_workflow" in public_api.__all__
+    assert "abc_smc_markdown" in public_api.__all__
+    assert "PosteriorPredictiveDiagnostics" in public_api.__all__
+    assert "posterior_predictive_diagnostics" in public_api.__all__
+    assert "posterior_predictive_markdown" in public_api.__all__
+    assert "MigrationPulseCandidate" in public_api.__all__
+    assert "run_migration_pulse_candidate_workflow" in public_api.__all__
+    assert "migration_pulse_candidate_markdown" in public_api.__all__
+    assert "ChildRegionCandidate" in public_api.__all__
+    assert "run_child_region_candidate_workflow" in public_api.__all__
+    assert "child_region_candidate_markdown" in public_api.__all__
+    assert "StructuredPulseCandidate" in public_api.__all__
+    assert "run_structured_head_to_head_workflow" in public_api.__all__
+    assert "structured_head_to_head_markdown" in public_api.__all__
+    assert "RealPipelineRefreshPaths" in public_api.__all__
+    assert "run_real_pipeline_refresh_workflow" in public_api.__all__
+    assert "StructuralSMCOutputPaths" in public_api.__all__
+    assert "run_structural_smc_head_to_head_workflow" in public_api.__all__
+    assert "structural_smc_markdown" in public_api.__all__
+    assert "StructuralSMCValidationFoldSpec" in public_api.__all__
+    assert "run_structural_smc_multifold_validation_workflow" in public_api.__all__
+    assert "structural_smc_validation_markdown" in public_api.__all__
+    assert "StructuralSMCDisagreementReport" in public_api.__all__
+    assert "load_structural_smc_disagreement_report" in public_api.__all__
+    assert "structural_smc_disagreement_markdown" in public_api.__all__
+    assert "DisagreementTargetCurationAuditReport" in public_api.__all__
+    assert "load_disagreement_target_curation_audit" in public_api.__all__
+    assert "disagreement_target_audit_markdown" in public_api.__all__
 
 
 def test_project_files_stay_under_line_limits() -> None:

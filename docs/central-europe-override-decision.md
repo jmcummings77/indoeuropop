@@ -23,6 +23,12 @@ The accepted head-to-head report is
 Negative deltas indicate better validation fit for the interaction-best
 candidate relative to the superseded first candidate.
 
+The same-baseline structural report is
+`results/qpadm-rerun/central-europe-structured-pulse-vs-child-head-to-head.md`.
+It compares the active child-region override with a broad-pulse candidate on
+the same structured baseline. The active curation metadata points at this
+report so strict readiness validation can catch stale report-manifest checksums.
+
 - mean validation delta: `-0.022506`
 - priority mean delta: `-0.098945`
 - protected Britain delta: `-0.029487`
@@ -67,5 +73,8 @@ Tiefbrunn demography.
   --require-artifacts`.
 - Compare future candidates against this promoted file and against the broader
   structured baseline before changing default curation again.
+- Use `indoeuropop compare-structured-candidates` when comparing this file with
+  a broad structural pulse, because it keeps both candidate deltas on the same
+  structured baseline.
 - Keep archaeological interpretation separate from the validation score until
   target grouping, chronology, and uncertainty assumptions have been reviewed.

@@ -13,6 +13,7 @@ supersedes = "curation/aadr-v66-central-europe-child-overrides.toml"
 decision_record = "docs/central-europe-override-decision.md"
 source_report = "results/qpadm-rerun/central-europe-child-override-interactions.md"
 source_delta_report = "results/qpadm-rerun/central-europe-curated-vs-interaction-best-delta.md"
+same_baseline_head_to_head_report = "results/qpadm-rerun/central-europe-structured-pulse-vs-child-head-to-head.md"
 fit_metric = "root_mean_squared_error"
 protected_degradation_tolerance = 0.0
 protected_holdouts = ["britain"]

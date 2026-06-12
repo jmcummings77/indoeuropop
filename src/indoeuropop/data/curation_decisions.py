@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-import json
 import tomllib
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from indoeuropop.data.data_sources import sha256_file
+from indoeuropop.data.curation_artifacts import (
+    artifact_manifest_path,
+    same_baseline_head_to_head_artifact_issues,
+    validation_manifest_artifact_issues,
+)
 
 CURATION_DECISION_STATUSES = frozenset(
     {"review_candidate", "superseded_review_candidate"}
@@ -248,53 +251,26 @@ def _artifact_issues(record: CurationDecisionRecord, root: Path) -> tuple[str, .
     source_report = _optional_path_text(record.review, "source_report")
     if source_report and not (root / source_report).exists():
         issues.append(f"{record.relative_path}: source_report does not exist")
-    manifest_path = _manifest_path(delta_report_path)
+    manifest_path = artifact_manifest_path(delta_report_path)
     if not manifest_path.exists():
         issues.append(f"{record.relative_path}: source_delta_report manifest missing")
         return tuple(issues)
-    issues.extend(_manifest_artifact_issues(record, root, manifest_path))
+    issues.extend(
+        validation_manifest_artifact_issues(
+            record.relative_path,
+            record.review,
+            root,
+            manifest_path,
+        )
+    )
+    issues.extend(
+        same_baseline_head_to_head_artifact_issues(
+            record.relative_path,
+            record.review,
+            root,
+        )
+    )
     return tuple(issues)
-
-
-def _manifest_artifact_issues(
-    record: CurationDecisionRecord,
-    root: Path,
-    manifest_path: Path,
-) -> tuple[str, ...]:
-    """Return issues when manifest artifact paths or checksums do not match."""
-    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    artifacts = {
-        artifact["name"]: artifact
-        for artifact in payload.get("artifacts", [])
-        if isinstance(artifact, dict) and isinstance(artifact.get("name"), str)
-    }
-    issues: list[str] = []
-    for name, review_key in (
-        ("baseline_validation_fit_csv", "baseline_validation_fit_csv"),
-        ("override_validation_fit_csv", "override_validation_fit_csv"),
-    ):
-        artifact = artifacts.get(name)
-        expected_path = _optional_path_text(record.review, review_key)
-        if not expected_path:
-            continue
-        if artifact is None:
-            issues.append(f"{record.relative_path}: manifest missing {name}")
-            continue
-        if artifact.get("path") != expected_path:
-            issues.append(f"{record.relative_path}: manifest {name} path is stale")
-            continue
-        artifact_path = root / expected_path
-        if not artifact_path.exists():
-            continue
-        actual_checksum = sha256_file(artifact_path)
-        if artifact.get("checksum_sha256") != actual_checksum:
-            issues.append(f"{record.relative_path}: manifest {name} checksum is stale")
-    return tuple(issues)
-
-
-def _manifest_path(report_path: Path) -> Path:
-    """Return the manifest path convention for a generated Markdown report."""
-    return report_path.with_name(f"{report_path.stem}-manifest.json")
 
 
 def _absolute_path(path: str | Path, root: Path) -> Path:
