@@ -1,7 +1,25 @@
 # IndoEuroPop
 
 IndoEuroPop is a research-engineering scaffold for mechanistic models of
-Late Neolithic and Early Bronze Age population dynamics in western Eurasia. The
+Late Neolithic and Early Bronze Age population dynamics in western Eurasia.
+
+My primary motive for pursuing this project is curiosity about the possible role that Yersinia Pestis (aka the Plague or the Black Death) played in enabling the rapid and far flung expansion of the Yamnaya Steppe Pastoralists (YSP) and their culture across huge swathes of Eurasia during the Early Bronze Age (ca. 4000-1000 BCE), which is very likely the mechanism by which Indo-European languages came to dominate such a wide and diverse swathe of territory, stretching from India to Ireland.
+
+In particular, I am curious about the extent to which differential immune system advantages may have enabled near complete YSP replacement of the preexisting Western Hunter Gatherer (WHG) and Anatolian-derived Neolithic Farmer (ANF) populations of Western Europe. Recent evidence suggests that a shockingly high proportion of both the Yamnaya and the populations they displaced during this period suffered from Y. Pestis infections. The Plague bacillus itself likely derives from zoonotic reservoirs native to the Yamnaya-dominated Eurasian steppe regions, including domesticated animals (especially horses) with which the Yamnya lived in much closer contact than any prior human populations ever had. It is possible that extended, multigenerational exposure to the bacillus on the steppes drove immune system adaptations among the Yamnaya that gave them a differential advantage over neighboring populations of early humans as they expanded outwards from their steppe homeland.
+
+Unbenknowst to the steppe pastoralists, their large domesticated herds may have acted like biowarfare incubators, carrying the deadly infection with them into new territories where the locals had no prior exposure and thus no acquired immunity. Rapid depopulation and the social disruption that naturally follows from a sudden widespread mortality event may have undermined any resistance WHG/ANF peoples may have otherwise offered to an influx of YSP migrants. Even assuming the migrations were peaceful and even welcomed by the indigenous peoples, simply reducing the baseline numbers of people with WHG/ANF heritage prior to a post-migration admixture event necessarily reduces the proportion of that heritage likely to survive mixing with the incoming migrant population. 
+
+Similar phenomenon appear in the historical record from subsequent eras for which documentary evidence survives, suggesting by analogy that the disease hypothesis is worth investigating.
+
+As suggested by the title of the most famous book on this topic (the Horse, the Wheel, and Language), the Yamnaya were the first people to successfully domesticate horses and were early adopters of covered wagons, enabling them to survive on the Eurasian steppes that had formerly been impassable wasteland because it was too difficult for someone on foot to carry sufficient supplies to cross between the limited and isolated sources of fresh water available on the plains. Similarly, the expansion of Mongolian control over most of Eurasia during the 13th century set the conditions for the 14th century outbreak of Y. Pestis in Western Europe now known as the Black Death. In both cases, horse-riding steppe pastoralists with greater resistance to the disease (though not full immunity in all cases, it should be noted) spread across the steppes, linking together areas on the fringes of the steppelands that were formerly isolated from each other by the impassable terrain, while also exposing them to the steppe-dwelling zoonotic reservoir species.
+
+It is also becoming increasingly clear that previous historical research into the pre-Columbian population of the Americas dramatically underestimated both how many Native Americans lived in the New World and (relatedly) how many were killed by novel European diseases following contact in 1492. In fact, much of the European success in conquering the Americas was likely attributable to waves of disease rippling out in advance of European settlers along existing native trade routes. In the 100-150 years after 1492, those waves of disease killed something like 80-90% of the local people living in the Americas, often before the Europeans ever even laid eyes on them, which in turn helped shape the European misconception that the Americas were unpeopled, unsettled lands free for anyone to claim. The sudden introduction of a devastating collection of infectious diseases ensured not only that there would be fewer Native Americans alive to resist European invaders, but also destroyed the political and cultural centers of power that may otherwise have been able to organize resistance. The Plague may have had a similar effect on the indigineous populations of Western Europe, paving the way for the Indo-European expansion.
+
+In this repository, I hope to test alternative models of the YSP expansion against empirical DNA data collected from historical remains dated to this period and the distribution of surviving YSP, WHG, and ANF heritage in modern populations.
+
+## Modeling Philosophy
+
+The
 initial focus is on building reproducible code that can later compare migration,
 epidemic, climate, violence, fertility, subsistence, and elite-reproduction
 hypotheses against ancient-DNA observations.
@@ -10,8 +28,6 @@ This repository does **not** yet contain a fitted scientific model,
 ancient-DNA genotype processing, or inferred historical results. The first
 milestone is a small, tested Python package that makes the modeling assumptions
 explicit and easy to replace.
-
-## Modeling Philosophy
 
 The project treats steppe-related ancestry as an observable derived from modeled
 population counts rather than as a value that is manually adjusted. This keeps
