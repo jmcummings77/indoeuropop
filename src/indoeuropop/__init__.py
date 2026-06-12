@@ -85,8 +85,14 @@ _COMPATIBILITY_MODULES: dict[str, str] = {
     "structural_smc_disagreement_report": (
         "indoeuropop.reporting.structural_smc_disagreements"
     ),
+    "structural_smc_uncertainty_report": (
+        "indoeuropop.reporting.structural_smc_uncertainty"
+    ),
     "structural_smc_outputs": "indoeuropop.orchestration.structural_smc_outputs",
     "structural_smc_report": "indoeuropop.reporting.structural_smc",
+    "structural_smc_uncertainty_cli": (
+        "indoeuropop.orchestration.structural_smc_uncertainty_cli"
+    ),
     "structural_smc_validation": (
         "indoeuropop.orchestration.structural_smc_validation_models"
     ),

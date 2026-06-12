@@ -98,8 +98,14 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "structural_smc_disagreement_report": (
             "indoeuropop.reporting.structural_smc_disagreements"
         ),
+        "structural_smc_uncertainty_report": (
+            "indoeuropop.reporting.structural_smc_uncertainty"
+        ),
         "structural_smc_outputs": ("indoeuropop.orchestration.structural_smc_outputs"),
         "structural_smc_report": "indoeuropop.reporting.structural_smc",
+        "structural_smc_uncertainty_cli": (
+            "indoeuropop.orchestration.structural_smc_uncertainty_cli"
+        ),
         "structural_smc_validation": (
             "indoeuropop.orchestration.structural_smc_validation_models"
         ),
@@ -228,6 +234,9 @@ def test_public_api_exports_target_decision_helpers() -> None:
     assert "DisagreementTargetCurationAuditReport" in public_api.__all__
     assert "load_disagreement_target_curation_audit" in public_api.__all__
     assert "disagreement_target_audit_markdown" in public_api.__all__
+    assert "StructuralSMCUncertaintyReport" in public_api.__all__
+    assert "load_structural_smc_uncertainty_report" in public_api.__all__
+    assert "structural_smc_uncertainty_markdown" in public_api.__all__
     assert "TargetFragilityDecision" in public_api.__all__
     assert "run_structural_smc_target_fragility_gate" in public_api.__all__
     assert "target_fragility_gate_markdown" in public_api.__all__

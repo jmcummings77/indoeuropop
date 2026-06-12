@@ -754,6 +754,21 @@ Markdown summary, and a nested multi-fold validation rerun under `validation/`.
 By default it excludes `high_se`, `critical`, `missing_metadata`,
 `missing_estimate`, and `out_of_window` flags plus repeated identical estimates.
 
+Review any remaining disagreement folds with uncertainty-normalized z-scores
+before treating raw residual differences as structural evidence:
+
+```bash
+uv run indoeuropop review-structured-smc-uncertainty \
+  --smc-validation-summary-csv results/qpadm-rerun/structured-smc-fragility-gate/validation/structural-smc-validation-summary.csv \
+  --smc-validation-output-dir results/qpadm-rerun/structured-smc-fragility-gate/validation \
+  --smc-uncertainty-csv results/qpadm-rerun/structured-smc-fragility-gate/structural-smc-uncertainty.csv \
+  --smc-uncertainty-report-md results/qpadm-rerun/structured-smc-fragility-gate/structural-smc-uncertainty.md
+```
+
+The default materiality threshold treats child-minus-pulse chi-square deltas
+below `1.0` as `uncertainty_tie`, which is useful when broad target uncertainty
+dominates small candidate residual differences.
+
 Compare validation-guided narrowed and expanded parameter ranges against the
 current grid:
 

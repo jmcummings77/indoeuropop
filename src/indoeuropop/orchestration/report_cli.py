@@ -9,6 +9,11 @@ from indoeuropop.orchestration.override_delta import (
     OverrideDeltaOutputPaths,
     run_override_delta_workflow,
 )
+from indoeuropop.orchestration.structural_smc_uncertainty_cli import (
+    STRUCTURAL_SMC_UNCERTAINTY_REPORT_COMMANDS,
+    add_structural_smc_uncertainty_report_arguments,
+    run_structural_smc_uncertainty_report_command,
+)
 from indoeuropop.reporting.disagreement_target_audit import (
     load_disagreement_target_curation_audit,
     write_disagreement_target_audit_samples_csv,
@@ -47,6 +52,7 @@ REPORT_COMMANDS = (
     "review-pipeline-readiness",
     "review-override-deltas",
     "review-structured-smc-disagreements",
+    *STRUCTURAL_SMC_UNCERTAINTY_REPORT_COMMANDS,
     "review-target-residuals",
 )
 
@@ -122,6 +128,7 @@ def add_report_arguments(parser: argparse.ArgumentParser) -> None:
         type=Path,
         help="optional output path for disagreement diagnostic Markdown",
     )
+    add_structural_smc_uncertainty_report_arguments(parser)
     parser.add_argument(
         "--disagreement-target-audit-csv",
         type=Path,
@@ -149,6 +156,9 @@ def run_report_command(
         return _run_review_override_deltas_command(args, parser)
     if args.command == "review-structured-smc-disagreements":
         return _run_review_structural_smc_disagreements_command(args, parser)
+    uncertainty_exit_code = run_structural_smc_uncertainty_report_command(args, parser)
+    if uncertainty_exit_code is not None:
+        return uncertainty_exit_code
     if args.command == "review-target-residuals":
         return _run_review_target_residuals_command(args, parser)
     return None

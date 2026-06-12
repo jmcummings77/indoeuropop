@@ -1,5 +1,7 @@
 """Public reporting exports for top-level package imports."""
 
+from indoeuropop._api_reporting_uncertainty import *  # noqa: F403
+from indoeuropop._api_reporting_uncertainty import __all__ as _uncertainty_exports
 from indoeuropop.reporting import (
     diagnostic_issue_records,
     provenance_fieldnames,
@@ -392,4 +394,5 @@ __all__ = [
     "write_target_residual_review_markdown",
     "write_target_validation_csv",
     "write_target_validation_markdown",
+    *_uncertainty_exports,
 ]

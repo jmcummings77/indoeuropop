@@ -556,6 +556,21 @@ Default exclusion reasons are `high_se`, `critical`, `missing_metadata`,
 `--target-fragility-keep-repeated-estimates` when checking only explicit sample
 flags, or pass `--target-fragility-flag` repeatedly for a narrower flag set.
 
+Review the remaining disagreement folds with uncertainty-aware scoring before
+treating small raw residual differences as model evidence:
+
+```bash
+uv run indoeuropop review-structured-smc-uncertainty \
+  --smc-validation-summary-csv results/qpadm-rerun/structured-smc-fragility-gate/validation/structural-smc-validation-summary.csv \
+  --smc-validation-output-dir results/qpadm-rerun/structured-smc-fragility-gate/validation \
+  --smc-uncertainty-csv results/qpadm-rerun/structured-smc-fragility-gate/structural-smc-uncertainty.csv \
+  --smc-uncertainty-report-md results/qpadm-rerun/structured-smc-fragility-gate/structural-smc-uncertainty.md
+```
+
+This report writes target-level z-scores and child-minus-pulse chi-square
+deltas. With the default materiality threshold, deltas below `1.0` are reported
+as `uncertainty_tie` rather than evidence for either structural candidate.
+
 Apply reviewed decisions to already prepared target inputs when you want to
 inspect the filtered curation CSVs directly:
 
