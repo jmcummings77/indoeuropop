@@ -25,9 +25,21 @@ from indoeuropop.orchestration.structural_smc_validation_models import (
 from indoeuropop.orchestration.structural_smc_validation_outputs import (
     structural_smc_validation_output_paths_from_dir,
 )
+from indoeuropop.orchestration.target_fragility import (
+    run_structural_smc_target_fragility_gate,
+    target_fragility_gate_paths_from_dir,
+)
+from indoeuropop.orchestration.target_fragility_models import (
+    DEFAULT_REPEATED_ESTIMATE_TOLERANCE,
+    DEFAULT_TARGET_FRAGILITY_FLAGS,
+    TargetFragilityGateResult,
+)
 from indoeuropop.simulation.config import load_sweep_spec
 
-STRUCTURAL_SMC_VALIDATION_COMMANDS = ("validate-structured-candidates-smc",)
+STRUCTURAL_SMC_VALIDATION_COMMANDS = (
+    "validate-structured-candidates-smc",
+    "validate-structured-smc-target-fragility",
+)
 
 
 def add_structural_smc_validation_arguments(parser: argparse.ArgumentParser) -> None:
@@ -47,6 +59,33 @@ def add_structural_smc_validation_arguments(parser: argparse.ArgumentParser) -> 
         action="store_true",
         help="omit default chronology-band validation folds",
     )
+    parser.add_argument(
+        "--target-fragility-audit-csv",
+        type=Path,
+        help="sample audit CSV used to identify fragile target IDs",
+    )
+    parser.add_argument(
+        "--target-fragility-output-dir",
+        type=Path,
+        help="directory for target-fragility gate artifacts",
+    )
+    parser.add_argument(
+        "--target-fragility-flag",
+        dest="target_fragility_flags",
+        action="append",
+        help="sample flag that excludes a target; may be passed more than once",
+    )
+    parser.add_argument(
+        "--target-fragility-keep-repeated-estimates",
+        action="store_true",
+        help="do not exclude targets whose samples share one repeated estimate",
+    )
+    parser.add_argument(
+        "--target-fragility-repeated-estimate-tolerance",
+        type=float,
+        default=DEFAULT_REPEATED_ESTIMATE_TOLERANCE,
+        help="absolute tolerance for detecting repeated sample estimates",
+    )
 
 
 def run_structural_smc_validation_command(
@@ -54,8 +93,10 @@ def run_structural_smc_validation_command(
     parser: argparse.ArgumentParser,
 ) -> int | None:
     """Run structural SMC validation commands or return `None`."""
-    if args.command != "validate-structured-candidates-smc":
+    if args.command not in STRUCTURAL_SMC_VALIDATION_COMMANDS:
         return None
+    if args.command == "validate-structured-smc-target-fragility":
+        return _run_target_fragility_command(args, parser)
     _require_inputs(args, parser)
     targets = load_target_dataset(args.targets)
     folds = _validation_folds(args, parser, targets)
@@ -86,9 +127,51 @@ def run_structural_smc_validation_command(
     return 0
 
 
-def _require_inputs(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
+def _run_target_fragility_command(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+) -> int:
+    """Run a target-fragility sensitivity gate for structural SMC validation."""
+    _require_inputs(args, parser, require_validation_output_dir=False)
+    _require_target_fragility_inputs(args, parser)
+    targets = load_target_dataset(args.targets)
+    folds = _validation_folds(args, parser, targets)
+    result = run_structural_smc_target_fragility_gate(
+        load_sweep_spec(args.config),
+        targets,
+        load_child_region_overrides(args.child_region_overrides),
+        StructuredPulseCandidate(
+            name=args.structured_pulse_candidate_name,
+            region_prefix=args.structured_pulse_region_prefix,
+            start_bce=args.structured_pulse_start_bce,
+            end_bce=args.structured_pulse_end_bce,
+            annual_rate=args.structured_pulse_annual_rate,
+        ),
+        sample_audit_csv=args.target_fragility_audit_csv,
+        folds=folds,
+        child_candidate_name=args.child_region_candidate_name,
+        options=_smc_options(args),
+        paths=target_fragility_gate_paths_from_dir(args.target_fragility_output_dir),
+        interval_probability=args.posterior_predictive_interval_probability,
+        excluded_flags=_target_fragility_flags(args),
+        exclude_repeated_estimates=not args.target_fragility_keep_repeated_estimates,
+        repeated_estimate_tolerance=args.target_fragility_repeated_estimate_tolerance,
+        config_path=args.config,
+        child_region_overrides_path=args.child_region_overrides,
+        command=args.command,
+    )
+    _print_target_fragility_result(result)
+    return 0
+
+
+def _require_inputs(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+    *,
+    require_validation_output_dir: bool = True,
+) -> None:
     """Raise argparse errors for missing structural validation inputs."""
-    for argument_name in (
+    required = [
         "config",
         "targets",
         "child_region_overrides",
@@ -96,13 +179,24 @@ def _require_inputs(args: argparse.Namespace, parser: argparse.ArgumentParser) -
         "structured_pulse_start_bce",
         "structured_pulse_end_bce",
         "structured_pulse_annual_rate",
-        "smc_validation_output_dir",
-    ):
+    ]
+    if require_validation_output_dir:
+        required.append("smc_validation_output_dir")
+    for argument_name in required:
         if getattr(args, argument_name) is None:
             parser.error(
-                "validate-structured-candidates-smc requires "
-                f"--{argument_name.replace('_', '-')}"
+                f"{args.command} requires " f"--{argument_name.replace('_', '-')}"
             )
+
+
+def _require_target_fragility_inputs(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+) -> None:
+    """Raise argparse errors for missing target-fragility gate inputs."""
+    for argument_name in ("target_fragility_audit_csv", "target_fragility_output_dir"):
+        if getattr(args, argument_name) is None:
+            parser.error(f"{args.command} requires --{argument_name.replace('_', '-')}")
 
 
 def _validation_folds(
@@ -131,7 +225,7 @@ def _validation_folds(
     folds.extend(_explicit_folds(args.validation_field, args.validation_value or ()))
     merged = merge_structural_smc_validation_folds(folds)
     if not merged:
-        parser.error("validate-structured-candidates-smc requires at least one fold")
+        parser.error(f"{args.command} requires at least one fold")
     return merged
 
 
@@ -177,6 +271,14 @@ def _smc_options(args: argparse.Namespace) -> ABCSMCOptions:
     )
 
 
+def _target_fragility_flags(args: argparse.Namespace) -> tuple[str, ...]:
+    """Return CLI-selected target-fragility sample flags."""
+    flags = args.target_fragility_flags
+    if flags is None:
+        return DEFAULT_TARGET_FRAGILITY_FLAGS
+    return tuple(flag for flag in flags if flag.strip())
+
+
 def _print_result(result: StructuralSMCMultiFoldValidationResult) -> None:
     """Print compact machine-readable structural SMC validation summary lines."""
     print("structural_smc_validation=true")
@@ -199,6 +301,36 @@ def _print_result(result: StructuralSMCMultiFoldValidationResult) -> None:
         print(f"structural_smc_validation_report_md={result.report_md_path}")
     if result.manifest_json_path is not None:
         print(f"manifest_json={result.manifest_json_path}")
+
+
+def _print_target_fragility_result(result: TargetFragilityGateResult) -> None:
+    """Print compact machine-readable target-fragility gate summary lines."""
+    print("target_fragility_gate=true")
+    print(f"target_fragility_original_target_count={result.original_target_count}")
+    print(f"target_fragility_retained_target_count={result.filtered_target_count}")
+    print(f"target_fragility_excluded_target_count={result.excluded_target_count}")
+    print(f"target_fragility_skipped_fold_count={result.skipped_fold_count}")
+    print(
+        "target_fragility_validation_fold_count="
+        f"{len(result.validation_result.folds)}"
+    )
+    print(
+        "target_fragility_validation_preference_disagreement_count="
+        f"{result.validation_result.preference_disagreement_count}"
+    )
+    print(f"target_fragility_filtered_targets={result.paths.filtered_targets_csv}")
+    print(f"target_fragility_decisions_csv={result.paths.decisions_csv}")
+    print(f"target_fragility_report_md={result.paths.report_md}")
+    if result.validation_result.summary_csv_path is not None:
+        print(
+            "target_fragility_validation_summary_csv="
+            f"{result.validation_result.summary_csv_path}"
+        )
+    if result.validation_result.report_md_path is not None:
+        print(
+            "target_fragility_validation_report_md="
+            f"{result.validation_result.report_md_path}"
+        )
 
 
 def _candidate_count(

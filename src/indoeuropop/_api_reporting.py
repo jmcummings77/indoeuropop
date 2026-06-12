@@ -180,6 +180,14 @@ from indoeuropop.reporting.target_comparison import (
     target_comparisons_to_csv,
     write_target_comparisons_csv,
 )
+from indoeuropop.reporting.target_fragility import (
+    TARGET_FRAGILITY_DECISION_FIELDS,
+    target_fragility_decision_rows,
+    target_fragility_decisions_to_csv,
+    target_fragility_gate_markdown,
+    write_target_fragility_decisions_csv,
+    write_target_fragility_gate_markdown,
+)
 from indoeuropop.reporting.target_refinement import (
     REFINEMENT_RANGE_FIELDS,
     REFINEMENT_SUMMARY_FIELDS,
@@ -233,6 +241,7 @@ __all__ = [
     "STRUCTURAL_SMC_DISAGREEMENT_FIELDS",
     "STRUCTURAL_SMC_VALIDATION_FIELDS",
     "TARGET_COMPARISON_FIELDS",
+    "TARGET_FRAGILITY_DECISION_FIELDS",
     "TARGET_RESIDUAL_REVIEW_COLUMNS",
     "VALIDATION_METRIC_FIELDS",
     "DisagreementTargetCurationAudit",
@@ -328,6 +337,9 @@ __all__ = [
     "target_comparisons_to_csv",
     "target_curation_audit_markdown",
     "target_fit_provenance_records",
+    "target_fragility_decision_rows",
+    "target_fragility_decisions_to_csv",
+    "target_fragility_gate_markdown",
     "target_observation_provenance_records",
     "target_refinement_markdown",
     "target_refinement_ranges_rows",
@@ -372,6 +384,8 @@ __all__ = [
     "write_sweep_runs_csv",
     "write_target_comparisons_csv",
     "write_target_curation_audit_markdown",
+    "write_target_fragility_decisions_csv",
+    "write_target_fragility_gate_markdown",
     "write_target_refinement_markdown",
     "write_target_refinement_ranges_csv",
     "write_target_refinement_summary_csv",

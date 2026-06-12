@@ -143,6 +143,9 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
         "target_curation": "indoeuropop.data.target_curation",
         "target_decision_cli": "indoeuropop.orchestration.target_decision_cli",
         "target_decisions": "indoeuropop.data.target_decisions",
+        "target_fragility": "indoeuropop.orchestration.target_fragility",
+        "target_fragility_models": "indoeuropop.orchestration.target_fragility_models",
+        "target_fragility_report": "indoeuropop.reporting.target_fragility",
         "target_notes": "indoeuropop.data.target_notes",
         "target_pipeline": "indoeuropop.data.target_pipeline",
         "target_refinement": "indoeuropop.orchestration.target_refinement",
@@ -225,6 +228,9 @@ def test_public_api_exports_target_decision_helpers() -> None:
     assert "DisagreementTargetCurationAuditReport" in public_api.__all__
     assert "load_disagreement_target_curation_audit" in public_api.__all__
     assert "disagreement_target_audit_markdown" in public_api.__all__
+    assert "TargetFragilityDecision" in public_api.__all__
+    assert "run_structural_smc_target_fragility_gate" in public_api.__all__
+    assert "target_fragility_gate_markdown" in public_api.__all__
 
 
 def test_project_files_stay_under_line_limits() -> None:

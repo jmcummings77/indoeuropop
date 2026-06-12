@@ -3,6 +3,8 @@
 IndoEuroPop is a research-engineering scaffold for mechanistic models of
 Late Neolithic and Early Bronze Age population dynamics in western Eurasia.
 
+![Map of Yamaya expansions](https://upload.wikimedia.org/wikipedia/commons/b/b1/Indo-European_migrations.jpg)
+
 My primary motive for pursuing this project is curiosity about the possible role that Yersinia Pestis (aka the Plague or the Black Death) played in enabling the rapid and far flung expansion of the Yamnaya Steppe Pastoralists (YSP) and their culture across huge swathes of Eurasia during the Early Bronze Age (ca. 4000-1000 BCE), which is very likely the mechanism by which Indo-European languages came to dominate such a wide and diverse swathe of territory, stretching from India to Ireland.
 
 In particular, I am curious about the extent to which differential immune system advantages may have enabled near complete YSP replacement of the preexisting Western Hunter Gatherer (WHG) and Anatolian-derived Neolithic Farmer (ANF) populations of Western Europe. Recent evidence suggests that a shockingly high proportion of both the Yamnaya and the populations they displaced during this period suffered from Y. Pestis infections. The Plague bacillus itself likely derives from zoonotic reservoirs native to the Yamnaya-dominated Eurasian steppe regions, including domesticated animals (especially horses) with which the Yamnya lived in much closer contact than any prior human populations ever had. It is possible that extended, multigenerational exposure to the bacillus on the steppes drove immune system adaptations among the Yamnaya that gave them a differential advantage over neighboring populations of early humans as they expanded outwards from their steppe homeland.
@@ -723,6 +725,34 @@ This writes a target-level Markdown review plus a long-form sample CSV with
 sample dates, sex labels, sites, publication keys, qpAdm estimates, standard
 errors, p-values, and review flags such as `high_se`, `critical`, or
 `out_of_window`.
+
+Run the target-fragility sensitivity gate to remove disagreement targets with
+sample-level fragility flags or repeated identical sample estimates, then rerun
+only the validation folds that still have calibration and holdout rows:
+
+```bash
+uv run indoeuropop validate-structured-smc-target-fragility \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --smc-generations 3 \
+  --smc-sample-count 30 \
+  --structured-pulse-candidate-name central-europe-structured-broad-pulse \
+  --structured-pulse-region-prefix central_europe__ \
+  --structured-pulse-start-bce 3000 \
+  --structured-pulse-end-bce 2600 \
+  --structured-pulse-annual-rate 0.00005 \
+  --child-region-candidate-name central-europe-child-interaction-best \
+  --target-fragility-audit-csv results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-target-audit-samples.csv \
+  --target-fragility-output-dir results/qpadm-rerun/structured-smc-fragility-gate
+```
+
+The gate writes `filtered-targets.csv`, `target-fragility-decisions.csv`, a
+Markdown summary, and a nested multi-fold validation rerun under `validation/`.
+By default it excludes `high_se`, `critical`, `missing_metadata`,
+`missing_estimate`, and `out_of_window` flags plus repeated identical estimates.
 
 Compare validation-guided narrowed and expanded parameter ranges against the
 current grid:

@@ -527,6 +527,35 @@ estimate notes, publication keys, sample dates, standard errors, p-values, and
 review flags into one place so target fragility can be separated from model
 fragility.
 
+Run the target-fragility sensitivity gate after the batch audit. It removes
+disagreement targets with sample-level fragility flags or repeated identical
+sample estimates, writes the filtered target set, and reruns only validation
+folds that still have both calibration and holdout rows:
+
+```bash
+uv run indoeuropop validate-structured-smc-target-fragility \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --fit-metric root_mean_squared_error \
+  --acceptance-count 6 \
+  --smc-generations 3 \
+  --smc-sample-count 30 \
+  --structured-pulse-candidate-name central-europe-structured-broad-pulse \
+  --structured-pulse-region-prefix central_europe__ \
+  --structured-pulse-start-bce 3000 \
+  --structured-pulse-end-bce 2600 \
+  --structured-pulse-annual-rate 0.00005 \
+  --child-region-candidate-name central-europe-child-interaction-best \
+  --target-fragility-audit-csv results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-target-audit-samples.csv \
+  --target-fragility-output-dir results/qpadm-rerun/structured-smc-fragility-gate
+```
+
+Default exclusion reasons are `high_se`, `critical`, `missing_metadata`,
+`missing_estimate`, `out_of_window`, and repeated identical estimates. Use
+`--target-fragility-keep-repeated-estimates` when checking only explicit sample
+flags, or pass `--target-fragility-flag` repeatedly for a narrower flag set.
+
 Apply reviewed decisions to already prepared target inputs when you want to
 inspect the filtered curation CSVs directly:
 
