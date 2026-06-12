@@ -1,0 +1,53 @@
+{
+  "default_provider": {
+    "provider": "openai",
+    "model": "gpt-5-codex"
+  },
+  "providers": {
+    "openai": {
+      "api_key_env": "OPENAI_API_KEY",
+      "models": {
+        "coding": "gpt-5-codex",
+        "planning": "gpt-5",
+        "review": "gpt-5",
+        "documentation": "gpt-5-mini"
+      }
+    },
+    "anthropic": {
+      "api_key_env": "ANTHROPIC_API_KEY",
+      "models": {
+        "coding": "claude-sonnet-4-6",
+        "planning": "claude-sonnet-4-6",
+        "review": "claude-sonnet-4-6",
+        "documentation": "claude-haiku-4-5-20251001"
+      }
+    },
+    "ollama": {
+      "base_url": "http://127.0.0.1:11434/v1",
+      "models": {
+        "coding": "qwen2.5-coder:32b",
+        "planning": "llama3.1:70b",
+        "review": "llama3.1:70b",
+        "documentation": "llama3.1:70b"
+      }
+    }
+  },
+  "ci": {
+    "provider": "openai",
+    "fallback_provider": null
+  },
+  "project": {
+    "language": "python",
+    "package": "indoeuropop",
+    "python": ">=3.11",
+    "setup": [
+      "uv sync --all-extras --dev"
+    ],
+    "quality_gates": [
+      "uv run pytest --cov=indoeuropop --cov-report=term-missing --cov-fail-under=100",
+      "uv run black --check .",
+      "uv run ruff check .",
+      "uv run mypy src tests"
+    ]
+  }
+}

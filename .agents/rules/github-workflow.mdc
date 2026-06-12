@@ -1,0 +1,20 @@
+---
+description: >-
+  GitHub and git workflow expectations for hosted repository work.
+alwaysApply: false
+globs:
+  - ".agents/commands/**"
+  - "AGENTS.md"
+  - ".github/**/*"
+---
+
+# GitHub Workflow
+
+- Use `gh` from the repository root for GitHub issue and pull request work.
+- Run `gh auth status` before GitHub operations.
+- The default hosted branch is `main`; feature PRs target `main` until a
+  different branch model is documented.
+- Do not force-push, reset, or delete branches without explicit permission.
+- Base PR descriptions on the actual diff, not memory or intent alone.
+- Include verification commands actually run in PR descriptions.
+- Do not merge unless the user has authorized it and required checks are green.

@@ -1,0 +1,24 @@
+---
+description: >-
+  Cross-cutting repository standards for clear, maintainable, tested code.
+  Apply when editing any hand-written project file.
+alwaysApply: true
+globs:
+  - "**/*"
+---
+
+# General Coding Standards
+
+- Read nearby code before editing and follow existing module boundaries.
+- Prefer clarity over cleverness and small functions over broad control flows.
+- Add an abstraction only when it reduces real duplication or clarifies a
+  repeated concept.
+- Preserve public APIs and compatibility re-exports when reorganizing modules.
+- Avoid unrelated refactors, formatting churn, or metadata changes.
+- Do not add unnecessary dependencies.
+- Use meaningful names. Short mathematical symbols are acceptable when they
+  correspond to standard equations and are documented nearby.
+- Add comments only for non-obvious reasoning, equations, or scientific
+  assumptions.
+- Never make destructive git changes or overwrite user data without explicit
+  permission.

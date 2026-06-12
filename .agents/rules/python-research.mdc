@@ -1,0 +1,32 @@
+---
+description: >-
+  Python, uv, strict typing, docstrings, and research-modeling standards for
+  IndoEuroPop source, tests, scripts, and configuration.
+alwaysApply: false
+globs:
+  - "src/**/*.py"
+  - "tests/**/*.py"
+  - "scripts/**/*.py"
+  - "pyproject.toml"
+  - "uv.lock"
+---
+
+# Python Research Package Standards
+
+- Use `uv` for dependency management and command execution.
+- Target Python `>=3.11`.
+- Format with Black and lint with Ruff.
+- Keep mypy strictness green for `src` and `tests`.
+- Use pytest for tests; do not introduce `unittest`.
+- Type every function and method parameter and return value.
+- Write accurate docstrings for public functions, classes, dataclasses, and
+  CLI/reporting entry points.
+- Keep logic in pure, testable functions where possible. Keep CLI handlers thin.
+- Validate dataclass values in `__post_init__` when invalid states would make
+  downstream scientific interpretation ambiguous.
+- Keep files small: source under 400 lines, tests/docs under 1000 lines.
+- Do not weaken coverage settings or add exclusions for real logic.
+- Use stdlib parsers and structured APIs for CSV/TOML/JSON instead of ad hoc
+  string parsing when practical.
+- Keep runtime dependencies minimal; document any new dependency in the README
+  or relevant workflow docs when it changes setup expectations.

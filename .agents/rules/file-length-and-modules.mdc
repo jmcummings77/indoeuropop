@@ -1,0 +1,35 @@
+---
+description: >-
+  Keep source, test, and documentation files small and cohesive. Applies to all
+  agent work in this repository.
+alwaysApply: true
+---
+
+# File Length And Module Boundaries
+
+## Targets
+
+- Hand-written source files: maximum 400 lines.
+- Test files, fixtures, and documentation: maximum 1000 lines.
+- Generated files, vendored files, local data, results, caches, and lockfiles
+  are exempt from split-only refactors.
+
+## Before A File Grows Past The Target
+
+Split by responsibility before appending:
+
+- `*_models.py` for dataclasses, constants, and shared typed records.
+- `*_report.py` for Markdown/report rendering.
+- `*_cli.py` for argument parsing and thin command handlers.
+- `*_workflow.py` or orchestration modules for multi-step workflows.
+- Feature-specific analysis modules under `src/indoeuropop/analysis/`.
+- Data loading/parsing modules under `src/indoeuropop/data/`.
+
+Preserve public imports through `_api_*.py`, package `__init__.py` files, or
+compatibility aliases when moving public modules.
+
+## When Not To Split
+
+- Do not split only to create arbitrary fragments.
+- Do not scatter a cohesive test suite that is below the test-file limit.
+- Prefer one readable module over several tiny modules with unclear ownership.

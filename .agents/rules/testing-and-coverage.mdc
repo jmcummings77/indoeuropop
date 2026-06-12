@@ -1,0 +1,33 @@
+---
+description: >-
+  Pytest, coverage, focused verification, and full-gate expectations for this
+  package.
+alwaysApply: false
+globs:
+  - "src/**/*.py"
+  - "tests/**/*.py"
+  - "pyproject.toml"
+---
+
+# Testing And Coverage
+
+- Logic-bearing code must have tests.
+- The repository coverage target is 100% for `indoeuropop`.
+- Prefer focused tests while iterating, then run the full gate before handing
+  off substantial code changes:
+
+  ```bash
+  uv run pytest --cov=indoeuropop --cov-report=term-missing --cov-fail-under=100
+  uv run black --check .
+  uv run ruff check .
+  uv run mypy src tests
+  ```
+
+- For small documentation/config-only changes, run targeted structural checks
+  instead of pretending Python tests prove the docs.
+- Test public behavior, error branches, malformed inputs, and generated
+  artifact serialization.
+- Do not lower thresholds, change coverage include/exclude settings, or mark
+  real logic as ignored.
+- If a full gate cannot be run, state exactly what was run and why the full gate
+  was skipped.

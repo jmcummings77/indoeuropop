@@ -1,4 +1,7 @@
 .coverage
+.agents/agent-config.local.json
+.agents/settings.local.json
+.agents/worktrees.local.json
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/

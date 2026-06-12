@@ -1,0 +1,32 @@
+---
+description: >-
+  Research-data, curation, and scientific-interpretation guardrails for AADR,
+  qpAdm, target observations, simulations, and reports.
+alwaysApply: false
+globs:
+  - "curation/**/*"
+  - "docs/**/*"
+  - "src/indoeuropop/data/**/*.py"
+  - "src/indoeuropop/analysis/**/*.py"
+  - "src/indoeuropop/reporting/**/*.py"
+  - "src/indoeuropop/simulation/**/*.py"
+---
+
+# Data And Scientific Guardrails
+
+- Do not fabricate scientific results, sample metadata, qpAdm estimates, or
+  historical conclusions.
+- Treat model outputs as diagnostics unless a document explicitly frames them
+  as reviewed evidence.
+- Preserve uncertainty, sample counts, publication keys, target notes, and
+  curation decisions when transforming target data.
+- Do not overwrite local `data/` files without explicit permission.
+- Do not commit generated `results/` artifacts unless the user asks to promote
+  them.
+- Prefer cautious language: "candidate", "diagnostic", "review surface",
+  "held-out check", and "posterior-predictive residual" over final claims.
+- Before tuning simulator parameters to fit a target, inspect target curation,
+  qpAdm uncertainty, sample-level joins, and validation splits.
+- Make data filters explicit and reproducible. Avoid silent drops.
+- Keep external AADR/Poseidon/ADMIXTOOLS ingestion assumptions documented in
+  `docs/` and reflected in CLI help.
