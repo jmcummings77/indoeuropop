@@ -571,6 +571,137 @@ This report writes target-level z-scores and child-minus-pulse chi-square
 deltas. With the default materiality threshold, deltas below `1.0` are reported
 as `uncertainty_tie` rather than evidence for either structural candidate.
 
+Run the fit-metric sensitivity gate when you need to test whether the
+fragility-filtered candidate preference is stable across raw RMSE-style scoring
+and uncertainty-weighted chi-square scoring:
+
+```bash
+uv run indoeuropop validate-structured-smc-fit-metric-sensitivity \
+  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
+  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --acceptance-count 6 \
+  --smc-generations 3 \
+  --smc-sample-count 30 \
+  --structured-pulse-candidate-name central-europe-structured-broad-pulse \
+  --structured-pulse-region-prefix central_europe__ \
+  --structured-pulse-start-bce 3000 \
+  --structured-pulse-end-bce 2600 \
+  --structured-pulse-annual-rate 0.00005 \
+  --child-region-candidate-name central-europe-child-interaction-best \
+  --target-fragility-audit-csv results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-target-audit-samples.csv \
+  --fit-metric-sensitivity-output-dir results/qpadm-rerun/structured-smc-fit-metric-sensitivity
+```
+
+The command writes a shared `filtered-targets.csv`,
+`target-fragility-decisions.csv`, `fit-metric-sensitivity-summary.csv`, and
+`fit-metric-sensitivity.md`. Each objective gets a nested
+`metrics/<fit_metric>/validation/` rerun plus
+`metrics/<fit_metric>/structural-smc-uncertainty.md`, so raw preference changes
+and uncertainty-aware ties can be reviewed together.
+
+Run the source-model sensitivity gate to test whether the structural validation
+depends on the qpAdm target surface rather than the demographic candidate. This
+example compares the pre-rerun baseline targets with the accepted post-rerun
+targets after aligning them to shared `target_id` values:
+
+```bash
+uv run indoeuropop validate-structured-smc-source-model-sensitivity \
+  --config curation/aadr-v66-western-europe-comparison.toml \
+  --source-model-targets baseline=results/qpadm-rerun/baseline-target-observations.csv \
+  --source-model-targets accepted=results/qpadm-rerun/accepted-target-observations.csv \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --acceptance-count 6 \
+  --smc-generations 3 \
+  --smc-sample-count 30 \
+  --structured-pulse-candidate-name central-europe-structured-broad-pulse \
+  --structured-pulse-region-prefix central_europe__ \
+  --structured-pulse-start-bce 3000 \
+  --structured-pulse-end-bce 2600 \
+  --structured-pulse-annual-rate 0.00005 \
+  --child-region-candidate-name central-europe-child-interaction-best \
+  --source-model-structure-region central_europe \
+  --target-fragility-audit-csv results/qpadm-rerun/structured-smc-validation/structural-smc-disagreement-target-audit-samples.csv \
+  --source-model-sensitivity-output-dir results/qpadm-rerun/structured-smc-source-model-sensitivity
+```
+
+The command writes `source-model-sensitivity-summary.csv` and
+`source-model-sensitivity.md`, plus `source_models/<label>/prepared-targets.csv`,
+`source_models/<label>/structured-config.toml`, validation artifacts, and
+source-specific uncertainty reviews. By default it filters child overrides to
+regions that remain after source-model alignment, and the report records how
+many override regions were unavailable for each source-model target surface.
+
+Combine the robustness gates into one promotion decision after the
+target-fragility, fit-metric, and source-model reports exist:
+
+```bash
+uv run indoeuropop validate-structured-smc-robustness \
+  --robustness-candidate-name central-europe-child-interaction-best \
+  --target-fragility-decisions-csv results/qpadm-rerun/structured-smc-fragility-gate/target-fragility-decisions.csv \
+  --fit-metric-sensitivity-summary-csv results/qpadm-rerun/structured-smc-fit-metric-sensitivity/fit-metric-sensitivity-summary.csv \
+  --fit-metric-sensitivity-report-md results/qpadm-rerun/structured-smc-fit-metric-sensitivity/fit-metric-sensitivity.md \
+  --source-model-sensitivity-summary-csv results/qpadm-rerun/structured-smc-source-model-sensitivity/source-model-sensitivity-summary.csv \
+  --source-model-sensitivity-report-md results/qpadm-rerun/structured-smc-source-model-sensitivity/source-model-sensitivity.md \
+  --robustness-output-dir results/qpadm-rerun/structural-smc-robustness-decision
+```
+
+The unified report blocks promotion when configured robustness screens disagree
+on holdout preferences. Positive target exclusions, uncertainty ties,
+preference disagreements, skipped folds, or missing override regions are
+preserved as caveats when they do not cause instability.
+
+Expand the caveats into concrete fold, target, and run-level review rows:
+
+```bash
+uv run indoeuropop summarize-structural-smc-caveats \
+  --target-fragility-decisions-csv results/qpadm-rerun/structured-smc-fragility-gate/target-fragility-decisions.csv \
+  --fit-metric-sensitivity-summary-csv results/qpadm-rerun/structured-smc-fit-metric-sensitivity/fit-metric-sensitivity-summary.csv \
+  --source-model-sensitivity-summary-csv results/qpadm-rerun/structured-smc-source-model-sensitivity/source-model-sensitivity-summary.csv \
+  --robustness-drilldown-output-dir results/qpadm-rerun/structural-smc-caveat-drilldown
+```
+
+The drilldown CSV and Markdown report preserve exact fold names and target IDs
+for preference-disagreement and uncertainty-tie caveats, plus run-level rows
+for source-model skipped folds and missing override regions.
+
+Initialize a reviewed caveat-disposition template from the drilldown queue:
+
+```bash
+uv run indoeuropop initialize-structural-smc-caveat-dispositions \
+  --caveat-drilldown-csv results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.csv \
+  --caveat-dispositions-out results/qpadm-rerun/structural-smc-caveat-dispositions.csv
+```
+
+Reviewers can mark each row as `accepted_caveat`, `requires_qpadm_rerun`,
+`configuration_gap`, `not_applicable`, or `blocks_promotion`; blank or
+`undecided` rows remain unresolved. Validate the reviewed file with:
+
+```bash
+uv run indoeuropop validate-structural-smc-caveat-dispositions \
+  --caveat-drilldown-csv results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.csv \
+  --caveat-dispositions-csv results/qpadm-rerun/structural-smc-caveat-dispositions.csv \
+  --caveat-disposition-report-md results/qpadm-rerun/structural-smc-caveat-dispositions.md
+```
+
+Prioritize the disposition queue before review:
+
+```bash
+uv run indoeuropop prioritize-structural-smc-caveat-dispositions \
+  --caveat-drilldown-csv results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.csv \
+  --caveat-dispositions-csv results/qpadm-rerun/structural-smc-caveat-dispositions.csv \
+  --caveat-priority-output-dir results/qpadm-rerun/structural-smc-caveat-priorities
+```
+
+The priority report is a triage aid. It scores rows using disposition status,
+caveat type, gate, numeric diagnostic deltas, and target flags; reviewers still
+need evidence-backed reasons before accepting the suggested disposition hints.
+
+Pass reviewed dispositions into `validate-structured-smc-robustness` with
+`--caveat-drilldown-csv` and `--caveat-dispositions-csv`. Dispositions marked
+`requires_qpadm_rerun`, `configuration_gap`, or `blocks_promotion` add blockers
+to the unified robustness decision.
+
 Apply reviewed decisions to already prepared target inputs when you want to
 inspect the filtered curation CSVs directly:
 

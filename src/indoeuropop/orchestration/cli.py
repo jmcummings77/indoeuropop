@@ -54,6 +54,21 @@ from indoeuropop.orchestration.structural_smc_cli import (
     add_structural_smc_arguments,
     run_structural_smc_command,
 )
+from indoeuropop.orchestration.structural_smc_metric_sensitivity_cli import (
+    STRUCTURAL_SMC_METRIC_SENSITIVITY_COMMANDS,
+    add_structural_smc_metric_sensitivity_arguments,
+    run_structural_smc_metric_sensitivity_command,
+)
+from indoeuropop.orchestration.structural_smc_robustness_cli import (
+    STRUCTURAL_SMC_ROBUSTNESS_COMMANDS,
+    add_structural_smc_robustness_arguments,
+    run_structural_smc_robustness_command,
+)
+from indoeuropop.orchestration.structural_smc_source_model_sensitivity_cli import (
+    STRUCTURAL_SMC_SOURCE_MODEL_SENSITIVITY_COMMANDS,
+    add_structural_smc_source_model_sensitivity_arguments,
+    run_structural_smc_source_model_sensitivity_command,
+)
 from indoeuropop.orchestration.structural_smc_validation_cli import (
     STRUCTURAL_SMC_VALIDATION_COMMANDS,
     add_structural_smc_validation_arguments,
@@ -109,6 +124,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     if structural_smc_validation_exit_code is not None:
         return structural_smc_validation_exit_code
+    structural_smc_metric_sensitivity_exit_code = (
+        run_structural_smc_metric_sensitivity_command(args, parser)
+    )
+    if structural_smc_metric_sensitivity_exit_code is not None:
+        return structural_smc_metric_sensitivity_exit_code
+    structural_smc_source_model_sensitivity_exit_code = (
+        run_structural_smc_source_model_sensitivity_command(args, parser)
+    )
+    if structural_smc_source_model_sensitivity_exit_code is not None:
+        return structural_smc_source_model_sensitivity_exit_code
+    structural_smc_robustness_exit_code = run_structural_smc_robustness_command(
+        args, parser
+    )
+    if structural_smc_robustness_exit_code is not None:
+        return structural_smc_robustness_exit_code
     real_pipeline_refresh_exit_code = run_real_pipeline_refresh_command(args, parser)
     if real_pipeline_refresh_exit_code is not None:
         return real_pipeline_refresh_exit_code
@@ -264,6 +294,9 @@ def _build_parser() -> argparse.ArgumentParser:
             *STRUCTURAL_CANDIDATE_COMMANDS,
             *STRUCTURAL_HEAD_TO_HEAD_COMMANDS,
             *STRUCTURAL_SMC_COMMANDS,
+            *STRUCTURAL_SMC_METRIC_SENSITIVITY_COMMANDS,
+            *STRUCTURAL_SMC_ROBUSTNESS_COMMANDS,
+            *STRUCTURAL_SMC_SOURCE_MODEL_SENSITIVITY_COMMANDS,
             *STRUCTURAL_SMC_VALIDATION_COMMANDS,
             *TARGET_COMMANDS,
             *TARGET_DECISION_COMMANDS,
@@ -349,6 +382,9 @@ def _build_parser() -> argparse.ArgumentParser:
     add_structural_head_to_head_arguments(parser)
     add_structural_smc_arguments(parser)
     add_structural_smc_validation_arguments(parser)
+    add_structural_smc_metric_sensitivity_arguments(parser)
+    add_structural_smc_source_model_sensitivity_arguments(parser)
+    add_structural_smc_robustness_arguments(parser)
     add_real_pipeline_refresh_arguments(parser)
     add_curation_decision_arguments(parser)
     add_target_arguments(parser)

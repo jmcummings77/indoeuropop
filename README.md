@@ -769,6 +769,30 @@ The default materiality threshold treats child-minus-pulse chi-square deltas
 below `1.0` as `uncertainty_tie`, which is useful when broad target uncertainty
 dominates small candidate residual differences.
 
+To check whether those conclusions depend on the objective function, run
+`validate-structured-smc-fit-metric-sensitivity`. It reuses the same
+target-fragility filter, reruns the retained folds under
+`root_mean_squared_error` and `chi_square`, writes per-metric uncertainty
+reviews, and reports folds whose holdout preference changes across metrics.
+
+To check whether the conclusion depends on qpAdm target construction, run
+`validate-structured-smc-source-model-sensitivity`. It aligns labeled target
+CSVs by shared `target_id`, applies the fragility audit, reruns structural SMC
+validation per source-model target surface, and reports any holdout-preference
+changes across source models.
+
+After all three robustness gates have written artifacts, summarize promotion
+status with `validate-structured-smc-robustness`. It reads the target-fragility
+decisions, fit-metric sensitivity report, and source-model sensitivity report,
+then writes one blocker/caveat decision without rerunning SMC.
+Use `summarize-structural-smc-caveats` to expand that decision into fold,
+target, and run-level review rows.
+Use `initialize-structural-smc-caveat-dispositions` and
+`validate-structural-smc-caveat-dispositions` to track reviewed caveat outcomes
+and feed blocking dispositions back into the promotion decision. Use
+`prioritize-structural-smc-caveat-dispositions` to rank unresolved caveats
+before review.
+
 Compare validation-guided narrowed and expanded parameter ranges against the
 current grid:
 

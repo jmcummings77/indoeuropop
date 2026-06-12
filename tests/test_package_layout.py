@@ -95,8 +95,71 @@ def test_legacy_module_names_resolve_to_new_subpackages() -> None:
             "indoeuropop.orchestration.structural_head_to_head"
         ),
         "structural_smc_cli": "indoeuropop.orchestration.structural_smc_cli",
+        "structural_smc_caveat_drilldown": (
+            "indoeuropop.orchestration.structural_smc_caveat_drilldown"
+        ),
+        "structural_smc_caveat_drilldown_models": (
+            "indoeuropop.orchestration.structural_smc_caveat_drilldown_models"
+        ),
+        "structural_smc_caveat_drilldown_report": (
+            "indoeuropop.reporting.structural_smc_caveat_drilldown"
+        ),
+        "structural_smc_caveat_dispositions": (
+            "indoeuropop.data.structural_smc_caveat_dispositions"
+        ),
+        "structural_smc_caveat_disposition_report": (
+            "indoeuropop.reporting.structural_smc_caveat_dispositions"
+        ),
+        "structural_smc_caveat_priority": (
+            "indoeuropop.orchestration.structural_smc_caveat_priority"
+        ),
+        "structural_smc_caveat_priority_models": (
+            "indoeuropop.orchestration.structural_smc_caveat_priority_models"
+        ),
+        "structural_smc_caveat_priority_report": (
+            "indoeuropop.reporting.structural_smc_caveat_priority"
+        ),
         "structural_smc_disagreement_report": (
             "indoeuropop.reporting.structural_smc_disagreements"
+        ),
+        "structural_smc_metric_sensitivity": (
+            "indoeuropop.orchestration.structural_smc_metric_sensitivity"
+        ),
+        "structural_smc_metric_sensitivity_cli": (
+            "indoeuropop.orchestration.structural_smc_metric_sensitivity_cli"
+        ),
+        "structural_smc_metric_sensitivity_models": (
+            "indoeuropop.orchestration.structural_smc_metric_sensitivity_models"
+        ),
+        "structural_smc_metric_sensitivity_report": (
+            "indoeuropop.reporting.structural_smc_metric_sensitivity"
+        ),
+        "structural_smc_robustness": (
+            "indoeuropop.orchestration.structural_smc_robustness"
+        ),
+        "structural_smc_robustness_cli": (
+            "indoeuropop.orchestration.structural_smc_robustness_cli"
+        ),
+        "structural_smc_robustness_models": (
+            "indoeuropop.orchestration.structural_smc_robustness_models"
+        ),
+        "structural_smc_robustness_report": (
+            "indoeuropop.reporting.structural_smc_robustness"
+        ),
+        "structural_smc_source_model_sensitivity": (
+            "indoeuropop.orchestration.structural_smc_source_model_sensitivity"
+        ),
+        "structural_smc_source_model_sensitivity_cli": (
+            "indoeuropop.orchestration.structural_smc_source_model_sensitivity_cli"
+        ),
+        "structural_smc_source_model_sensitivity_inputs": (
+            "indoeuropop.orchestration.structural_smc_source_model_sensitivity_inputs"
+        ),
+        "structural_smc_source_model_sensitivity_models": (
+            "indoeuropop.orchestration.structural_smc_source_model_sensitivity_models"
+        ),
+        "structural_smc_source_model_sensitivity_report": (
+            "indoeuropop.reporting.structural_smc_source_model_sensitivity"
         ),
         "structural_smc_uncertainty_report": (
             "indoeuropop.reporting.structural_smc_uncertainty"
@@ -240,6 +303,23 @@ def test_public_api_exports_target_decision_helpers() -> None:
     assert "TargetFragilityDecision" in public_api.__all__
     assert "run_structural_smc_target_fragility_gate" in public_api.__all__
     assert "target_fragility_gate_markdown" in public_api.__all__
+    assert "run_structural_smc_fit_metric_sensitivity" in public_api.__all__
+    assert "structural_smc_fit_metric_sensitivity_markdown" in public_api.__all__
+    assert "StructuralSMCCaveatDrilldownReport" in public_api.__all__
+    assert "run_structural_smc_caveat_drilldown" in public_api.__all__
+    assert "structural_smc_caveat_drilldown_markdown" in public_api.__all__
+    assert "StructuralSMCCaveatDispositionDataset" in public_api.__all__
+    assert "validate_structural_smc_caveat_dispositions" in public_api.__all__
+    assert "structural_smc_caveat_disposition_validation_markdown" in (
+        public_api.__all__
+    )
+    assert "run_structural_smc_caveat_prioritization" in public_api.__all__
+    assert "structural_smc_caveat_priority_markdown" in public_api.__all__
+    assert "StructuralSMCRobustnessDecision" in public_api.__all__
+    assert "run_structural_smc_robustness_decision" in public_api.__all__
+    assert "structural_smc_robustness_decision_markdown" in public_api.__all__
+    assert "run_structural_smc_source_model_sensitivity" in public_api.__all__
+    assert "structural_smc_source_model_sensitivity_markdown" in public_api.__all__
 
 
 def test_project_files_stay_under_line_limits() -> None:

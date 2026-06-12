@@ -82,12 +82,60 @@ from indoeuropop.orchestration.structural_head_to_head_outputs import (
 from indoeuropop.orchestration.structural_smc import (
     run_structural_smc_head_to_head_workflow,
 )
+from indoeuropop.orchestration.structural_smc_caveat_drilldown import (
+    run_structural_smc_caveat_drilldown,
+    structural_smc_caveat_drilldown_paths_from_dir,
+)
+from indoeuropop.orchestration.structural_smc_caveat_drilldown_models import (
+    StructuralSMCCaveatDrilldownPaths,
+    StructuralSMCCaveatDrilldownReport,
+    StructuralSMCCaveatDrilldownRow,
+)
+from indoeuropop.orchestration.structural_smc_caveat_priority import (
+    run_structural_smc_caveat_prioritization,
+    structural_smc_caveat_priority_paths_from_dir,
+)
+from indoeuropop.orchestration.structural_smc_metric_sensitivity import (
+    run_structural_smc_fit_metric_sensitivity,
+    structural_smc_fit_metric_sensitivity_paths_from_dir,
+)
+from indoeuropop.orchestration.structural_smc_metric_sensitivity_models import (
+    DEFAULT_STRUCTURAL_SMC_FIT_METRICS,
+    StructuralSMCFitMetricRunResult,
+    StructuralSMCFitMetricSensitivityPaths,
+    StructuralSMCFitMetricSensitivityResult,
+)
 from indoeuropop.orchestration.structural_smc_outputs import (
     StructuralSMCComparisonResult,
     StructuralSMCOutputPaths,
     structural_smc_artifacts,
     structural_smc_manifest,
     structural_smc_output_paths_from_dir,
+)
+from indoeuropop.orchestration.structural_smc_robustness import (
+    load_fit_metric_robustness_summary,
+    load_source_model_robustness_summary,
+    load_target_fragility_robustness_summary,
+    run_structural_smc_robustness_decision,
+    structural_smc_robustness_decision_paths_from_dir,
+)
+from indoeuropop.orchestration.structural_smc_robustness_models import (
+    FitMetricRobustnessSummary,
+    SourceModelRobustnessSummary,
+    StructuralSMCRobustnessDecision,
+    StructuralSMCRobustnessDecisionPaths,
+    StructuralSMCRobustnessIssue,
+    TargetFragilityRobustnessSummary,
+)
+from indoeuropop.orchestration.structural_smc_source_model_sensitivity import (
+    run_structural_smc_source_model_sensitivity,
+    structural_smc_source_model_sensitivity_paths_from_dir,
+)
+from indoeuropop.orchestration.structural_smc_source_model_sensitivity_models import (
+    StructuralSMCSourceModel,
+    StructuralSMCSourceModelRunResult,
+    StructuralSMCSourceModelSensitivityPaths,
+    StructuralSMCSourceModelSensitivityResult,
 )
 from indoeuropop.orchestration.structural_smc_validation import (
     default_structural_smc_validation_folds,
@@ -188,6 +236,7 @@ __all__ = [
     "ARTIFACT_ROLES",
     "DEFAULT_REPEATED_ESTIMATE_TOLERANCE",
     "DEFAULT_STRUCTURAL_SMC_CHRONOLOGY_WINDOWS",
+    "DEFAULT_STRUCTURAL_SMC_FIT_METRICS",
     "DEFAULT_TARGET_FRAGILITY_FLAGS",
     "EXPERIMENT_MANIFEST_SCHEMA_VERSION",
     "SIMULATOR_KINDS",
@@ -203,6 +252,7 @@ __all__ = [
     "ChildRegionOverrideWorkflowResult",
     "ExperimentArtifact",
     "ExperimentManifest",
+    "FitMetricRobustnessSummary",
     "MigrationPulseCandidateOutputPaths",
     "MigrationPulseCandidateWorkflowResult",
     "OverrideDeltaOutputPaths",
@@ -216,9 +266,23 @@ __all__ = [
     "SimulationOutputPaths",
     "SimulationRun",
     "SimulatorKind",
+    "SourceModelRobustnessSummary",
+    "StructuralSMCCaveatDrilldownPaths",
+    "StructuralSMCCaveatDrilldownReport",
+    "StructuralSMCCaveatDrilldownRow",
     "StructuralSMCComparisonResult",
+    "StructuralSMCFitMetricRunResult",
+    "StructuralSMCFitMetricSensitivityPaths",
+    "StructuralSMCFitMetricSensitivityResult",
     "StructuralSMCMultiFoldValidationResult",
     "StructuralSMCOutputPaths",
+    "StructuralSMCRobustnessDecision",
+    "StructuralSMCRobustnessDecisionPaths",
+    "StructuralSMCRobustnessIssue",
+    "StructuralSMCSourceModel",
+    "StructuralSMCSourceModelRunResult",
+    "StructuralSMCSourceModelSensitivityPaths",
+    "StructuralSMCSourceModelSensitivityResult",
     "StructuralSMCValidationFoldResult",
     "StructuralSMCValidationFoldSpec",
     "StructuralSMCValidationOutputPaths",
@@ -234,6 +298,7 @@ __all__ = [
     "TargetFragilityDecision",
     "TargetFragilityGatePaths",
     "TargetFragilityGateResult",
+    "TargetFragilityRobustnessSummary",
     "TargetRefinementOutputPaths",
     "TargetRefinementWorkflowResult",
     "TargetStructureOutputPaths",
@@ -256,8 +321,11 @@ __all__ = [
     "filter_targets_by_fragility",
     "latin_hypercube_samples",
     "load_child_region_overrides",
+    "load_fit_metric_robustness_summary",
+    "load_source_model_robustness_summary",
     "load_structural_comparison_reference",
     "load_target_fragility_decisions",
+    "load_target_fragility_robustness_summary",
     "merge_structural_smc_validation_folds",
     "migration_pulse_candidate_artifacts",
     "migration_pulse_candidate_manifest",
@@ -277,8 +345,13 @@ __all__ = [
     "run_override_delta_workflow",
     "run_parameter_sweep",
     "run_real_pipeline_refresh_workflow",
+    "run_structural_smc_caveat_drilldown",
+    "run_structural_smc_caveat_prioritization",
+    "run_structural_smc_fit_metric_sensitivity",
     "run_structural_smc_head_to_head_workflow",
     "run_structural_smc_multifold_validation_workflow",
+    "run_structural_smc_robustness_decision",
+    "run_structural_smc_source_model_sensitivity",
     "run_structural_smc_target_fragility_gate",
     "run_structured_head_to_head_workflow",
     "run_sweep_run_simulation",
@@ -292,9 +365,14 @@ __all__ = [
     "simulation_provenance_records",
     "split_targets_by_structural_smc_fold",
     "structural_smc_artifacts",
+    "structural_smc_caveat_drilldown_paths_from_dir",
+    "structural_smc_caveat_priority_paths_from_dir",
+    "structural_smc_fit_metric_sensitivity_paths_from_dir",
     "structural_smc_manifest",
     "structural_smc_output_paths_from_dir",
     "structural_smc_preferred_candidate",
+    "structural_smc_robustness_decision_paths_from_dir",
+    "structural_smc_source_model_sensitivity_paths_from_dir",
     "structural_smc_validation_artifacts",
     "structural_smc_validation_manifest",
     "structural_smc_validation_output_paths_from_dir",

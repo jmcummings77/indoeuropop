@@ -1,5 +1,49 @@
 """Public uncertainty-reporting exports for top-level package imports."""
 
+from indoeuropop.reporting.structural_smc_caveat_dispositions import (
+    structural_smc_caveat_disposition_validation_markdown,
+    write_structural_smc_caveat_disposition_validation_markdown,
+)
+from indoeuropop.reporting.structural_smc_caveat_drilldown import (
+    STRUCTURAL_SMC_CAVEAT_DRILLDOWN_FIELDS,
+    structural_smc_caveat_drilldown_markdown,
+    structural_smc_caveat_drilldown_rows,
+    structural_smc_caveat_drilldown_to_csv,
+    write_structural_smc_caveat_drilldown_csv,
+    write_structural_smc_caveat_drilldown_markdown,
+)
+from indoeuropop.reporting.structural_smc_caveat_priority import (
+    STRUCTURAL_SMC_CAVEAT_PRIORITY_FIELDS,
+    structural_smc_caveat_priority_markdown,
+    structural_smc_caveat_priority_rows,
+    structural_smc_caveat_priority_to_csv,
+    write_structural_smc_caveat_priority_csv,
+    write_structural_smc_caveat_priority_markdown,
+)
+from indoeuropop.reporting.structural_smc_metric_sensitivity import (
+    STRUCTURAL_SMC_FIT_METRIC_SENSITIVITY_FIELDS,
+    structural_smc_fit_metric_sensitivity_markdown,
+    structural_smc_fit_metric_sensitivity_rows,
+    structural_smc_fit_metric_sensitivity_to_csv,
+    write_structural_smc_fit_metric_sensitivity_csv,
+    write_structural_smc_fit_metric_sensitivity_markdown,
+)
+from indoeuropop.reporting.structural_smc_robustness import (
+    STRUCTURAL_SMC_ROBUSTNESS_DECISION_FIELDS,
+    structural_smc_robustness_decision_markdown,
+    structural_smc_robustness_decision_row,
+    structural_smc_robustness_decision_to_csv,
+    write_structural_smc_robustness_decision_csv,
+    write_structural_smc_robustness_decision_markdown,
+)
+from indoeuropop.reporting.structural_smc_source_model_sensitivity import (
+    STRUCTURAL_SMC_SOURCE_MODEL_SENSITIVITY_FIELDS,
+    structural_smc_source_model_sensitivity_markdown,
+    structural_smc_source_model_sensitivity_rows,
+    structural_smc_source_model_sensitivity_to_csv,
+    write_structural_smc_source_model_sensitivity_csv,
+    write_structural_smc_source_model_sensitivity_markdown,
+)
 from indoeuropop.reporting.structural_smc_uncertainty import (
     DEFAULT_MATERIAL_CHI_SQUARE_DELTA,
     STRUCTURAL_SMC_UNCERTAINTY_FIELDS,
@@ -15,13 +59,45 @@ from indoeuropop.reporting.structural_smc_uncertainty import (
 
 __all__ = [
     "DEFAULT_MATERIAL_CHI_SQUARE_DELTA",
+    "STRUCTURAL_SMC_CAVEAT_DRILLDOWN_FIELDS",
+    "STRUCTURAL_SMC_CAVEAT_PRIORITY_FIELDS",
+    "STRUCTURAL_SMC_FIT_METRIC_SENSITIVITY_FIELDS",
+    "STRUCTURAL_SMC_ROBUSTNESS_DECISION_FIELDS",
+    "STRUCTURAL_SMC_SOURCE_MODEL_SENSITIVITY_FIELDS",
     "STRUCTURAL_SMC_UNCERTAINTY_FIELDS",
     "StructuralSMCUncertaintyReport",
     "StructuralSMCUncertaintyRow",
     "load_structural_smc_uncertainty_report",
+    "structural_smc_caveat_disposition_validation_markdown",
+    "structural_smc_caveat_drilldown_markdown",
+    "structural_smc_caveat_drilldown_rows",
+    "structural_smc_caveat_drilldown_to_csv",
+    "structural_smc_caveat_priority_markdown",
+    "structural_smc_caveat_priority_rows",
+    "structural_smc_caveat_priority_to_csv",
+    "structural_smc_fit_metric_sensitivity_markdown",
+    "structural_smc_fit_metric_sensitivity_rows",
+    "structural_smc_fit_metric_sensitivity_to_csv",
+    "structural_smc_robustness_decision_markdown",
+    "structural_smc_robustness_decision_row",
+    "structural_smc_robustness_decision_to_csv",
+    "structural_smc_source_model_sensitivity_markdown",
+    "structural_smc_source_model_sensitivity_rows",
+    "structural_smc_source_model_sensitivity_to_csv",
     "structural_smc_uncertainty_markdown",
     "structural_smc_uncertainty_rows",
     "structural_smc_uncertainty_to_csv",
+    "write_structural_smc_caveat_disposition_validation_markdown",
+    "write_structural_smc_caveat_drilldown_csv",
+    "write_structural_smc_caveat_drilldown_markdown",
+    "write_structural_smc_caveat_priority_csv",
+    "write_structural_smc_caveat_priority_markdown",
+    "write_structural_smc_fit_metric_sensitivity_csv",
+    "write_structural_smc_fit_metric_sensitivity_markdown",
+    "write_structural_smc_robustness_decision_csv",
+    "write_structural_smc_robustness_decision_markdown",
+    "write_structural_smc_source_model_sensitivity_csv",
+    "write_structural_smc_source_model_sensitivity_markdown",
     "write_structural_smc_uncertainty_csv",
     "write_structural_smc_uncertainty_markdown",
 ]
