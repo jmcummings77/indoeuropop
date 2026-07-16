@@ -791,7 +791,10 @@ Use `initialize-structural-smc-caveat-dispositions` and
 `validate-structural-smc-caveat-dispositions` to track reviewed caveat outcomes
 and feed blocking dispositions back into the promotion decision. Use
 `prioritize-structural-smc-caveat-dispositions` to rank unresolved caveats
-before review.
+before review. The current reviewed AADR v66 table is tracked under `curation/`
+with a Markdown decision record. Supplying the complete review surface and
+`--manifest-json` to `validate-structured-smc-robustness` freezes checksums for
+the decision inputs and compact generated evidence reports.
 
 Compare validation-guided narrowed and expanded parameter ranges against the
 current grid:

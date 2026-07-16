@@ -1,0 +1,118 @@
+{
+  "artifacts": [
+    {
+      "checksum_sha256": "72b660a652c6d920be2232d5ac2b2779ef7ba6bf510bc419a1a535d3d03350a0",
+      "metadata": {},
+      "name": "candidate_config",
+      "path": "curation/aadr-v66-central-europe-child-overrides-interaction-best.toml",
+      "role": "config"
+    },
+    {
+      "checksum_sha256": "3bed794cd9b8b9d25aa444ddfd7b27f1890983f483eae79d14c8f9ef4bb3f8f5",
+      "metadata": {},
+      "name": "decision_record_md",
+      "path": "docs/structural-smc-caveat-disposition-decision.md",
+      "role": "other"
+    },
+    {
+      "checksum_sha256": "e9d10bbde1d047cabd51603c7f9715d28d210f6d695552f2f286f46d01bef1ce",
+      "metadata": {},
+      "name": "target_fragility_decisions_csv",
+      "path": "results/qpadm-rerun/structured-smc-fragility-gate/target-fragility-decisions.csv",
+      "role": "other"
+    },
+    {
+      "checksum_sha256": "6d8a756ac8605ad33d72f1fe4300b086e093fea288cd9a2e36a94b4f0dd0f252",
+      "metadata": {},
+      "name": "target_fragility_report_md",
+      "path": "results/qpadm-rerun/structured-smc-fragility-gate/target-fragility-gate.md",
+      "role": "other"
+    },
+    {
+      "checksum_sha256": "ec4d44d28610184bf12385f488035fa5d05d92e8908e05e391cf038c659ebb4d",
+      "metadata": {},
+      "name": "fit_metric_summary_csv",
+      "path": "results/qpadm-rerun/structured-smc-fit-metric-sensitivity/fit-metric-sensitivity-summary.csv",
+      "role": "target_fit"
+    },
+    {
+      "checksum_sha256": "33a3fa37e649b365adbd644e73ac7eab431ad9699ee2676ce2f11ffe4471eccf",
+      "metadata": {},
+      "name": "fit_metric_report_md",
+      "path": "results/qpadm-rerun/structured-smc-fit-metric-sensitivity/fit-metric-sensitivity.md",
+      "role": "other"
+    },
+    {
+      "checksum_sha256": "c01e5516350ad8a0869bfd30c203a5dd5475f5a4cd211d7d7106b3c3df7ec77d",
+      "metadata": {},
+      "name": "source_model_summary_csv",
+      "path": "results/qpadm-rerun/structured-smc-source-model-sensitivity/source-model-sensitivity-summary.csv",
+      "role": "target_fit"
+    },
+    {
+      "checksum_sha256": "acb1d362035f6b8c8001e003ee2517981cfec0fb2ec4f0ee0ffb0b474e0708c4",
+      "metadata": {},
+      "name": "source_model_report_md",
+      "path": "results/qpadm-rerun/structured-smc-source-model-sensitivity/source-model-sensitivity.md",
+      "role": "other"
+    },
+    {
+      "checksum_sha256": "fd5e97a95e2d43a73ff75b79d712359d9b2fe623d09571f6bff55b7f62c70fa5",
+      "metadata": {},
+      "name": "caveat_drilldown_csv",
+      "path": "results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.csv",
+      "role": "other"
+    },
+    {
+      "checksum_sha256": "7b0bb75e4f928b86325fd826c5f0c94b95bef65f6c6efd0233a0221a00346342",
+      "metadata": {},
+      "name": "caveat_drilldown_report_md",
+      "path": "results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.md",
+      "role": "other"
+    },
+    {
+      "checksum_sha256": "e5cc17b292f072ac46dcdc4192d1acab9ccf6fcde8f41b447935eb98acd4c211",
+      "metadata": {},
+      "name": "caveat_dispositions_csv",
+      "path": "curation/aadr-v66-structural-smc-caveat-dispositions.csv",
+      "role": "config"
+    },
+    {
+      "checksum_sha256": "7ffa330764340420d338dd4521718b08342418ce2844ab3eabf0f49413c3a187",
+      "metadata": {},
+      "name": "caveat_disposition_report_md",
+      "path": "results/qpadm-rerun/structural-smc-caveat-dispositions.md",
+      "role": "other"
+    },
+    {
+      "checksum_sha256": "a3e1a65516abda950c1a071d6fd232bc93a08cd7a4a45fad21d95cfdb8045a30",
+      "metadata": {},
+      "name": "robustness_summary_csv",
+      "path": "results/qpadm-rerun/structural-smc-robustness-decision/structural-smc-robustness-decision.csv",
+      "role": "target_fit"
+    },
+    {
+      "checksum_sha256": "d8955dbcda03335e2f1a0364159cbdd4e03ed2596645412eb918bac1793e1c51",
+      "metadata": {},
+      "name": "robustness_report_md",
+      "path": "results/qpadm-rerun/structural-smc-robustness-decision/structural-smc-robustness-decision.md",
+      "role": "other"
+    }
+  ],
+  "description": "Checksummed structural SMC robustness decision evidence",
+  "fingerprints": [],
+  "metadata": {
+    "blocker_count": "0",
+    "blocking_disposition_count": "0",
+    "candidate_name": "central-europe-child-interaction-best",
+    "caution_count": "7",
+    "command": "validate-structured-smc-robustness",
+    "recommendation": "promote_only_with_documented_caveats",
+    "reviewed_disposition_count": "42",
+    "scientific_scope": "robustness review evidence; not historical proof",
+    "status": "review_with_caveats",
+    "unresolved_disposition_count": "0"
+  },
+  "name": "structural-smc-robustness-evidence",
+  "schema_version": "indoeuropop-experiment-manifest-v1"
+}

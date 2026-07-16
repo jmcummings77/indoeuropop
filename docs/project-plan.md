@@ -205,7 +205,10 @@ Phase 4: Inference and validation.
   The first experiment-manifest scaffold records output artifacts, optional
   SHA-256 checksums, and reproducibility fingerprints as derived provenance
   records. The CLI demo can now write a manifest JSON file after generating
-  plots and provenance CSV outputs.
+  plots and provenance CSV outputs. Structural SMC robustness review can now
+  require a fully resolved tracked caveat table and freeze its candidate config,
+  decision record, gate summaries, and rebuilt reports in a checksummed evidence
+  manifest without bundling external AADR data.
 - Revalidate emulator and posterior results against the explicit simulator.
   The first emulator-validation scaffold compares future emulator summary
   predictions against explicit simulator summaries by run fingerprint.

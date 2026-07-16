@@ -29,6 +29,11 @@ from indoeuropop.orchestration.structural_smc_robustness import (
     run_structural_smc_robustness_decision,
     structural_smc_robustness_decision_paths_from_dir,
 )
+from indoeuropop.orchestration.structural_smc_robustness_evidence_cli import (
+    add_structural_smc_robustness_evidence_arguments,
+    require_structural_smc_robustness_evidence_inputs,
+    write_requested_structural_smc_robustness_evidence,
+)
 from indoeuropop.orchestration.structural_smc_robustness_models import (
     StructuralSMCRobustnessDecision,
 )
@@ -118,6 +123,7 @@ def add_structural_smc_robustness_arguments(parser: argparse.ArgumentParser) -> 
         type=Path,
         help="source-model sensitivity Markdown report",
     )
+    add_structural_smc_robustness_evidence_arguments(parser)
 
 
 def run_structural_smc_robustness_command(
@@ -136,6 +142,7 @@ def run_structural_smc_robustness_command(
     if args.command == "validate-structural-smc-caveat-dispositions":
         return _run_validate_caveat_dispositions_command(args, parser)
     _require_inputs(args, parser)
+    require_structural_smc_robustness_evidence_inputs(args, parser)
     decision = run_structural_smc_robustness_decision(
         candidate_name=args.robustness_candidate_name,
         target_fragility_decisions_csv=args.target_fragility_decisions_csv,
@@ -151,6 +158,11 @@ def run_structural_smc_robustness_command(
         max_unstable_holdout_folds=args.robustness_max_unstable_holdout_folds,
     )
     _print_result(decision)
+    if args.manifest_json is not None:
+        manifest_path = write_requested_structural_smc_robustness_evidence(
+            args, decision
+        )
+        print(f"structural_smc_robustness_evidence_manifest={manifest_path}")
     return 0
 
 

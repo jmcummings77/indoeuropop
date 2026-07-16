@@ -318,6 +318,8 @@ def test_public_api_exports_target_decision_helpers() -> None:
     assert "StructuralSMCRobustnessDecision" in public_api.__all__
     assert "run_structural_smc_robustness_decision" in public_api.__all__
     assert "structural_smc_robustness_decision_markdown" in public_api.__all__
+    assert "StructuralSMCRobustnessEvidencePaths" in public_api.__all__
+    assert "structural_smc_robustness_evidence_manifest" in public_api.__all__
     assert "run_structural_smc_source_model_sensitivity" in public_api.__all__
     assert "structural_smc_source_model_sensitivity_markdown" in public_api.__all__
 

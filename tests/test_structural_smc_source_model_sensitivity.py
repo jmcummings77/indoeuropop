@@ -302,6 +302,9 @@ def test_source_model_sensitivity_rejects_bad_inputs(tmp_path: Path) -> None:
                 sample_count=2,
                 acceptance_count=1,
             ),
+            paths=structural_smc_source_model_sensitivity_paths_from_dir(
+                tmp_path / "no-usable-folds"
+            ),
         )
     with pytest.raises(SystemExit, match="2"):
         _parse_source_model_targets(None, parser)

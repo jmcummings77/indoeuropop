@@ -639,17 +639,29 @@ target-fragility, fit-metric, and source-model reports exist:
 uv run indoeuropop validate-structured-smc-robustness \
   --robustness-candidate-name central-europe-child-interaction-best \
   --target-fragility-decisions-csv results/qpadm-rerun/structured-smc-fragility-gate/target-fragility-decisions.csv \
+  --target-fragility-report-md results/qpadm-rerun/structured-smc-fragility-gate/target-fragility-gate.md \
   --fit-metric-sensitivity-summary-csv results/qpadm-rerun/structured-smc-fit-metric-sensitivity/fit-metric-sensitivity-summary.csv \
   --fit-metric-sensitivity-report-md results/qpadm-rerun/structured-smc-fit-metric-sensitivity/fit-metric-sensitivity.md \
   --source-model-sensitivity-summary-csv results/qpadm-rerun/structured-smc-source-model-sensitivity/source-model-sensitivity-summary.csv \
   --source-model-sensitivity-report-md results/qpadm-rerun/structured-smc-source-model-sensitivity/source-model-sensitivity.md \
-  --robustness-output-dir results/qpadm-rerun/structural-smc-robustness-decision
+  --caveat-drilldown-csv results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.csv \
+  --caveat-drilldown-report-md results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.md \
+  --caveat-dispositions-csv curation/aadr-v66-structural-smc-caveat-dispositions.csv \
+  --caveat-disposition-report-md results/qpadm-rerun/structural-smc-caveat-dispositions.md \
+  --robustness-decision-record-md docs/structural-smc-caveat-disposition-decision.md \
+  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
+  --robustness-output-dir results/qpadm-rerun/structural-smc-robustness-decision \
+  --manifest-json curation/aadr-v66-structural-smc-evidence-manifest.json
 ```
 
 The unified report blocks promotion when configured robustness screens disagree
 on holdout preferences. Positive target exclusions, uncertainty ties,
 preference disagreements, skipped folds, or missing override regions are
 preserved as caveats when they do not cause instability.
+When `--manifest-json` is supplied, the command requires a complete reviewed
+surface and writes SHA-256 checksums for the tracked decision inputs, gate
+summaries, and rebuilt reports. The manifest freezes review evidence; it does
+not bundle AADR data or reclassify generated outputs as scientific results.
 
 Expand the caveats into concrete fold, target, and run-level review rows:
 
@@ -680,7 +692,7 @@ Reviewers can mark each row as `accepted_caveat`, `requires_qpadm_rerun`,
 ```bash
 uv run indoeuropop validate-structural-smc-caveat-dispositions \
   --caveat-drilldown-csv results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.csv \
-  --caveat-dispositions-csv results/qpadm-rerun/structural-smc-caveat-dispositions.csv \
+  --caveat-dispositions-csv curation/aadr-v66-structural-smc-caveat-dispositions.csv \
   --caveat-disposition-report-md results/qpadm-rerun/structural-smc-caveat-dispositions.md
 ```
 
@@ -689,7 +701,7 @@ Prioritize the disposition queue before review:
 ```bash
 uv run indoeuropop prioritize-structural-smc-caveat-dispositions \
   --caveat-drilldown-csv results/qpadm-rerun/structural-smc-caveat-drilldown/structural-smc-caveat-drilldown.csv \
-  --caveat-dispositions-csv results/qpadm-rerun/structural-smc-caveat-dispositions.csv \
+  --caveat-dispositions-csv curation/aadr-v66-structural-smc-caveat-dispositions.csv \
   --caveat-priority-output-dir results/qpadm-rerun/structural-smc-caveat-priorities
 ```
 
@@ -697,8 +709,9 @@ The priority report is a triage aid. It scores rows using disposition status,
 caveat type, gate, numeric diagnostic deltas, and target flags; reviewers still
 need evidence-backed reasons before accepting the suggested disposition hints.
 
-Pass reviewed dispositions into `validate-structured-smc-robustness` with
-`--caveat-drilldown-csv` and `--caveat-dispositions-csv`. Dispositions marked
+The current reviewed table is tracked at
+`curation/aadr-v66-structural-smc-caveat-dispositions.csv`; its rationale is
+`docs/structural-smc-caveat-disposition-decision.md`. Dispositions marked
 `requires_qpadm_rerun`, `configuration_gap`, or `blocks_promotion` add blockers
 to the unified robustness decision.
 

@@ -1,5 +1,7 @@
 """Public orchestration exports for top-level package imports."""
 
+from indoeuropop._api_orchestration_robustness import *  # noqa: F403
+from indoeuropop._api_orchestration_robustness import __all__ as _robustness_exports
 from indoeuropop.orchestration.abc_smc import (
     ABCSMCOutputPaths,
     ABCSMCWorkflowResult,
@@ -112,21 +114,6 @@ from indoeuropop.orchestration.structural_smc_outputs import (
     structural_smc_manifest,
     structural_smc_output_paths_from_dir,
 )
-from indoeuropop.orchestration.structural_smc_robustness import (
-    load_fit_metric_robustness_summary,
-    load_source_model_robustness_summary,
-    load_target_fragility_robustness_summary,
-    run_structural_smc_robustness_decision,
-    structural_smc_robustness_decision_paths_from_dir,
-)
-from indoeuropop.orchestration.structural_smc_robustness_models import (
-    FitMetricRobustnessSummary,
-    SourceModelRobustnessSummary,
-    StructuralSMCRobustnessDecision,
-    StructuralSMCRobustnessDecisionPaths,
-    StructuralSMCRobustnessIssue,
-    TargetFragilityRobustnessSummary,
-)
 from indoeuropop.orchestration.structural_smc_source_model_sensitivity import (
     run_structural_smc_source_model_sensitivity,
     structural_smc_source_model_sensitivity_paths_from_dir,
@@ -233,6 +220,7 @@ from indoeuropop.orchestration.workflows import (
 )
 
 __all__ = [
+    *_robustness_exports,
     "ARTIFACT_ROLES",
     "DEFAULT_REPEATED_ESTIMATE_TOLERANCE",
     "DEFAULT_STRUCTURAL_SMC_CHRONOLOGY_WINDOWS",
@@ -252,7 +240,6 @@ __all__ = [
     "ChildRegionOverrideWorkflowResult",
     "ExperimentArtifact",
     "ExperimentManifest",
-    "FitMetricRobustnessSummary",
     "MigrationPulseCandidateOutputPaths",
     "MigrationPulseCandidateWorkflowResult",
     "OverrideDeltaOutputPaths",
@@ -266,7 +253,6 @@ __all__ = [
     "SimulationOutputPaths",
     "SimulationRun",
     "SimulatorKind",
-    "SourceModelRobustnessSummary",
     "StructuralSMCCaveatDrilldownPaths",
     "StructuralSMCCaveatDrilldownReport",
     "StructuralSMCCaveatDrilldownRow",
@@ -276,9 +262,6 @@ __all__ = [
     "StructuralSMCFitMetricSensitivityResult",
     "StructuralSMCMultiFoldValidationResult",
     "StructuralSMCOutputPaths",
-    "StructuralSMCRobustnessDecision",
-    "StructuralSMCRobustnessDecisionPaths",
-    "StructuralSMCRobustnessIssue",
     "StructuralSMCSourceModel",
     "StructuralSMCSourceModelRunResult",
     "StructuralSMCSourceModelSensitivityPaths",
@@ -298,7 +281,6 @@ __all__ = [
     "TargetFragilityDecision",
     "TargetFragilityGatePaths",
     "TargetFragilityGateResult",
-    "TargetFragilityRobustnessSummary",
     "TargetRefinementOutputPaths",
     "TargetRefinementWorkflowResult",
     "TargetStructureOutputPaths",
@@ -321,11 +303,8 @@ __all__ = [
     "filter_targets_by_fragility",
     "latin_hypercube_samples",
     "load_child_region_overrides",
-    "load_fit_metric_robustness_summary",
-    "load_source_model_robustness_summary",
     "load_structural_comparison_reference",
     "load_target_fragility_decisions",
-    "load_target_fragility_robustness_summary",
     "merge_structural_smc_validation_folds",
     "migration_pulse_candidate_artifacts",
     "migration_pulse_candidate_manifest",
@@ -350,7 +329,6 @@ __all__ = [
     "run_structural_smc_fit_metric_sensitivity",
     "run_structural_smc_head_to_head_workflow",
     "run_structural_smc_multifold_validation_workflow",
-    "run_structural_smc_robustness_decision",
     "run_structural_smc_source_model_sensitivity",
     "run_structural_smc_target_fragility_gate",
     "run_structured_head_to_head_workflow",
@@ -371,7 +349,6 @@ __all__ = [
     "structural_smc_manifest",
     "structural_smc_output_paths_from_dir",
     "structural_smc_preferred_candidate",
-    "structural_smc_robustness_decision_paths_from_dir",
     "structural_smc_source_model_sensitivity_paths_from_dir",
     "structural_smc_validation_artifacts",
     "structural_smc_validation_manifest",
