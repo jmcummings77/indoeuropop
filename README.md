@@ -1,5 +1,7 @@
 # IndoEuroPop
 
+[![CI](https://github.com/jmcummings77/indoeuropop/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jmcummings77/indoeuropop/actions/workflows/ci.yml)
+
 IndoEuroPop is a research-engineering scaffold for mechanistic models of
 Late Neolithic and Early Bronze Age population dynamics in western Eurasia.
 
@@ -60,6 +62,12 @@ uv run black --check .
 uv run ruff check .
 uv run mypy src tests
 ```
+
+GitHub Actions runs these four checks on Python 3.11 and Ubuntu for pull
+requests targeting `main`, pushes to `main`, and manual runs. CI installs the
+committed `uv.lock` with `uv sync --locked --all-extras --dev` and enforces 100%
+coverage. It uses synthetic test inputs and requires no private datasets or
+repository secrets. Public run logs are available from the CI badge above.
 
 Compare a demo run against the synthetic target example:
 
