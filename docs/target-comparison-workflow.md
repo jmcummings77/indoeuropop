@@ -4,6 +4,13 @@ The target comparison workflow turns a deterministic sweep plus a target CSV
 into review artifacts for one best-ranked run. It is exploratory model
 diagnostics, not posterior inference.
 
+## Prerequisites
+
+Run from the repository root after [installation](../README.md). The first
+example uses checked-in synthetic files. The AADR examples require accepted
+post-rerun targets from the [real target workflow](real-target-workflow.md) and
+[qpAdm rerun workflow](qpadm-workflow.md).
+
 ## CLI
 
 ```bash
@@ -90,7 +97,7 @@ uv run indoeuropop compare-targets \
   --fit-metric root_mean_squared_error
 ```
 
-In the current decision-aware local AADR v66.1 run after focused qpAdm rerun
+In the recorded decision-aware local AADR v66.1 run after focused qpAdm rerun
 ingestion, this comparison evaluated 24 deterministic sweep samples against 13
 retained-with-caveat target observations. The best exploratory run had RMSE
 `0.273952`, and the residual review found no absolute z-score outliers. Treat
@@ -124,7 +131,7 @@ uv run indoeuropop validate-targets \
   --fit-metric root_mean_squared_error
 ```
 
-The current accepted-target validation selected run `9` for both region folds:
+The recorded accepted-target validation selected run `9` for both region folds:
 Britain held out at RMSE `0.122664`, and central Europe held out at RMSE
 `0.305043`. The group-level validation also selected run `9` for every fold;
 `Germany_Tiefbrunn_CordedWare-1` had the largest held-out RMSE at `0.630451`.
@@ -149,8 +156,8 @@ uv run indoeuropop refine-target-parameters \
   --fit-metric root_mean_squared_error
 ```
 
-For the current accepted targets, narrowed and expanded grids both improved the
-central-Europe holdout, but both degraded the protected Britain holdout. The
+For the recorded accepted-target run, narrowed and expanded grids both improved
+the central-Europe holdout, but both degraded the protected Britain holdout. The
 narrowed grid changed central-Europe RMSE by `-0.010448` and Britain by
 `+0.019410`; the expanded grid changed central Europe by `-0.007753` and
 Britain by `+0.061346`.
@@ -176,160 +183,22 @@ uv run indoeuropop refine-target-parameters \
 
 The expanded group-level candidate improved
 `Germany_Tiefbrunn_CordedWare-1` by RMSE `0.031027`, but it degraded protected
-Britain groups by up to `0.168369`. That tradeoff argues for structural model
-changes before simply expanding the parameter grid.
+Britain groups by up to `0.168369`. That recorded tradeoff motivated reviewing
+model structure before expanding the parameter grid. These values describe one exploratory sweep; they are not
+a claim that a structural change is historically sufficient.
 
-## Target-Aligned Structure
+Inspect the generated `accepted-region-refinement-report.md` and
+`accepted-group-refinement-report.md` under `results/qpadm-rerun/`, together
+with the CSVs and manifests named above, when reproducing these diagnostics.
 
-Use `structure-target-regions` when a broad region, such as central Europe,
-needs explicit target-aligned child regions before another comparison or
-validation pass:
+## Structural follow-up
 
-```bash
-uv run indoeuropop structure-target-regions \
-  --config curation/aadr-v66-western-europe-comparison.toml \
-  --targets results/qpadm-rerun/accepted-target-observations.csv \
-  --structure-region central_europe \
-  --structured-targets-out results/qpadm-rerun/central-europe-structured-targets.csv \
-  --structured-config-out results/qpadm-rerun/central-europe-structured-comparison.toml
-```
+Use the [structural candidate workflow](structural-candidate-workflow.md) for
+target-aligned child regions, reviewed overrides, local sensitivity, and
+comparisons against a shared baseline. It includes the command sequence for
+reproducing the [Central Europe override decision](central-europe-override-decision.md).
 
-By default, structure labels come from `note:requested_group_id`. The command
-relabels matching targets, splits selected parent initial counts evenly across
-child regions, copies parent migration pulses and parameter overrides, and
-writes a loadable sweep TOML. The result is a review scaffold: child-specific
-dynamics still need archaeologically and genetically defensible priors before
-the split should be interpreted as a scientific model improvement.
-
-After reviewing priors for one or more child regions, apply them as a partial
-override TOML:
-
-```bash
-uv run indoeuropop apply-child-region-overrides \
-  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
-  --child-region-overrides curation/aadr-v66-central-europe-child-overrides.toml \
-  --overridden-config-out results/qpadm-rerun/central-europe-curated-comparison.toml
-```
-
-The override file may include `[counts.<region>]`,
-`[[migration_pulses]]`, `[region_parameters.<region>]`, and
-`[source_parameters.<region>.<source>]` tables. Migration pulses replace
-inherited pulses for the same region by default; set
-`[options] replace_migration_pulses = false` to append them.
-
-The tracked central-Europe override is a review candidate with an explicit
-protected-fold tolerance of `0.03` RMSE for Britain. Rerun validation against
-the structured targets before reviewing deltas:
-
-```bash
-uv run indoeuropop validate-targets \
-  --config results/qpadm-rerun/central-europe-curated-comparison.toml \
-  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
-  --validation-field region \
-  --validation-fit-csv results/qpadm-rerun/central-europe-curated-validation-fit.csv \
-  --validation-report-md results/qpadm-rerun/central-europe-curated-validation-report.md \
-  --manifest-json results/qpadm-rerun/central-europe-curated-validation-manifest.json \
-  --fit-metric root_mean_squared_error
-```
-
-Use `review-override-deltas` to compare validation outputs before and after an
-override:
-
-```bash
-uv run indoeuropop review-override-deltas \
-  --baseline-validation-fit-csv results/qpadm-rerun/central-europe-structured-validation-fit.csv \
-  --override-validation-fit-csv results/qpadm-rerun/central-europe-curated-validation-fit.csv \
-  --priority-validation-value central_europe__germany_tiefbrunn_cordedware_1 \
-  --priority-validation-value central_europe__germany_manchingoberstimm_bellbeaker \
-  --protected-validation-value britain \
-  --refinement-tolerance 0.03 \
-  --override-delta-csv results/qpadm-rerun/central-europe-curated-override-delta.csv \
-  --override-delta-report-md results/qpadm-rerun/central-europe-curated-override-delta.md \
-  --manifest-json results/qpadm-rerun/central-europe-curated-override-delta-manifest.json \
-  --fit-metric root_mean_squared_error
-```
-
-Negative validation deltas indicate improved held-out fit. Positive protected
-deltas should remain within the committed tolerance before a candidate moves
-from review-only to default workflow status.
-
-Run a one-factor child-override sensitivity sweep when the curated candidate
-passes the tolerance gate but still needs local robustness checks:
-
-```bash
-uv run indoeuropop sweep-child-overrides \
-  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
-  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
-  --child-region-overrides curation/aadr-v66-central-europe-child-overrides.toml \
-  --priority-validation-value central_europe__germany_tiefbrunn_cordedware_1 \
-  --priority-validation-value central_europe__germany_manchingoberstimm_bellbeaker \
-  --protected-validation-value britain \
-  --refinement-tolerance 0.03 \
-  --override-sensitivity-csv results/qpadm-rerun/central-europe-child-override-sensitivity.csv \
-  --override-sensitivity-report-md results/qpadm-rerun/central-europe-child-override-sensitivity.md \
-  --manifest-json results/qpadm-rerun/central-europe-child-override-sensitivity-manifest.json \
-  --fit-metric root_mean_squared_error
-```
-
-The default candidate set changes one value at a time around the override file:
-local and Steppe counts, pulse rates, pulse windows, and Steppe reproductive
-multipliers. The report ranks accepted candidates first, then orders them by
-priority mean delta.
-
-If the one-factor report points to Steppe reproductive multipliers, run the
-second-stage count-by-reproduction interaction grid:
-
-```bash
-uv run indoeuropop sweep-child-override-interactions \
-  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
-  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
-  --child-region-overrides curation/aadr-v66-central-europe-child-overrides.toml \
-  --priority-validation-value central_europe__germany_tiefbrunn_cordedware_1 \
-  --priority-validation-value central_europe__germany_manchingoberstimm_bellbeaker \
-  --protected-validation-value britain \
-  --refinement-tolerance 0.03 \
-  --override-sensitivity-csv results/qpadm-rerun/central-europe-child-override-interactions.csv \
-  --override-sensitivity-report-md results/qpadm-rerun/central-europe-child-override-interactions.md \
-  --manifest-json results/qpadm-rerun/central-europe-child-override-interactions-manifest.json \
-  --fit-metric root_mean_squared_error
-```
-
-This command varies Steppe count and Steppe reproductive multiplier factors
-together for each child region, while leaving the other child region at the
-curated candidate values.
-
-The current top interaction row is promoted as
-`curation/aadr-v66-central-europe-child-overrides-interaction-best.toml`. The
-decision record is `docs/central-europe-override-decision.md`; rerun the
-head-to-head check below whenever targets or source estimates change:
-
-```bash
-uv run indoeuropop apply-child-region-overrides \
-  --config results/qpadm-rerun/central-europe-structured-comparison.toml \
-  --child-region-overrides curation/aadr-v66-central-europe-child-overrides-interaction-best.toml \
-  --overridden-config-out results/qpadm-rerun/central-europe-interaction-best-comparison.toml
-
-uv run indoeuropop validate-targets \
-  --config results/qpadm-rerun/central-europe-interaction-best-comparison.toml \
-  --targets results/qpadm-rerun/central-europe-structured-targets.csv \
-  --validation-field region \
-  --validation-fit-csv results/qpadm-rerun/central-europe-interaction-best-validation-fit.csv \
-  --validation-report-md results/qpadm-rerun/central-europe-interaction-best-validation-report.md \
-  --manifest-json results/qpadm-rerun/central-europe-interaction-best-validation-manifest.json \
-  --fit-metric root_mean_squared_error
-
-uv run indoeuropop review-override-deltas \
-  --baseline-validation-fit-csv results/qpadm-rerun/central-europe-curated-validation-fit.csv \
-  --override-validation-fit-csv results/qpadm-rerun/central-europe-interaction-best-validation-fit.csv \
-  --priority-validation-value central_europe__germany_tiefbrunn_cordedware_1 \
-  --priority-validation-value central_europe__germany_manchingoberstimm_bellbeaker \
-  --protected-validation-value britain \
-  --refinement-tolerance 0 \
-  --override-delta-csv results/qpadm-rerun/central-europe-curated-vs-interaction-best-delta.csv \
-  --override-delta-report-md results/qpadm-rerun/central-europe-curated-vs-interaction-best-delta.md \
-  --manifest-json results/qpadm-rerun/central-europe-curated-vs-interaction-best-delta-manifest.json \
-  --fit-metric root_mean_squared_error
-```
+## Residual review
 
 Generate a Markdown review of the residual table with:
 
@@ -344,3 +213,8 @@ In the pre-decision comparison, the largest residual was
 `Germany_StkrStraubing_BellBeaker`, where the target mean was much lower than
 the smooth central-Europe trajectory. That target is now decision-deferred as
 `rerun_qpadm`.
+
+For bounded parameter screening, continue to the
+[inference workflow](inference-workflow.md). Read the
+[target curation audit guide](target-curation-audit.md) before responding to
+large residuals with parameter or structural changes.
