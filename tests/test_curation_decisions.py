@@ -16,13 +16,12 @@ from indoeuropop.data.data_sources import sha256_file
 
 
 def test_checked_in_central_europe_curation_decisions_validate() -> None:
-    """The promoted central-Europe override should have live local artifacts."""
+    """Checked-in curation metadata should validate without generated artifacts."""
     report = validate_curation_decision_files(
         (
             "curation/aadr-v66-central-europe-child-overrides.toml",
             "curation/aadr-v66-central-europe-child-overrides-interaction-best.toml",
         ),
-        require_artifacts=True,
     )
 
     assert report.valid

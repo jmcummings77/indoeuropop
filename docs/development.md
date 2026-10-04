@@ -26,12 +26,18 @@ uv run ruff check .
 uv run mypy src tests
 ```
 
-The full suite includes curation-decision checks that validate local generated
-reports, CSVs, and manifests under `results/qpadm-rerun/`. These artifacts are
-ignored by Git, so a fresh checkout without them cannot pass those checks.
-See the [real target workflow](real-target-workflow.md) for their prerequisites
-and regeneration commands; report missing artifacts explicitly when recording
-verification results.
+GitHub Actions runs these four checks on Python 3.11 and Ubuntu for pull
+requests targeting `main`, pushes to `main`, and manual runs. CI installs the
+committed `uv.lock` with `uv sync --locked --all-extras --dev` and enforces 100%
+coverage. Public run logs are available from the README's CI badge.
+
+The full suite runs in a fresh checkout using synthetic fixtures and committed
+curation metadata, with no private datasets or repository secrets. Artifact
+and checksum validation use temporary synthetic files. Validating local
+research outputs with `validate-curation-decisions --require-artifacts` still
+requires the generated reports, CSVs, and manifests under `results/`; see the
+[real target workflow](real-target-workflow.md) for prerequisites and
+regeneration commands.
 
 The coverage target is 100% for logic-bearing package code. Preserve that
 threshold and test public behavior, validation failures, and artifact

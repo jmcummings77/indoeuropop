@@ -18,3 +18,9 @@ globs:
 - Base PR descriptions on the actual diff, not memory or intent alone.
 - Include verification commands actually run in PR descriptions.
 - Do not merge unless the user has authorized it and required checks are green.
+- Public CI lives in `.github/workflows/ci.yml` and runs the documented Black,
+  Ruff, mypy, and pytest/100%-coverage gates on Python 3.11 for PRs to `main`,
+  pushes to `main`, and manual runs.
+- Keep CI usable by fork pull requests: use GitHub-hosted runners, read-only
+  repository permissions, locked dependencies, synthetic inputs, and no
+  repository secrets or private data. Pin third-party actions to commit SHAs.

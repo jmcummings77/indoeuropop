@@ -1,5 +1,7 @@
 # IndoEuroPop
 
+[![CI](https://github.com/jmcummings77/indoeuropop/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jmcummings77/indoeuropop/actions/workflows/ci.yml)
+
 ## One-minute introduction
 
 Ancient-DNA ancestry patterns alone do not tell us which combination of

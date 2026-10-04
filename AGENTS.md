@@ -115,6 +115,12 @@ uv run ruff check .
 uv run mypy src tests
 ```
 
+Public CI is defined in `.github/workflows/ci.yml`. It runs the four gates
+above on GitHub-hosted Ubuntu with Python 3.11 for pull requests targeting
+`main`, pushes to `main`, and manual dispatch. Dependencies are installed from
+`uv.lock` using `uv sync --locked --all-extras --dev`. Keep CI self-contained:
+use synthetic test inputs, with no private datasets or repository secrets.
+
 Never lower coverage thresholds, broaden coverage exclusions, or add ignore
 markers around real logic to make the gate pass. Fix coverage with tests or by
 extracting testable logic.
